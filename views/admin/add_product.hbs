@@ -1,0 +1,80 @@
+
+
+{{>admin_header}}
+
+       <section>
+        <div class="container mt-4">
+        <div class="row">
+
+            <div class="col-md-6">
+                <h2>Add Product</h2>
+                <form action="add_product" method="post" enctype="multipart/form-data">
+                <label for="name">Name</label>
+                <input type="text" name="name" class="form-control">
+
+                <label for="category">Category</label>
+                {{!-- <input type="text" name="" class="form-control"> --}}
+                <br>
+                <select name="category" class="form-control" id="category">
+                    <option value="men" >men</option>
+                    <option value="woman">woman</option>
+                    <option value="kids">kids</option>
+                </select>
+
+                
+                <label for="price">Price</label>
+                <input type="number" name="price" class="form-control">
+
+                
+                <label for="description">Description</label>
+                <input type="text" name="description" class="form-control">
+
+                
+                <label for="image">Image</label>
+                <img  alt="" style="width: 100px;" class="p-3" id="image">
+                <input type="file" name="image" class="form-control" onchange="changeImg(event)">
+
+                <button type="submit" class="btn btn-success mt-4">Submit</button>
+                <a href="/admin/allproducts" class="btn btn-warning mt-4">Cancel</a>
+                <button type="reset" class="btn btn-danger mt-4">Clear</button>
+
+                </form>
+
+                {{!-- Adding new catogory --}}
+
+                <form action="/add_catogory" method="post">
+
+                <label for="add_catogory">Add Category</label>
+                <input type="text" name="add_catogry" class="form-control">
+                <a href="/admin/add_catogory" class="btn btn-success mt-4">add</a>
+                </form>
+
+                {{!-- render Catogory --}}
+                <select name="category" class="form-control" id="category">
+
+                    <option value="men" >men</option>
+                    <a href="" class="btn btn-primary mt-4">Edit</a>
+                    <a type="" class="btn btn-danger mt-4">delete</a>
+                    
+                </select>
+
+
+                
+
+                
+
+            </div>
+
+
+        </div>
+
+
+        </div>
+       </section>    
+ <script>
+        function changeImg(event){
+            document.getElementById('image').src = URL.createObjectURL(event.target.files[0])
+        }
+       </script>
+
+{{>admin_footer}}
