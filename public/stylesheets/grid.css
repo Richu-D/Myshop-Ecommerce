@@ -1,0 +1,15 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: 25% auto;
+  padding: 10px;
+}
+
+.grid-item {
+  border: 1px solid black;
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+.hidden{
+  display: none;
+}

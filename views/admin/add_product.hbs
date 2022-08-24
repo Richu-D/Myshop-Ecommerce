@@ -6,7 +6,7 @@
         <div class="container mt-4">
         <div class="row">
 
-            <div class="col-md-6">
+            <div class="col-md-6 boxShadow">
                 <h2>Add Product</h2>
                 <form action="add_product" method="post" enctype="multipart/form-data">
                 <label for="name">Name</label>
@@ -15,10 +15,11 @@
                 <label for="category">Category</label>
                 {{!-- <input type="text" name="" class="form-control"> --}}
                 <br>
+                {{!-- Catogory Render it --}}
                 <select name="category" class="form-control" id="category">
-                    <option value="men" >men</option>
-                    <option value="woman">woman</option>
-                    <option value="kids">kids</option>
+                        {{#each category}}
+                    <option value="{{this.category}}" >{{this.category}}</option>
+                        {{/each}}
                 </select>
 
                 
@@ -41,23 +42,57 @@
                 </form>
 
                 {{!-- Adding new catogory --}}
-
-                <form action="/add_catogory" method="post">
-
+                <br><br>
+                <form action="add_category" method="post">
                 <label for="add_catogory">Add Category</label>
-                <input type="text" name="add_catogry" class="form-control">
-                <a href="/admin/add_catogory" class="btn btn-success mt-4">add</a>
+                <input type="text" name="category" class="form-control">
+                <button type="submit" class="btn btn-success mt-2">add</button>
                 </form>
 
                 {{!-- render Catogory --}}
-                <select name="category" class="form-control" id="category">
+                {{!-- <select name="category" class="form-control" id="category">
 
                     <option value="men" >men</option>
                     <a href="" class="btn btn-primary mt-4">Edit</a>
                     <a type="" class="btn btn-danger mt-4">delete</a>
                     
-                </select>
+                </select> --}} 
 
+               <div class="col-12">
+                        <div class="bg-light rounded h-100 p-4">
+                            <h6 class="mb-4">Category Table</h6>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            {{!-- <th scope="col">#</th> --}}
+                                            <th scope="col">Category Name</th>
+                                            <th scope="col">Edit</th>
+                                            <th scope="col">Delete</th>                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each category}}
+                                        <tr>
+                                            {{!-- <th scope="row">1</th> --}}
+                                            <form action="categoryedit/{{this._id}}" method="post">
+                                            <td><input type="text" name="category" class="form-control" value="{{this.category}}"></td>
+                                            <td><button type="submit" class="btn btn-primary">Edit</button></td></form>
+
+                                            <td><a href="categorydelete/{{this._id}}" class="btn btn-danger">delete</a></td>
+                                            
+                                            {{!-- <td>Member</td> --}}
+                                        </tr>
+                                        
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                <br><br><br>
+                {{!-- Table --}}
 
                 
 

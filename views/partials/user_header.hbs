@@ -30,14 +30,14 @@
     <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-1 px-xl-5">
-            <div class="col-lg-6 d-none d-lg-block">
+            {{!-- <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
                     <a class="text-body mr-3" href="">About</a>
                     <a class="text-body mr-3" href="">Contact</a>
                     <a class="text-body mr-3" href="">Help</a>
                     <a class="text-body mr-3" href="">FAQs</a>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
         
@@ -73,7 +73,7 @@
         </div>
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
-                <a href="" class="text-decoration-none">
+                <a href="/home" class="text-decoration-none">
                     <span class="h1 text-uppercase">My</span>
                     <span class="h1 text-uppercase ml-n1">Shop</span>
                 </a>
@@ -91,8 +91,7 @@
                 </form>
             </div>
             <div class="col-lg-4 col-6 text-right">
-                <p class="m-0">Customer Service</p>
-                <h5 class="m-0">+91 9898989898 </h5>
+               {{!-- <button>Profile</button> --}}
             </div>
         </div>
     </div>
@@ -102,7 +101,7 @@
     <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
-            <div class="col-lg-3 d-none d-lg-block">
+            {{!-- <div class="col-lg-3 d-none d-lg-block">
                 <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
                     <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
                     <i class="fa fa-angle-down text-dark"></i>
@@ -128,7 +127,7 @@
                         <a href="" class="nav-item nav-link">Shoes</a>
                     </div>
                 </nav>
-            </div>
+            </div> --}}
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <a href="" class="text-decoration-none d-block d-lg-none">
@@ -142,19 +141,23 @@
                         <div class="navbar-nav mr-auto py-0">
                             <a href="/home" class="nav-item nav-link">Home</a>
                             <a href="/shop" class="nav-item nav-link">Shop</a>
-                            <a href="/detail" class="nav-item nav-link">Shop Detail</a>
+                            <a href="/cart" class="nav-item nav-link">Shopping Cart</a>
+                            <a href="/orders" class="nav-item nav-link">Orders</a>
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
+                                {{!-- <i class="fa fa-angle-down mt-1"></i> --}}
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Profile </i></a>
                                 <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                                    <a href="/cart" class="dropdown-item">Shopping Cart</a>
+                                    <a href="/myprofile" class="dropdown-item">My Profile</a>
                                     <a href="/checkout" class="dropdown-item">Checkout</a>
+                                    <a href="/logout" class="dropdown-item">logout</a>
+
                                 </div>
                             </div>
-                            <a href="/contact" class="nav-item nav-link">Contact</a>
-                            <a href="/logout" class="nav-item nav-link">logout</a>
+                                    
+                            {{!-- <a href="/contact" class="nav-item nav-link">Contact</a> --}}
                             
                         </div>
-                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                        {{!-- <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
@@ -163,7 +166,7 @@
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </nav>
             </div>

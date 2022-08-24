@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
   
  if(req.body.email==='r@gmail.com'&& req.body.password==='123'){
- 
+ console.log(process.env.ADMIN_TOKEN_SECRET)
    const email = req.body.email
   const user = { email: email}
   const accessToken = jwt.sign(user,process.env.ADMIN_TOKEN_SECRET)
@@ -58,11 +58,16 @@ router.get('/home', function(req, res) {
 });
 
 router.get('/add_product', function(req, res) {
-  res.render('admin/add_product')
+  helpers.getCategory().then((category)=>{
+    res.render('admin/add_product',{category})
+
+  })
+
 });
 
 router.post('/add_product', function(req, res) {
   console.log(req.body);
+  if(req.files){
   helpers.addProduct(req.body,(id)=>{
     let image = req.files.image
     image.mv('./public/product_image/'+id+'.jpg',(err,done)=>{
@@ -73,10 +78,34 @@ router.post('/add_product', function(req, res) {
       }
     })
   })
+  res.redirect('/admin/add_product')
+  }else{
+    res.redirect('/admin/add_product')
+    // set cookie error = image is not null
+  }
+
 });
 
-router.get('/form', function(req, res) {
-  res.render('admin/form')
+router.post('/add_category',(req,res)=>{
+  // push category:value in document 
+  helpers.addCategory(req.body)
+  res.redirect('add_product')
+})
+
+
+router.post('/categoryedit/:id',(req,res)=>{
+helpers.editCategory(req.params.id,req.body)
+ res.redirect('/admin/add_product')
+})
+
+router.get('/categorydelete/:id',(req,res)=>{
+  helpers.deleteCategory(req.params.id)
+  res.redirect('/admin/add_product')
+ })
+
+
+router.get('/form', function(req, res){
+  res.render('/admin/form')
 });
 
 router.get('/allproducts', function(req, res) {

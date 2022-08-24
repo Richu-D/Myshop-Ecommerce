@@ -1,0 +1,63 @@
+{{>user_header}}
+
+<link rel="stylesheet" href="/stylesheets/grid.css">
+
+<div class="grid-container">
+    {{!-- side menu --}}
+  <div class="grid-item">
+    <div>My order</div>
+    <div>Account Setting
+        <div>Profile Informations</div>
+        <div>Manage Address</div>
+    </div>
+    <div>Logout</div>
+  </div>
+  {{!-- details --}}
+  <div class="grid-item">
+
+
+    {{!-- manage Address --}}
+    <div>
+        <h3>Manage Address</h3>
+        {{!-- Add address --}}
+        <div> 
+            <button class="btn btn-primary" id="addAddressBtn" onclick="show()">Add Address</button>
+            <div class="hidden" id="addAddress">
+                <form action="/addAddress" method="post">
+                 <div class="form-group">
+                <label for="exampleFormControlTextarea1">Enter Address</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="address"></textarea>
+                </div>
+
+                <button class="btn btn-success" type="submit">Submit</button>
+                </form>
+            </div>
+
+        </div>
+
+
+        {{!-- show existing addresses --}}
+        <div>
+            <form action="/editAddress" method="post">
+                <div class="form-group ">
+                <label for="exampleFormControlTextarea1">Existing Address</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Edit</button><a class="btn btn-danger" href="/deleteAddress">Delete</a>
+                </form>
+        </div>
+
+
+    </div>
+
+  </div>
+ 
+</div>
+
+<script>
+    function show(){
+        document.getElementById('addAddress').classList.remove('hidden')
+    }
+</script>
+
+{{>user_footer}}

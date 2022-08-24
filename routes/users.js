@@ -2,23 +2,42 @@ var express = require('express');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 var helpers = require('../helpers/helpers')
-// const twilio = require('twilio')
+const twilio = require('twilio');
+const { Db } = require('mongodb');
 
-// const accountSid = process.env.TWILIO_ACCOUNT_SID;
-// const authToken = process.env.TWILIO_AUTH_TOKEN;
-// const client = require('twilio')(accountSid, authToken);
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
 
 
 var router = express.Router();
 
+function ifuser(req,res,next){
+  // checking JWT
+  if(req.headers.cookie){
+let x = req.headers.cookie;
+let y = x.split('=')[1]
+   let token = y;
+    if(token == null){next()}
+
+    jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
+        if(err) return res.sendStatus(403)
+        
+        res.redirect('/home')
+    })}else{
+      next()
+    }
+  }
+
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   if(req.cookies.err){
+    res.render('users/signin')
+
     res.render('users/signin',{err:"Invalid Username or Password",err_class:"alert alert-warning"})
     res.clearCookie('err')
   }else{
     res.render('users/signin')
-
   }
 });
 
@@ -51,7 +70,10 @@ if(data){
   }
 
 }else{
-  res.redirect('/signup')
+  // with err
+  res.setHeader('Set-Cookie',"err=true")
+  
+  res.redirect('/')
 }
   
  }
@@ -65,44 +87,84 @@ router.get('/signup', function(req, res) {
 });
 
 router.post('/signup', async function (req, res) {
-  req.body.password = await bcrypt.hash(req.body.password,10)
-  // res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.email}`,`password=${req.body.password}`])
-console.log(req.body);
-helpers.addUser(req.body)
-  const email = req.body.email
-  const user = { email: email}
-  const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+
+req.body.password = await bcrypt.hash(req.body.password,10)
+otp = Math.floor(100000 + Math.random() * 900000);
+console.log(otp);
+req.body.otp = await bcrypt.hash(`${otp}`,10)
+// send to cookie
+res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.email}`,`password=${req.body.password}`,`number=${req.body.number}`,`otp=${req.body.otp}`])
+
+// verify
+
+
+  try{
+  client.messages
+  .create({
+    body: `Your one time password for login is ${otp} `,
+    from: +16415521519,
+    to: `+91` + req.body.number,
+  })
+  .then((message) => {
   
-  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
-    res.redirect('/home')
 
-  // cookie warning setting + redirect to /
-  // res.setHeader('Set-Cookie',"err=true")
-  // res.redirect('/')
+    
+    console.log(`This is something return from twilio ${message}`);
+    res.redirect('/verifyotp')
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+}catch (err){
 
-  // res.end()
+console.log(`Some error cames in catch /signup post  ${err}`);
 
-// // 
-// client.messages('MM800f449d0399ed014aae2bcc0cc2f2ec')
-//       .fetch()
-//       .then(message => console.log(message.body));
-
-// res.redirect('/home')
-  // res.redirect('/verifyotp')
+}
+  res.redirect('/verifyotp')
 });
 
 router.get('/verifyotp', function(req, res, next) {
-  console.log(req.cookies); 
   res.render('users/verifyotp')
 });
 
 router.post('/verifyotp', function(req, res, next) {
+  // console.log(req.cookies.otp); 
+var {username,email,number,password,otp} = req.cookies;
+  
+var userdata ={username,email,number,password}
+
   // verifying otp 
-  // generating JWT
+  bcrypt.compare(req.body.otp,req.cookies.otp).then((data)=>{
+    if(data){
+// push data into database
+console.log(userdata);
+
+
+
+helpers.addUser(userdata)
+    const email = req.cookies.email
+    const user = { email: email}
+
+  
+
+
+  //  generating JWT
+   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+  
+  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
   res.clearCookie('password')
-  res.clearCookie('email')
-  res.clearCookie('username')
-  res.redirect('/home')
+res.clearCookie('email')
+res.clearCookie('username')
+res.clearCookie('number')
+res.clearCookie('data')
+res.clearCookie('otp')
+    res.redirect('/')
+
+
+    }else{
+      console.log("data delete ayi");
+    }
+  })
 
 });
 
@@ -120,7 +182,12 @@ let y = x.split('=')[1]
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
         if(err) return res.sendStatus(403)
         req.user = user
-        console.log(req.user);
+        // check block or not
+        helpers.getUser(req.user.email).then((data)=>{
+          if(data.block){
+            res.send('Your are blocked')
+          }
+        })
         next()
     })}else{
       res.redirect('/')
@@ -139,18 +206,62 @@ router.get('/shop',checkuser, function(req, res) {
 
 // now work on here
 router.get('/detail/:id',checkuser, function(req, res) {
-  console.log(req.params.id); 
   helpers.getProductDetails(req.params.id).then((data)=>{
     res.render('users/detail',{data})
   })
 });
 
-router.get('/cart/:id',checkuser, function(req, res) {
-  // add to cart then render
-  res.render('users/cart')
+// router.post('/getTotalAmount',(req,res)=>{
+//   console.log(req.body);
+//   helpers.getTotalAmount(req.body.userId).then((response)=>{
+//     console.log(`Resposne of getTotalAmount is ${response}`);
+//     res.json(response)
+//   })
+// })
+
+router.get('/cart',checkuser, async function(req, res) {
+
+  let products = await helpers.getAllCartItems(req.user.email)
+let grantTotal = 0;
+products.forEach(data => {
+  data.total=data.quantity*data.product.price;
+  grantTotal += data.total;
+});
+  res.render('users/cart',{products,grantTotal:grantTotal})
+   });
+
+router.post('/addtocart/:id',checkuser, function(req, res) {
+  // add to cart 
+  try {
+    helpers.addToCart(req.user.email,req.params.id).then(()=>{
+      res.redirect('/cart')
+    })
+  } catch (error) {
+
+  }
+  
+// res.send("add to cart post request"+req.user.email)
+  // res.render('users/cart')
 });
 
-router.get('/checkout',checkuser, function(req, res) {
+router.post('/change-product-quantity',(req,res)=>{
+  helpers.changeProductQuantity(req.body).then((response)=>{    
+    res.json(response)
+  })
+})
+
+router.post('/removeCartItem',(req,res)=>{
+  helpers.removeCartItem(req.body).then((response)=>{
+    res.json(response)
+  })
+
+  // helpers.changeProductQuantity(req.body).then((response)=>{
+  //   res.json(response)
+  // })
+})
+
+router.get('/checkout',checkuser, async function(req, res) {
+
   res.render('users/checkout')
 });
 router.get('/contact',checkuser, function(req, res) {
@@ -160,6 +271,81 @@ router.get('/logout',checkuser,(req,res)=>{
   res.clearCookie('jwt')
   res.redirect('/')
 })
+router.post('/updateAllValues',checkuser,async(req,res)=>{
+  
+  let products = await helpers.getAllCartItems(req.user.email)
+  let grantTotal = 0;
+  let rates = [];
+  products.forEach(data => {
+    rates.push(data.quantity*data.product.price)
+    grantTotal += data.quantity*data.product.price;
+  });
+ 
+    res.json({rates,grantTotal})
+
+})
+
+router.get('/myprofile',checkuser,(req,res)=>{
+  
+
+  res.render('users/profile')
+})
+
+router.get('/cancelorder/:id',checkuser,(req,res)=>{
+helpers.cancelOrder(req.params.id)
+
+  res.send(req.params.id)
+})
+
+
+router.post('/addAddress',checkuser,(req,res)=>{
+  
+  helpers.addAddress(req.user.email,req.body)
+
+  res.render('users/profile')
+})
+
+router.get('/orders',checkuser,(req,res)=>{
+helpers.getAllOrder(req.user.email).then((data)=>{
+  console.log(data[0]);
+  // let grantTotal = 0
+  // data.forEach(data=>{
+  //   grantTotal += data.grantTotal.grantTotal;
+  //   console.log(data.order);
+
+  // })
+  res.render('users/orders',{data})
+
+})
+
+
+})
+router.post('/placeorder',checkuser,(req,res)=>{
+    // inser details into order collection 
+helpers.getAllCartItems(req.user.email).then((cartitems)=>{
+
+  grantTotal =0
+  
+  order = []
+  cartitems.forEach(data =>{
+    order.push({userId:req.user.email,item:data.item,quantity:data.quantity,price:data.product.price,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.price,date:new Date(),status:"placed",name:req.body.name,number:req.body.number,address:req.body.address,paymentMethod:req.body.paymentMethod})
+
+    grantTotal += data.quantity*data.product.price;
+
+  })
+  grantTotal={'grantTotal':grantTotal}
+
+
+  helpers.addOrder(order,grantTotal)
+
+  helpers.removeAllCartItem(req.user.email)
+
+
+})
+
+
+  res.redirect('/orders')
+ })
 
 
 module.exports = router;
