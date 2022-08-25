@@ -34,7 +34,7 @@
                                         {{this.productname}} x 
                                         {{this.quantity}} = 
                                         {{this.totalAmount}}
-                                        
+                                        <br>
                                         {{/each}}
                                         </span>
                                     
@@ -42,22 +42,20 @@
                                 </div>
                             </td>
                            
-                            <td class="align-middle" >{{this.grantTotal.grantTotal}}</td>
+                            <td class="align-middle" >{{this.details.grantTotal}}</td>
                             <td class="align-middle" >
-                            {{#each order}}                            
-                            {{this.date}}
-                            {{/each}}
+                                                     
+                            {{this.details.date}}
+                          
                             </td>
                             <td class="align-middle" >
-                             {{#each order}}
-                            {{this.paymentMethod}}
-                            {{/each}}
+                            
+                            {{this.details.paymentMethod}}
+                          
                             </td>
 
                             <td class="align-middle" >
-                                {{#each order}}     
-                                <h4>{{this.status}}</h4>
-                                {{/each}}
+                                <h6>{{this.details.status}}</h6>
                             </td>
 
                             <td class="align-middle"><a href="/cancelorder/{{this._id}}" class="btn btn-danger" >Cancel Order</a></td>

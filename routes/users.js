@@ -262,8 +262,16 @@ router.post('/removeCartItem',(req,res)=>{
 
 router.get('/checkout',checkuser, async function(req, res) {
 
-  res.render('users/checkout')
+  helpers.getAddress(req.user.email).then(data =>{
+    console.log(data.address);
+    res.render('users/checkout',{address:data.address})
 });
+
+})
+
+
+
+
 router.get('/contact',checkuser, function(req, res) {
   res.render('users/contact')
 });
@@ -285,16 +293,28 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
 
 })
 
-router.get('/myprofile',checkuser,(req,res)=>{
+
+
   
 
-  res.render('users/profile')
-})
+
+
+router.get('/myprofile',checkuser,(req,res)=>{
+  
+  // helpers.getAddress(req.user.email).then(data =>{
+  //   console.log(data.address);
+    helpers.getUser(req.user.email).then((user)=>{
+      console.log(user);
+    res.render('users/profile',{address:user.address,user})
+    })
+  })
+
+// })
 
 router.get('/cancelorder/:id',checkuser,(req,res)=>{
-helpers.cancelOrder(req.params.id)
+helpers.cancelOrder(req.params.id,"Order Cancelled By User")
 
-  res.send(req.params.id)
+  res.redirect('/orders')
 })
 
 
@@ -302,41 +322,107 @@ router.post('/addAddress',checkuser,(req,res)=>{
   
   helpers.addAddress(req.user.email,req.body)
 
-  res.render('users/profile')
+  res.redirect('myprofile')
 })
 
 router.get('/orders',checkuser,(req,res)=>{
 helpers.getAllOrder(req.user.email).then((data)=>{
-  console.log(data[0]);
   // let grantTotal = 0
   // data.forEach(data=>{
   //   grantTotal += data.grantTotal.grantTotal;
   //   console.log(data.order);
 
-  // })
+  // }) 
   res.render('users/orders',{data})
 
 })
 
 
 })
+
+// editpersonaldetails
+router.post('/editpersonaldetails',checkuser,(req,res)=>{
+
+helpers.updateUser(req.user.email,req.body)
+
+res.redirect('/myprofile')
+})
+
+
+
+router.post('/changepassword',checkuser,(req,res)=>{
+  let existingpassword = req.body.existingpassword;
+  let newpassword = req.body.newpassword;
+  let conformpassword = req.body.conformpassword;
+  console.log(req.user.email,existingpassword,newpassword,conformpassword);
+
+  if(newpassword==conformpassword){
+  helpers.getUser(req.user.email).then((data)=>{
+    bcrypt.compare(existingpassword,data.password).then((data)=>{
+      console.log(data);
+      if(data){
+        // change password
+
+        res.send("password matched")
+  // res.redirect('/myprofile')
+
+      }else{
+
+res.send("password is not match")
+return 0;
+      }
+    })
+  })
+}else{
+res.send("new password and conformation password are not match")
+}
+
+
+  })
+
+
+
+router.post('/editaddress',checkuser,(req,res)=>{
+
+  // delete address
+  
+res.send(req.params.id,req.body)
+})
+
+router.get('/deleteaddress/:id',checkuser,(req,res)=>{
+
+  helpers.deleteaddress(req.user.email,req.params.id)
+    // delete address
+    
+res.redirect('/myprofile')
+})
+
 router.post('/placeorder',checkuser,(req,res)=>{
+
+console.log(req.body);
+
     // inser details into order collection 
 helpers.getAllCartItems(req.user.email).then((cartitems)=>{
 
   grantTotal =0
   
+  details = {}
   order = []
   cartitems.forEach(data =>{
-    order.push({userId:req.user.email,item:data.item,quantity:data.quantity,price:data.product.price,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.price,date:new Date(),status:"placed",name:req.body.name,number:req.body.number,address:req.body.address,paymentMethod:req.body.paymentMethod})
+    order.push({item:data.item,quantity:data.quantity,price:data.product.price,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.price})
+
+    details = { date: new Date(),name:req.body.name,number:req.body.number,address:req.body.selectedaddress,paymentMethod:req.body.paymentMethod,status:"placed",userId:req.user.email}
 
     grantTotal += data.quantity*data.product.price;
+    
 
   })
-  grantTotal={'grantTotal':grantTotal}
+
+details['grantTotal'] = grantTotal
 
 
-  helpers.addOrder(order,grantTotal)
+
+  helpers.addOrder(order,details)
 
   helpers.removeAllCartItem(req.user.email)
 

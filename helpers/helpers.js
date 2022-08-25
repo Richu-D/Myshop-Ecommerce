@@ -42,6 +42,18 @@ let data = await db.get().collection(collection.USERS).findOne({email})
         })
     },
 
+    // deleteaddress(req.user.email,req.params.id)
+    deleteaddress:(email,data)=>{
+       
+            db.get().collection(collection.USERS).updateOne({'email':email},{
+                $pull:{
+                    'address': `${data}`                  
+                }
+                
+        })
+    },
+
+    
 
     getAllUsers:()=>{
         return new Promise(async(resolve,reject)=>{
@@ -196,7 +208,6 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                 }
             }
         ]).toArray()
-        // console.log(cartItems[0].products);
             resolve(cartItems)
         })
     },
@@ -233,10 +244,10 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             } ,
             // helpers.addOrder(order,grantTotal)
 
-            addOrder:(order,grantTotal)=>{
+            addOrder:(order,details)=>{
 
                 return new Promise((resolve,reject)=>{
-                    db.get().collection(collection.ORDER).insertOne({order,grantTotal})
+                    db.get().collection(collection.ORDER).insertOne({order,details})
                 }).then((response)=>{
                     resolve()
                 })
@@ -249,87 +260,74 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             // getAllOrder(req.user.email)
             getAllOrder:(userId)=>{
                 return new Promise(async(resolve,reject)=>{
-                  let orders =await  db.get().collection(collection.ORDER).find({"order.userId":`${userId}`}).toArray()
+                  let orders =await  db.get().collection(collection.ORDER).find({"details.userId":`${userId}`}).toArray()
                     resolve(orders)
                 })
 
             },
 
             // cancelOrder(req.user.email,req.params.id)
-            cancelOrder:(orderId)=>{
+            cancelOrder:(orderId,cancelMsg)=>{
 
                 db.get().collection(collection.ORDER).updateMany({_id:objectId(orderId)},{
                     $set:{
-                        // pending
+                       'details.status':`${cancelMsg}`
                     }
                 })
 
 
+            },
+            getAllOrderAvailable:()=>{
+                return new Promise(async(resolve,reject)=>{
+                    let orderslist = await db.get().collection(collection.ORDER).find().toArray()
+                    resolve(orderslist)
+                })
+            },
+
+
+
+
+
+
+
+    addAddress:(email,data)=>{
+        console.log(data);
+        console.log(email);
+        data = data.address
+        console.log(data);
+    
+        return new Promise( async(resolve,reject)=>{
+
+            
+
+         let  userdata = await db.get().collection(collection.USERS).findOne({email:email})
+            console.log(userdata.address);
+            if(userdata.address==undefined){
+                db.get().collection(collection.USERS).updateOne({email:email},{
+                        $set:{
+        
+                            address:[data]
+                        }
+                    })
+            }else{
+                db.get().collection(collection.USERS).updateOne({email:email},{$push:{address:data}})
+               
             }
+            
+            // 
 
+        }
+        )
 
+    },
+    getAddress:(email)=>{
+        return new Promise( async(resolve,reject)=>{
 
+            let useraddress = db.get().collection(collection.USERS).findOne({email:email})
+            resolve(useraddress)
+        })
 
-
-
-
-    // addAddress:(email,data)=>{
-    //     console.log(data);
-    //     console.log(email);
-    //     data = data.address
-    //     return new Promise((resolve,reject)=>{
-    //         db.get().collection(collection.USERS).updateOne({email:email},{
-    //             $push:{
-    //                 address:data
-    //             }
-    //         })
-
-    //     })
-
-
-
-
-    // // }
-    // addAddress:(userId,productId)=>{
-    //     let addressObj={
-    //         email:objectId(userid),
-    //         address:[]
-    //     }
-
-    //     // checking user have cart
-    //     return new Promise(async(resolve,reject)=>{
-    //         let userCart = await db.get().collection(collection.CART).findOne({user:userId})
-    //         if(userCart){
-    //             let proExist = userCart.products.findIndex(product => product.item==productId)
-    //             if(proExist!=-1){
-    //                 db.get().collection(collection.CART).updateOne({user:objectId(userId),'products.item':objectId(productId)},
-    //                 {
-    //                     $inc:{'products.$.quantity':1}
-    //                 }
-    //                 ).then(()=>{
-    //                     resolve()
-    //                 })
-    //             }else{
-
-    //             db.get().collection(collection.CART).updateOne({user:userId},{$push:{products:proObj}})
-    //             }
-    //         }else{
-    //             console.log("No cart for this user");
-    //             let cartObj = {
-    //                         user:userId,
-    //                         products:[proObj]
-    //                     }
-    //                     console.log(cartObj);
-    //                     console.log(typeof cartObj);
-    //                     db.get().collection(collection.CART).insertOne(cartObj)
-
-    //         }
-    //         resolve()
-
-    //     })
-       
-
-    // }
+    }
 
 
 

@@ -201,4 +201,34 @@ router.get('/logout',(req,res)=>{
   res.redirect('/admin')
 })
 
+router.get('/orders',(req,res)=>{
+
+  helpers.getAllOrderAvailable().then((data)=>{
+    console.log(data);
+    res.render('admin/orders',{data})
+  })
+  
+  router.get('/orderstatus',(req,res)=>{
+    console.log(req.query.status);
+    console.log(req.query.id);
+    helpers.cancelOrder(req.query.id,req.query.status)
+    res.redirect('/admin/orders')
+
+    })
+
+    router.get('/profile',(req,res)=>{
+      
+      res.send("Admin profile ithuvare cheythilla")
+  
+      })
+
+      router.get('/settings',(req,res)=>{
+      
+        res.send("Admin settings ithuvare cheythilla")
+    
+        })
+  
+
+})
+
 module.exports = router;

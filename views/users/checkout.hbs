@@ -41,10 +41,25 @@
                             <label>Mobile No</label>
                             <input class="form-control" name="number" type="number" >
                         </div>
+
+
+                        <label>Address</label>
+
+                        {{#each address}}
+                           <br>
+                        
+                         <input type="radio" name="selectedaddress" value="{{this}}">
                         <div class="col-md-12 form-group">
-                            <label>Address</label>
-                        <textarea class="form-control" id="address" rows="3" name="address"></textarea>
+                        <textarea class="form-control" id="address" rows="3" name="address">{{this}}</textarea>
                         </div>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        {{/each}}
+                        {{!-- <input type="radio" id="age1" name="age" value="30"> --}}
+                       {{!-- <label for="age1">0 - 30</label><br>
+                        --}}
                         {{!-- <div class="col-md-6 form-group">
                             <label>Address Line 2</label>
                             <input class="form-control" type="text" placeholder="123 Street">
@@ -117,7 +132,7 @@
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
-                            <h5>Rs. <span>160</span> </h5>
+                            <h5>Rs. <span></span> </h5>
                         </div>
                     </div>
                 </div>

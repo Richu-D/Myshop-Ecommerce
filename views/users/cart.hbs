@@ -58,7 +58,7 @@
                                 </div>
                             </td>
                            
-                            <td class="align-middle" >{{this.total}}</td>
+                            <td class="align-middle unique" >{{this.total}}</td>
 
                             <td class="align-middle"><button class="btn btn-sm btn-danger"onclick="removeCartItem('{{this._id}}','{{this.product._id}}')"><i class="fa fa-times"></i></button></td>
                             
@@ -107,7 +107,8 @@
     <script>
         function changeQuantity(cartId,productId,count){
             let quantity = parseInt(document.getElementById(productId).innerHTML)
-
+            let unique = document.getElementsByClassName('unique')
+            
             $.ajax({
                 url:'/change-product-quantity',
                 data:{
@@ -128,10 +129,10 @@
                 url:'/updateAllValues',
                 method:'post',
                 success:(response)=>{
-                    
-                        console.log(response)
-                        console.log(response.grantTotal)
-                        console.log(response.rates)
+                
+                    for(i=0;i<unique.length;++i){
+                        unique[i].innerHTML = response.rates[i]
+                    }
 
                     document.getElementById('grantTotal').innerHTML=response.grantTotal;
                     
