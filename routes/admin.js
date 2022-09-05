@@ -51,16 +51,11 @@ router.use((req,res,next)=>{
 })
 
 router.get('/home', function(req, res) {
-   let todaySale=12000;
-   let totalSale = 145000;
-   let todayRevenue = 7000;
-   let totalRevenue = 115000;
-  //  helpers.salesReport().then(data =>{
+   helpers.salesReport().then((data)=>{
+     console.log(data);
+     res.render('admin/index',{details:data})
+   })
 
-   //  })
-
-
-     res.render('admin/index',{todaySale,totalSale,todayRevenue,totalRevenue})
  
 
 });

@@ -461,38 +461,6 @@ removeItemFromWishlist:(userId,productId)=>{
     db.get().collection(collection.WISHLIST).updateOne({user:userId},{$pull:{wishlistItems:objectId(productId)}})
 },
 
-// ,oldaddress,newaddress
-// editAddress:(email)=>{
-    
-   
-//    db.get().collection(collection.USERS)
-    
-    // .updateOne(
-    //     {email:email},
-    //     {
-    //         $set:{
-    //             'address.$':"email"
-    //         }
-    //     }
-    // )
-    
-    
-    
-    
-//     .aggregate([
-//         {$match:email},
-//         {
-//           address:["hey"]
-//         },
-//         {
-//             $set:{
-//                 "hey":"hello"
-//             }
-//         }
-//     ])
-  
-
-// },
 
     getAddress:(email)=>{
         return new Promise( async(resolve,reject)=>{
@@ -503,24 +471,110 @@ removeItemFromWishlist:(userId,productId)=>{
 
     },
     salesReport:()=>{
-            // Today Sale
-            // Total Sale
+            // Today Sale           
+            
             // Today Revenue
             // Total Revenue
+            
             // Weekly Sales
             // Yearly Sales
         return new Promise( async(resolve,reject)=>{
         // var details = await db.get().collection(collection.CART).find('details.date')
         // resolve(details.toArray)
 
-        // Total Sale
-        var totalSale = await db.get().collection(collection.CART).aggregate([
+
+
+        // Total Users 
+        var totalUsers = await db.get().collection(collection.USERS).count();
+
+
+            // Total Delivered Orders & today Revenue
+        var TodayrevenueAndDelevered = await db.get().collection(collection.ORDER).aggregate([
             {
-                
+                $match:{"details.status":"Delevered"}
+            },
+            {
+                $project:{
+                 date:{$convert: { input: "$_id", to: "date" } },order:1,details:1
+                }
+            },
+            {
+                $match:{
+                    date:{$lt:new Date(),$gt:new Date(new Date().getTime()-(24*60*60*1000))}
+                }
+            },
+
+            { $group: {
+              "_id": "tempId",
+              "todayRevenue": { 
+                  "$sum": { "$sum": "$details.grantTotal" } 
+              },
+                 "todaytotalOrders": { 
+                "$sum": { "$sum": "$order.quantity" } 
+                 }
+          } }
+          ]).toArray()
+
+        // Total Sale Price
+         // Total Order Count
+        var totalSale = await db.get().collection(collection.ORDER).aggregate([
+          { $group: {
+            "_id": "tempId",
+            "totalSale": { 
+                "$sum": { "$sum": "$details.grantTotal" } 
+            },
+            "totalOrders": { 
+                "$sum": { "$sum": "$order.quantity" } 
             }
+        } }
         ]).toArray()
-        console.log(totalSale);
-        resolve(totalSale)
+
+
+         // Total Delivered Sale Price
+         // Total Delivered Order Count
+         var deliveredTotalSale = await db.get().collection(collection.ORDER).aggregate([
+            {
+                $match:{"details.status":"Delevered"}
+            },
+            { $group: {
+              "_id": "tempId",
+              "totalRevenue": { 
+                  "$sum": { "$sum": "$details.grantTotal" } 
+              },
+              "totalDelivered": { 
+                  "$sum": { "$sum": "$order.quantity" } 
+              }
+          } }
+          ]).toArray()
+
+         
+
+        // today Order Quantity todaytotalOrders
+        var todayOrders = await db.get().collection(collection.ORDER).aggregate([
+            {
+                $project:{
+                 date:{$convert: { input: "$_id", to: "date" } },order:1,details:1
+                }
+            },
+            {
+                $match:{
+                    date:{$lt:new Date(),$gt:new Date(new Date().getTime()-(24*60*60*1000))}
+                }
+            },
+
+            { $group: {
+              "_id": "tempId",
+              "todaySales": { 
+                  "$sum": { "$sum": "$details.grantTotal" } 
+              },
+                 "todaytotalOrders": { 
+                "$sum": { "$sum": "$order.quantity" } 
+                 }
+          } }
+          ]).toArray()
+                           
+       
+          resolve({data:totalSale[0],totalUsers:totalUsers,todayOrders:todayOrders[0],deliveredTotalSale:deliveredTotalSale[0],TodayrevenueAndDelevered:TodayrevenueAndDelevered[0]})
     })
     }
 
