@@ -464,6 +464,10 @@ helpers.getAllCartItems(req.user.email).then((cartitems)=>{
 
     grantTotal += data.quantity*data.product.price;
     
+    let stringProductId = ""+data.product._id
+    
+    
+  helpers.removeItemFromWishlist(req.user.email,stringProductId)
 
   })
 
