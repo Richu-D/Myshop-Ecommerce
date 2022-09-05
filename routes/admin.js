@@ -3,7 +3,7 @@ var express = require('express');
 const jwt = require('jsonwebtoken')
 var router = express.Router();
 var helpers = require('../helpers/helpers')
-
+var fs = require('fs')
 // Authentication
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -25,7 +25,8 @@ router.post('/', function(req, res) {
   const user = { email: email}
   const accessToken = jwt.sign(user,process.env.ADMIN_TOKEN_SECRET)
   
-  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
+  // res.setHeader('Set-Cookie',`jwt=${accessToken}`)
+  res.cookie('jwt',accessToken, { httpOnly: true })
     res.redirect('admin/home')
  }else{
   // cookie warning setting + redirect to /
@@ -37,10 +38,8 @@ router.post('/', function(req, res) {
 });
 // Authorisation 
 router.use((req,res,next)=>{
-  if(req.headers.cookie){
-  let x = req.headers.cookie;
-  let y = x.split('=')[1]
-     let token = y;
+
+  let token = req.cookies.jwt;
       if(token == null) return res.redirect('/admin')
   
       jwt.verify(token,process.env.ADMIN_TOKEN_SECRET,(err,user)=>{
@@ -48,13 +47,22 @@ router.use((req,res,next)=>{
           req.user = user
           console.log(req.user);
           next()
-      })    }else{
-        res.redirect('/admin')
-      }
+      })   
 })
 
 router.get('/home', function(req, res) {
-  res.render('admin/index')
+   let todaySale=12000;
+   let totalSale = 145000;
+   let todayRevenue = 7000;
+   let totalRevenue = 115000;
+  //  helpers.salesReport().then(data =>{
+
+   //  })
+
+
+     res.render('admin/index',{todaySale,totalSale,todayRevenue,totalRevenue})
+ 
+
 });
 
 router.get('/add_product', function(req, res) {
@@ -99,8 +107,11 @@ helpers.editCategory(req.params.id,req.body)
 })
 
 router.get('/categorydelete/:id',(req,res)=>{
-  helpers.deleteCategory(req.params.id)
-  res.redirect('/admin/add_product')
+  fs.unlink(`/public/product_image/${id}.jpg`,()=>{
+    helpers.deleteCategory(req.params.id)
+    res.redirect('/admin/add_product')
+
+  })
  })
 
 
@@ -204,9 +215,11 @@ router.get('/logout',(req,res)=>{
 router.get('/orders',(req,res)=>{
 
   helpers.getAllOrderAvailable().then((data)=>{
-    console.log(data);
+    console.log(data[0]);
     res.render('admin/orders',{data})
   })
+
+  
   
   router.get('/orderstatus',(req,res)=>{
     console.log(req.query.status);
@@ -215,6 +228,11 @@ router.get('/orders',(req,res)=>{
     res.redirect('/admin/orders')
 
     })
+
+
+
+
+
 
     router.get('/profile',(req,res)=>{
       

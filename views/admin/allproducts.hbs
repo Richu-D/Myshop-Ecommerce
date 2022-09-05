@@ -28,12 +28,10 @@
                         <td>{{this.description}}</td>
                         <td><img style="width: 50px;height:50px" src="/product_image/{{this._id}}.jpg"
                                 alt="product image"></td>
-                        <td><a href="edit_product/{{this._id}}" class="btn btn-primary">Edit</a> <a
-                                href="delete_product/{{this._id}}" class="btn btn-danger"
-                                onclick="return confirm('Are you want to delete {{this.name}} product ?')">Delete</a>
+                        <td><a href="edit_product/{{this._id}}" class="btn btn-primary">Edit</a> 
+                        <button type="button" class="btn btn-danger"
+                                onclick="deleteThisProduct('{{this._id}}','{{this.name}}')">Delete</button>
                         </td>
-
-                        {{!-- <td>Member</td> --}}
                     </tr>
                     {{/each}}
                 </tbody>
@@ -45,6 +43,34 @@
 </div>
 <!-- Table End -->
 
+{{!-- Sweet Alert --}}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+    function deleteThisProduct(id,name) {
+        swal({
+            title: "",
+            text: `Are you sure to delete This Product "${name}" Permenently ?`,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+
+                $.ajax({
+                    url: `delete_product/${id}`,
+                    method: 'get'
+
+                })
+
+                swal("", "Product Deleted", "success").then(() => {
+                    location.reload()
+                })
+            }
+        })
+
+    }
 
 
+</script>
 {{>admin_footer}}

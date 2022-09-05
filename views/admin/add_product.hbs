@@ -1,115 +1,328 @@
-
-
 {{>admin_header}}
 
-       <section>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+<style>
+    .clr {
+        display: none;
+    }
+</style>
+<div class="container mb-5">
+<button onclick="addproduct()" class="btn btn-primary mx-3">Add Product</button>
+<button onclick="addcategory()" class="btn btn-primary mx-3">Add Category</button>
+<button onclick="deletecategory()" class="btn btn-primary mx-3">Delete Category</button>
+</div>
+
+<script>
+    function addproduct(){
+    let addproduct = document.getElementById('addproduct')
+    let addcategory = document.getElementById('addcategory')
+    let deletecategory = document.getElementById('deletecategory')
+
+        deletecategory.classList.add('hide')
+        addcategory.classList.add('hide')
+        addproduct.classList.remove('hide')
+    }
+    function addcategory(){
+     let addproduct = document.getElementById('addproduct')
+    let addcategory = document.getElementById('addcategory')
+    let deletecategory = document.getElementById('deletecategory')
+
+        deletecategory.classList.add('hide')
+        addcategory.classList.remove('hide')
+        addproduct.classList.add('hide')
+        
+        
+    }
+    function deletecategory(){
+    let addproduct = document.getElementById('addproduct')
+    let addcategory = document.getElementById('addcategory')
+    let deletecategory = document.getElementById('deletecategory')
+
+        deletecategory.classList.remove('hide')
+        addcategory.classList.add('hide')
+        addproduct.classList.add('hide')
+        
+        
+    }
+</script>
+
+
+<div class="container" id="addproduct">
+
+    <section>
         <div class="container mt-4">
-        <div class="row">
+            <div class="row">
 
-            <div class="col-md-6 boxShadow">
-                <h2>Add Product</h2>
-                <form action="add_product" method="post" enctype="multipart/form-data">
-                <label for="name">Name</label>
-                <input type="text" name="name" class="form-control">
+                <div class="col-md-6 boxShadow">
+                    <h2>Add Product</h2>
+                    <form action="add_product" method="post" enctype="multipart/form-data">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" class="form-control">
 
-                <label for="category">Category</label>
-                {{!-- <input type="text" name="" class="form-control"> --}}
-                <br>
-                {{!-- Catogory Render it --}}
-                <select name="category" class="form-control" id="category">
-                        {{#each category}}
-                    <option value="{{this.category}}" >{{this.category}}</option>
-                        {{/each}}
-                </select>
+                        <label for="category">Category</label>
+                        {{!-- <input type="text" name="" class="form-control"> --}}
+                        <br>
+                        {{!-- Catogory Render it --}}
+                        <select name="category" class="form-control" id="category">
+                            <option value="">Select Category</option>
+                            {{#each category}}
+                            <option value="{{this.category}}">{{this.category}}</option>
+                            {{/each}}
+                        </select>
 
-                
-                <label for="price">Price</label>
-                <input type="number" name="price" class="form-control">
 
-                
-                <label for="description">Description</label>
-                <input type="text" name="description" class="form-control">
+                        <label for="price">Price</label>
+                        <input type="number" name="price" class="form-control">
 
-                
-                <label for="image">Image</label>
-                <img  alt="" style="width: 100px;" class="p-3" id="image">
-                <input type="file" name="image" class="form-control" onchange="changeImg(event)">
 
-                <button type="submit" class="btn btn-success mt-4">Submit</button>
-                <a href="/admin/allproducts" class="btn btn-warning mt-4">Cancel</a>
-                <button type="reset" class="btn btn-danger mt-4">Clear</button>
+                        <label for="description">Description</label>
+                        <input type="text" name="description" class="form-control" autocomplete="off">
+                        <label for="">image</label><br>
+                        <div id="crop">
+                            <img id="imgView1" alt="" style="height: 100px; width: 120px" class="clr" />
 
-                </form>
-
-                {{!-- Adding new catogory --}}
-                <br><br>
-                <form action="add_category" method="post">
-                <label for="add_catogory">Add Category</label>
-                <input type="text" name="category" class="form-control">
-                <button type="submit" class="btn btn-success mt-2">add</button>
-                </form>
-
-                {{!-- render Catogory --}}
-                {{!-- <select name="category" class="form-control" id="category">
-
-                    <option value="men" >men</option>
-                    <a href="" class="btn btn-primary mt-4">Edit</a>
-                    <a type="" class="btn btn-danger mt-4">delete</a>
-                    
-                </select> --}} 
-
-               <div class="col-12">
-                        <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Category Table</h6>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            {{!-- <th scope="col">#</th> --}}
-                                            <th scope="col">Category Name</th>
-                                            <th scope="col">Edit</th>
-                                            <th scope="col">Delete</th>                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{#each category}}
-                                        <tr>
-                                            {{!-- <th scope="row">1</th> --}}
-                                            <form action="categoryedit/{{this._id}}" method="post">
-                                            <td><input type="text" name="category" class="form-control" value="{{this.category}}"></td>
-                                            <td><button type="submit" class="btn btn-primary">Edit</button></td></form>
-
-                                            <td><a href="categorydelete/{{this._id}}" class="btn btn-danger">delete</a></td>
-                                            
-                                            {{!-- <td>Member</td> --}}
-                                        </tr>
-                                        
-                                        {{/each}}
-                                    </tbody>
-                                </table>
+                            <div class="vald-info" id="info"></div>
+                            <h5 class="error_form text-danger" id="image1_error_message"></h5>
+                            <div style="display: flex">
+                                <div id="image-box1" class="image-container clr" style="height: 300px; width: 20%">
+                                </div>
+                                <div>
+                                    <button type="button" class="betaButton btn btn-success" id="crop-btn1" style="
+                                                display: none;
+                                                margin: 20px 0px 0px 40px;
+                                                position:relative;
+                                                top:80%;
+                                                left:70%
+                                                ">
+                                        Crop
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                <br><br><br>
-                {{!-- Table --}}
 
-                
+                        <input type="file" name="image" class="form-control" onchange="changeImg(event)" id="id_image1"
+                            onchange="viewImage1(event)" /><br />
+                        <button type="submit" class="betaButton btn btn-primary mt-4">submit</button>
+                        <button type="reset" class="btn btn-danger mt-4">Clear</button>
+                        <a href="/admin/allproducts" class="btn btn-warning mt-4">Cancel</a>
 
-                
 
+                    </form>
+                </div>
             </div>
-
-
         </div>
+    </section>
 
 
-        </div>
-       </section>    
- <script>
-        function changeImg(event){
-            document.getElementById('image').src = URL.createObjectURL(event.target.files[0])
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+
+<script>
+    function changeImg(event) {
+        document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
+    }
+    const imagebox1 = document.getElementById("image-box1");
+    const crop_btn1 = document.getElementById("crop-btn1");
+    const input1 = document.getElementById("id_image1");
+    function viewImage1(event) {
+        var fileInput1 = document.getElementById("id_image1");
+        var filePath1 = fileInput1.value;
+        var allowedExtensions = /(\.jpg)$/i;
+        if (!allowedExtensions.exec(filePath1)) {
+            fileInput1.value = "";
+            swal("There is a problem!", "Please choose image file.");
+            return false;
+        } else {
+            document.getElementById("imgView1").src = URL.createObjectURL(
+                event.target.files[0]
+            );
         }
-       </script>
+    }
+
+    // When user uploads the image this event will get triggered
+    input1.addEventListener("change", () => {
+        // Getting image file object from the input variable
+        const img_data1 = input1.files[0];
+        // createObjectURL() static method creates a DOMString containing a URL representing the object given in the parameter.
+        // The new object URL represents the specified File object or Blob object.
+        const url1 = URL.createObjectURL(img_data1);
+        // Creating a image tag inside imagebox which will hold the cropping view image(uploaded file) to it using the url created before.
+        imagebox1.innerHTML = `<img src="${url1}" id="image1" style="width:100%;">`;
+        // Storing that cropping view image in a variable
+        const image1 = document.getElementById("image1");
+
+        // Displaying the image box
+        document.getElementById("image-box1").style.display = "block";
+        // Displaying the Crop buttton
+        document.getElementById("crop-btn1").style.display = "block";
+        // Hiding the Post button
+        document.getElementById("imgView1").style.display = "block";
+
+        const cropper1 = new Cropper(image1, {
+            autoCropArea: 1,
+            viewMode: 1,
+            scalable: false,
+            zoomable: false,
+            movable: false,
+            minCropBoxWidth: 50,
+            minCropBoxHeight: 50,
+        });
+        // When crop button is clicked this event will get triggered
+        crop_btn1.addEventListener("click", () => {
+            // This method coverts the selected cropped image on the cropper canvas into a blob object
+            cropper1.getCroppedCanvas().toBlob((blob) => {
+                // Gets the original image data
+                let fileInputElement1 = document.getElementById("id_image1");
+                // Make a new cropped image file using that blob object, image_data.name will make the new file name same as original image
+                let file1 = new File([blob], img_data1.name, {
+                    type: "image/*",
+                    lastModified: new Date().getTime(),
+                });
+                // Create a new container
+                let container1 = new DataTransfer();
+                // Add the cropped image file to the container
+                container1.items.add(file1);
+                // Replace the original image file with the new cropped image file
+                fileInputElement1.files = container1.files;
+                document.getElementById("imgView1").src = URL.createObjectURL(
+                    fileInputElement1.files[0]
+                );
+                // Hide the cropper box
+                document.getElementById("image-box1").style.display = "none";
+                // Hide the crop button
+                document.getElementById("crop-btn1").style.display = "none";
+
+
+            });
+        });
+    });
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{!-- Adding new catogory --}}
+<br><br>
+
+<div class="container hide" id="addcategory">
+
+<div class="col-6">
+<form action="add_category" method="post">
+    <label for="add_catogory">Add Category</label>
+    <input type="text" name="category" class="form-control">
+    <button type="submit" class="btn btn-success mt-2">add</button>
+</form>
+</div>
+</div>
+
+{{!-- render Catogory --}}
+{{!-- <select name="category" class="form-control" id="category">
+
+    <option value="men">men</option>
+    <a href="" class="btn btn-primary mt-4">Edit</a>
+    <a type="" class="btn btn-danger mt-4">delete</a>
+
+</select> --}}
+
+
+
+<div class="container hide" id="deletecategory">
+
+<div class="col-6">
+    <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Category Table</h6>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        {{!-- <th scope="col">#</th> --}}
+                        <th scope="col">Category Name</th>
+                        {{!-- <th scope="col">Edit</th> --}}
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each category}}
+                    <tr>
+                        {{!-- <th scope="row">1</th> --}}
+                        {{!-- <form action="categoryedit/{{this._id}}" method="post">
+                            <td><input type="text" name="category" class="form-control" value="{{this.category}}"></td>
+                            <td><button type="submit" class="btn btn-primary">Edit</button></td>
+                        </form> --}}
+                        <td><label></label>{{this.category}}</td>
+                        <td><a href="categorydelete/{{this._id}}" class="btn btn-danger">delete</a></td>
+
+                        {{!-- <td>Member</td> --}}
+                    </tr>
+
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<br><br><br>
+{{!-- Table --}}
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+</section>
+
 
 {{>admin_footer}}

@@ -1,0 +1,73 @@
+{{>user_header}}
+<style>
+    .products {
+        text-decoration: none;
+        background-color: white;
+        color: black
+    }
+</style>
+<h2 class="title">wishlist</h2>
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-lg-12">
+            <div style="display: flex; align-items: flex-start;">
+                <div style="display: flex;flex-direction: row-reverse;">
+
+                    {{#each products}}
+                    <div style="margin:10px;padding:10px" class="product-item" style="display:flex;flex-direction: column;justify-content: space-evenly;">
+                        <div>
+                            <a class="products" href="/detail/{{this.product._id}}">
+                                <div><img src="/product_image/{{this.product._id}}.jpg" alt="" style="width: 150px;"></div>
+                                <div>{{this.product.name}}</div>
+                                <div>Rs.{{this.product.price}}</div>
+                                
+                            </a>
+                        </div>
+
+                            <div>
+                                <button class="btn btn-danger" onclick="removeWishlistItem('{{this.product._id}}')">Remove</button>
+                            </div>
+                                    
+                    </div>                     
+                       
+                        
+                    {{/each}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function removeWishlistItem(productId) {
+
+        $.ajax({
+            url: '/removeItemFromWishlist',
+            data: {
+                productId: productId
+            },
+            method: 'post',
+            success: (response) => {
+
+                  swal("","Wishlist Item Removed", "success").then(()=>{
+                        location.reload()
+                        })
+               
+            }
+
+
+        })
+
+
+
+
+
+
+
+
+
+    }
+
+</script>
+{{>user_footer}}

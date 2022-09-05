@@ -1,23 +1,9 @@
+
 {{>user_header}}
 
-
-    <!-- Breadcrumb Start -->
-    {{!-- <div class="container-fluid">
-        <div class="row px-xl-5">
-            <div class="col-12">
-                <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
-                    <span class="breadcrumb-item active">Shop Detail</span>
-                </nav>
-            </div>
-        </div>
-    </div> --}}
-    <!-- Breadcrumb End -->
-
-
+<div>
     <!-- Shop Detail Start -->
-    <div class="container-fluid pb-5" style="margin-top:5vh">
+    <div class="container-fluid pb-5" >
         <div class="row px-xl-5">
             <div class="col-lg-5 mb-30">
                 <img class="w-100 h-100" src="/product_image/{{data._id}}.jpg" alt="Image">
@@ -130,7 +116,8 @@
                             </div>
                         </div> --}}
                        <form action="/addtocart/{{data._id}}" method="post"> <button class="btn btn-primary px-3">Add To Cart</button></form>
-                        <button class="btn btn-success px-3 m-3"><i class="fa-solid fa-cart-shopping mr-1"></i> Buy Now</button>
+                       <form action="/wishlist/{{data._id}}" method="post"><button class="btn btn-success px-3 m-3">Add To wishlist</button></form>
+                        
                     </div>
                     {{!-- <div class="d-flex pt-2">
                         <strong class="text-dark mr-2">Share on:</strong>
@@ -400,5 +387,5 @@
         </div>
     </div> --}}
     <!-- Products End -->
-
+</div>
 {{>user_footer}}

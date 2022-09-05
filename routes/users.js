@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken')
 var helpers = require('../helpers/helpers')
 const twilio = require('twilio');
 const { Db } = require('mongodb');
+var moment = require('moment')
+const { response } = require('../app');
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -14,20 +16,15 @@ var router = express.Router();
 
 function ifuser(req,res,next){
   // checking JWT
-  if(req.headers.cookie){
-let x = req.headers.cookie;
-let y = x.split('=')[1]
-   let token = y;
+
+let token = req.cookies.jwt;
     if(token == null){next()}
 
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
         if(err) return res.sendStatus(403)
         
         res.redirect('/home')
-    })}else{
-      next()
-    }
-  }
+    })}
 
 /* GET users listing. */
 router.get('/', function(req, res) {
@@ -52,7 +49,8 @@ if(data){
   const user = { email: email}
   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
   
-  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
+  // res.setHeader('Set-Cookie',`jwt=${accessToken}`) //maxAge: 10000,
+  res.cookie('jwt',accessToken, { httpOnly: true })
     res.redirect('/home')
       }
       else{
@@ -107,9 +105,6 @@ res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.em
   })
   .then((message) => {
   
-
-    
-    console.log(`This is something return from twilio ${message}`);
     res.redirect('/verifyotp')
   })
   .catch((err) => {
@@ -137,10 +132,6 @@ var userdata ={username,email,number,password}
   bcrypt.compare(req.body.otp,req.cookies.otp).then((data)=>{
     if(data){
 // push data into database
-console.log(userdata);
-
-
-
 helpers.addUser(userdata)
     const email = req.cookies.email
     const user = { email: email}
@@ -162,7 +153,7 @@ res.clearCookie('otp')
 
 
     }else{
-      console.log("data delete ayi");
+
     }
   })
 
@@ -173,10 +164,8 @@ res.clearCookie('otp')
 // User Authorisation
 function checkuser(req,res,next){
   // checking JWT
-  if(req.headers.cookie){
-let x = req.headers.cookie;
-let y = x.split('=')[1]
-   let token = y;
+ 
+let token = req.cookies.jwt;
     if(token == null) return res.redirect('/')
 
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
@@ -189,10 +178,7 @@ let y = x.split('=')[1]
           }
         })
         next()
-    })}else{
-      res.redirect('/')
-    }
-}
+    })}
 
 router.get('/home',checkuser, function(req, res) {
   helpers.getAllProducts().then((products)=>{
@@ -204,10 +190,15 @@ router.get('/shop',checkuser, function(req, res) {
   res.render('users/shop')
 });
 
-// now work on here
 router.get('/detail/:id',checkuser, function(req, res) {
+  console.log(req.url);
+  console.log(req.params.id);
   helpers.getProductDetails(req.params.id).then((data)=>{
     res.render('users/detail',{data})
+  }).catch(err =>{
+    console.log(`This is an cautch error ${err}`);
+    console.log(err);
+    res.json()
   })
 });
 
@@ -222,7 +213,7 @@ router.get('/detail/:id',checkuser, function(req, res) {
 router.get('/cart',checkuser, async function(req, res) {
 
   let products = await helpers.getAllCartItems(req.user.email)
-let grantTotal = 0;
+let grantTotal = 0;   
 products.forEach(data => {
   data.total=data.quantity*data.product.price;
   grantTotal += data.total;
@@ -232,13 +223,13 @@ products.forEach(data => {
 
 router.post('/addtocart/:id',checkuser, function(req, res) {
   // add to cart 
-  try {
+
     helpers.addToCart(req.user.email,req.params.id).then(()=>{
       res.redirect('/cart')
+    }).catch(err =>{
+      console.log(err);
     })
-  } catch (error) {
 
-  }
   
 // res.send("add to cart post request"+req.user.email)
   // res.render('users/cart')
@@ -262,9 +253,17 @@ router.post('/removeCartItem',(req,res)=>{
 
 router.get('/checkout',checkuser, async function(req, res) {
 
-  helpers.getAddress(req.user.email).then(data =>{
-    console.log(data.address);
-    res.render('users/checkout',{address:data.address})
+  helpers.getAddress(req.user.email).then(async (data) =>{
+
+    let products = await helpers.getAllCartItems(req.user.email)
+    let grantTotal = 0;
+    let productdata = [];
+    products.forEach(data => {
+      data.total=data.quantity*data.product.price;
+      grantTotal += data.total;
+      productdata.push({name:data.product.name,price:data.product.price,quantity:data.quantity})
+    });
+    res.render('users/checkout',{address:data.address,productdata:productdata,razorpay_key:process.env.RAZORPAY_KEY_ID,grantTotal,name:data.username,number:data.number})
 });
 
 })
@@ -294,17 +293,22 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
 })
 
 
+router.get('/search',(req,res)=>{
+  
+  helpers.search(req.query.searchKey).then(data =>{
+console.log(data);
+    res.render('users/shop',{data:data})
+  })
+
+  // res.send(req.query.searchKey)
+  })
 
   
 
 
 
 router.get('/myprofile',checkuser,(req,res)=>{
-  
-  // helpers.getAddress(req.user.email).then(data =>{
-  //   console.log(data.address);
     helpers.getUser(req.user.email).then((user)=>{
-      console.log(user);
     res.render('users/profile',{address:user.address,user})
     })
   })
@@ -317,10 +321,28 @@ helpers.cancelOrder(req.params.id,"Order Cancelled By User")
   res.redirect('/orders')
 })
 
+router.get('/wishlist',checkuser,async (req,res)=>{
+ let data = await helpers.getWishlistItems(req.user.email)
+ console.log(data);
+    res.render('users/wishlist',{products:data})
+  })
+
+ router.post('/wishlist/:id',checkuser,(req,res)=>{
+ 
+helpers.addWishlist(req.user.email,req.params.id)
+
+  
+    res.redirect('/wishlist')
+})
+
+
+
 
 router.post('/addAddress',checkuser,(req,res)=>{
-  
-  helpers.addAddress(req.user.email,req.body)
+  let address = req.body.address
+  let stringAdress = address.replace(/\s+/g, ' ').trim()
+
+  helpers.addAddress(req.user.email,stringAdress)
 
   res.redirect('myprofile')
 })
@@ -348,48 +370,73 @@ helpers.updateUser(req.user.email,req.body)
 res.redirect('/myprofile')
 })
 
+router.post('/removeItemFromWishlist',checkuser,(req,res)=>{
+
+  helpers.removeItemFromWishlist(req.user.email,req.body.productId)
+  
+  res.json({delete:true})
+  })
 
 
-router.post('/changepassword',checkuser,(req,res)=>{
+router.post('/changepassword',checkuser,async (req,res)=>{
   let existingpassword = req.body.existingpassword;
   let newpassword = req.body.newpassword;
   let conformpassword = req.body.conformpassword;
-  console.log(req.user.email,existingpassword,newpassword,conformpassword);
-
   if(newpassword==conformpassword){
-  helpers.getUser(req.user.email).then((data)=>{
-    bcrypt.compare(existingpassword,data.password).then((data)=>{
-      console.log(data);
+  helpers.getUser(req.user.email).then(async (data)=>{
+    bcrypt.compare(existingpassword,data.password).then(async (data)=>{
       if(data){
         // change password
+        newpassword = await bcrypt.hash(newpassword,10)
 
-        res.send("password matched")
-  // res.redirect('/myprofile')
+        helpers.changePassword(req.user.email,newpassword)
+
+  res.redirect('/myprofile')
 
       }else{
 
-res.send("password is not match")
+        res.redirect('/myprofile')
+        // PASS ERROR MSG USING COOKIE
 return 0;
       }
     })
   })
 }else{
-res.send("new password and conformation password are not match")
+  res.redirect('/myprofile')
+  // PASS ERROR MSG USING COOKIE 
 }
 
 
   })
 
+  router.post('/verifyPayment',checkuser,(req,res)=>{
+      helpers.verifyPayment(req.body).then(()=>{
+        helpers.changePaymentStatus(req.body['order[receipt]']).then(()=>{
+          res.json({status:true})
+        })
+      }).catch((err)=>{
+        res.json({status:false,errMsg:"Payment Failed"})
+      })
 
+  })
+
+
+  
 
 router.post('/editaddress',checkuser,(req,res)=>{
 
   // delete address
-  
-res.send(req.params.id,req.body)
-})
+  let oldaddress = req.body.oldaddress
+  let newaddress = req.body.newaddress 
+  let stringoldAddress = oldaddress.replace(/\s+/g, ' ').trim()
+  let stringnewAddress = newaddress.replace(/\s+/g, ' ').trim()
 
+  helpers.editAddress(req.user.email,stringoldAddress,stringnewAddress)
+  
+res.redirect('/myprofile')
+})
 router.get('/deleteaddress/:id',checkuser,(req,res)=>{
+
 
   helpers.deleteaddress(req.user.email,req.params.id)
     // delete address
@@ -397,9 +444,11 @@ router.get('/deleteaddress/:id',checkuser,(req,res)=>{
 res.redirect('/myprofile')
 })
 
+
+// moment().format("MMM Do YY")
 router.post('/placeorder',checkuser,(req,res)=>{
 
-console.log(req.body);
+  console.log("place order il vanna details",req.body);
 
     // inser details into order collection 
 helpers.getAllCartItems(req.user.email).then((cartitems)=>{
@@ -411,26 +460,38 @@ helpers.getAllCartItems(req.user.email).then((cartitems)=>{
   cartitems.forEach(data =>{
     order.push({item:data.item,quantity:data.quantity,price:data.product.price,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.price})
 
-    details = { date: new Date(),name:req.body.name,number:req.body.number,address:req.body.selectedaddress,paymentMethod:req.body.paymentMethod,status:"placed",userId:req.user.email}
+    details = { date: moment().format("MMM Do YY"),name:req.body.name,number:req.body.number,address:req.body.address,paymentMethod:req.body.paymentMethod,status: (req.body.paymentMethod=="COD")?"placed":"pending",userId:req.user.email}
 
     grantTotal += data.quantity*data.product.price;
     
 
   })
 
+
 details['grantTotal'] = grantTotal
 
 
 
-  helpers.addOrder(order,details)
+  helpers.addOrder(order,details).then((orderId)=>{
+    if(req.body.paymentMethod=="COD"){
+      
+      res.json({codSuccess:true})
+
+    }else{
+      helpers.generateRazorpay(orderId,grantTotal).then((response)=>{
+res.json(response)
+        
+      })
+    }
+    
+
+  })
 
   helpers.removeAllCartItem(req.user.email)
 
 
 })
 
-
-  res.redirect('/orders')
  })
 
 

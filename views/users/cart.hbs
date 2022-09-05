@@ -19,7 +19,7 @@
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-lg-8 table-responsive mb-5">
-                <table class="table table-light table-borderless table-hover text-center mb-0">
+                <table class="table table-borderless text-center mb-0">
                     <thead class="thead-dark">
                         <tr>
                             <th>Product Image</th>
@@ -41,18 +41,18 @@
                             <td class="align-middle">{{this.product.name}}</td>
                             <td class="align-middle">Rs.{{this.product.price}}</td>
                             <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                <div class="input-group quantity mx-auto" style="width: 100px; display:flex;justify-content: center; align-items: center;">
                                  
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus " onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">
-                                        <i class="fa fa-minus"></i>
+                                    <div class="input-group-btn" >
+                                        <button class="btn btn-primary btn-minus mr-1 p-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">
+                                        <i class="fa fa-minus" style="font-size:13px;"></i>
                                         </button>
                                     </div>
-                                    <span class="mx-1" id="{{this.product._id}}">{{this.quantity}}</span>
+                                    <span class="mx-2" id="{{this.product._id}}">{{this.quantity}}</span>
                                     
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">
-                                            <i class="fa fa-plus"></i>
+                                        <button class="btn btn-sm btn-primary btn-plus ml-1 p-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">
+                                            <i class="fa fa-plus" style="font-size:14px;"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@
                             <td class="align-middle"><button class="btn btn-sm btn-danger"onclick="removeCartItem('{{this._id}}','{{this.product._id}}')"><i class="fa fa-times"></i></button></td>
                             
                         </tr>
-                        {{/each}}
+                      {{/each}}
                     </tbody>
                 </table>
             </div>
@@ -77,16 +77,18 @@
                     </div>
                 </form> --}}
                 {{!-- <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5> --}}
-                <div class="bg-light p-30 mb-5">
+                <div class="p-30 mb-5">
                     <div class="border-bottom pb-2">
                         {{!-- <div class="d-flex justify-content-between mb-3">
                             <h6>Subtotal</h6>
                             <h6>$150</h6>
                         </div> --}}
-                        {{!-- <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
-                        </div> --}}
+                          {{#each products}}
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">{{this.product.name}}  {{this.product.price}} X  <span id="{{this.product._id}}1">{{this.quantity}}</span></h6>
+                            <h6 class="font-weight-medium unique1">Rs.{{this.total}} </h6>
+                        </div>
+                        {{/each}}
                     </div>
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
@@ -107,7 +109,9 @@
     <script>
         function changeQuantity(cartId,productId,count){
             let quantity = parseInt(document.getElementById(productId).innerHTML)
+            let quantity1 = parseInt(document.getElementById(`${productId}1`).innerHTML)
             let unique = document.getElementsByClassName('unique')
+            let unique1 = document.getElementsByClassName('unique1')
             
             $.ajax({
                 url:'/change-product-quantity',
@@ -120,18 +124,22 @@
                 method:'post',
                 success:(response)=>{
                     if(response.removeProduct){
-                        alert("Product Removed from Cart")
+                        swal("","Cart Item Removed", "success").then(()=>{
                         location.reload()
+                        })
                     }else{
-                          //updateAllValues
 
+                          //updateAllValues'
                     $.ajax({
                 url:'/updateAllValues',
                 method:'post',
                 success:(response)=>{
+
                 
                     for(i=0;i<unique.length;++i){
                         unique[i].innerHTML = response.rates[i]
+                        unique1[i].innerHTML = response.rates[i]
+
                     }
 
                     document.getElementById('grantTotal').innerHTML=response.grantTotal;
@@ -143,6 +151,7 @@
 
                          // location.reload()
                        document.getElementById(productId).innerHTML=quantity+count;
+                       document.getElementById(`${productId}1`).innerHTML=quantity+count;
 
                     }
                 }
@@ -161,8 +170,10 @@
                 method:'post',
                 success:(response)=>{
                     if(response.delete){
-                        alert("Product Removed from Cart")
+                        //alert("Product Removed from Cart")
+                        swal("","Cart Item Removed", "success").then(()=>{
                         location.reload()
+                        })
                     }
                 }
             })

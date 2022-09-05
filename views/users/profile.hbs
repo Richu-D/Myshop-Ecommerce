@@ -1,173 +1,238 @@
 {{>user_header}}
 <style>
-    .hidden{
-  display: none;
-}
+    .hide {
+        display: none;
+    }
 </style>
 
-    <!-- Shop Start -->
-    <div class="container-fluid mt-2">
-        <div class="row px-xl-5">
-            <!-- Shop Sidebar Start -->
-            <div class="col-lg-3 col-md-4">
-                <div class="bg-light p-4 mb-30">
+<!-- Shop Start -->
+<div class="container-fluid mt-2">
+    <div class="row px-xl-5">
+        <!-- Shop Sidebar Start -->
+        <div class="col-md-4">
+            <div class="bg-light p-4 mb-30">
 
-         <div></div>
-    <div>
-        <div></div>
-        <div></div>
+                <div></div>
+                <div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div></div>
+
+
+                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                    <button onclick="manageAddress()" class="btn btn-primary">Manage Address</button>
+                </div>
+                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                    <button onclick="profileInformations()" class="btn btn-primary">Profile Informations</button>
+                </div>
+                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                    <button onclick="changePassword()" class="btn btn-primary">Change password</button>
+                </div>
+                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                    <a class="btn btn-secondary" href="/logout"> Logout</a>
+                </div>
+
+
+            </div>
+
+        </div>
+        <!-- Shop Sidebar End -->
+
+        <div class="col-md-8">
+
+
+            <script>
+                function changePassword() {
+                    let manageAddress = document.getElementById('manageAddress')
+                    let profileInfo = document.getElementById('profileInfo')
+                    let changePassword = document.getElementById('changePassword')
+                    manageAddress.classList.add('hide')
+                    profileInfo.classList.add('hide')
+                    changePassword.classList.remove('hide')
+                }
+                function profileInformations() {
+                    let manageAddress = document.getElementById('manageAddress')
+                    let profileInfo = document.getElementById('profileInfo')
+                    let changePassword = document.getElementById('changePassword')
+                    manageAddress.classList.add('hide')
+                    profileInfo.classList.remove('hide')
+                    changePassword.classList.add('hide')
+                }
+                function manageAddress() {
+                    let manageAddress = document.getElementById('manageAddress')
+                    let profileInfo = document.getElementById('profileInfo')
+                    let changePassword = document.getElementById('changePassword')
+                    manageAddress.classList.remove('hide')
+                    profileInfo.classList.add('hide')
+                    changePassword.classList.add('hide')
+
+                }
+                function show() {
+                    let addAddress = document.getElementById('addAddress')
+                    addAddress.classList.remove('hide')
+                }
+            </script>
+
+
+
+
+            {{!-- manage Address --}}
+            <div>
+                <div id="manageAddress">
+                    <h3>Manage Address</h3>
+
+                    {{!-- Add address --}}
+                    <div>
+                        <button class="btn btn-primary" id="addAddressBtn" onclick="show()">Add Address</button>
+                        <div class="hide" id="addAddress">
+                            <form action="/addAddress" method="post">
+                                <div class="form-group">
+                                    <label for="exampleFormControlTextarea1">Enter Address</label>
+                                    <textarea class="form-control" id="" rows="3" cols="35" name="address"></textarea>
+                                </div>
+                                <br>
+                                <button class="btn btn-success" type="submit">Submit</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+
+                    {{!-- show existing addresses --}}
+                    <h3 style="margin-top:25px;">Existing Addresses </h3>
+                    {{#each address}}
+
+
+                    <div style="margin-bottom:20px;">
+                        <form action="/editAddress" method="post">
+
+                            <div class="form-group ">
+
+                                <textarea name="newaddress" class="form-control" id="" rows="3" cols="35">{{this}}
+                                        </textarea>
+                                <textarea name="oldaddress" class="form-control hide" id="" rows="3">
+                                            {{this}}
+                                        </textarea>
+
+                            </div>
+                            <br>
+
+                            <button type="submit" class="btn btn-primary">Edit Address</button>
+                            <button type="button" onclick="deleteThisAddress('{{this}}')"
+                                class="btn btn-danger">Delete</button>
+                            {{!-- <a class="btn btn-danger" href="/deleteaddress/{{this}}">Delete</a> --}}
+                        </form>
+
+
+
+                    </div>
+                    {{/each}}
+
+                </div>
+                <div id="profileInfo" class="hide">
+                    <section>
+                        <div class="container mt-4">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <h2>Edit Information</h2>
+                                    <form action="/editpersonaldetails" method="post">
+                                        <label for="name">Name</label>
+                                        <input type="text" name="username" class="form-control"
+                                            value="{{user.username}}">
+
+                                        <label for="category">Gmail</label>
+                                        <input type="text" name="email" class="form-control" value="{{user.email}}">
+
+
+                                        <label for="price">Number</label>
+                                        <input type="number" name="number" class="form-control" value="{{user.number}}">
+
+
+                                        <button type="submit" class="btn btn-primary mt-4">Save</button>
+
+                                    </form>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+                    </section>
+                </div>
+
+                <div class="hide" id="changePassword">
+
+
+                    <h5 style="margin-top:20px;">Change Password</h5>
+                    <div class="col-md-6">
+
+                        <form action="/changepassword" method="post">
+                            <label for="name">Current Password</label>
+                            <input type="password" name="existingpassword" class="form-control">
+
+                            <label for="category">New Password</label>
+                            <input type="password" name="newpassword" class="form-control">
+
+
+                            <label for="price">Conform New Password</label>
+                            <input type="password" name="conformpassword" class="form-control">
+
+
+                            <button type="submit" class="btn btn-success mt-4">Change Password</button>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+        </div>
     </div>
-    <div></div>
-                    
-                         
-                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <label class="custom-control-label" for="price-all"><a href=""> Manage Address</a></label>
-                        </div>
-                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <label class="custom-control-label" for="price-all"><a href="">Profile Informations</a></label>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <label class="custom-control-label" for="price-all"><a href="">Change password</a></label>
-                        </div>
-                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a class="btn btn-secondary" href="/logout"> Logout</a>
-                        </div>
-                        
-                  
-                </div>
-                
-            </div>
-            <!-- Shop Sidebar End -->
-            
-            <div class="col-lg-9 col-md-8">
-
-
-
-
-
-<div class="grid-container">
-    {{!-- side menu --}}
-
-  {{!-- details --}}
-  <div class="grid-item">
-
-
-    {{!-- manage Address --}}
-    <div>
-        <h3>Manage Address</h3>
-        
-        {{!-- Add address --}}
-        <div> 
-            <button class="btn btn-primary" id="addAddressBtn" onclick="show()">Add Address</button>
-            <div class="hidden" id="addAddress">
-                <form action="/addAddress" method="post">
-                 <div class="form-group">
-                <label for="exampleFormControlTextarea1">Enter Address</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="address"></textarea>
-                </div>
-
-                <button class="btn btn-success" type="submit">Submit</button>
-                </form>
-            </div>
-
-        </div>
-
-
-        {{!-- show existing addresses --}}
-        {{#each address}}
-            
-        
-        <div>
-            <form action="/editAddress" method="get"></form>
-                <div class="form-group ">
-                <label for="exampleFormControlTextarea1">Existing Address</label>
-                <textarea name="newaddress" class="form-control" id="exampleFormControlTextarea1" rows="3">
-                    {{this}}
-                </textarea>
-                </div>
-                
-                <buttom type="submit" class="btn btn-primary">Edit</buttom>
-                
-                <a class="btn btn-danger" href="/deleteaddress/{{this}}">Delete</a>
-                
-        </div>
-        {{/each}}
-
-        
-        <section>
-        <div class="container mt-4">
-        <div class="row">
-
-            <div class="col-md-6">
-                <h2>Edit User Information</h2>
-                <form action="/editpersonaldetails" method="post">
-                <label for="name">Name</label>
-                <input type="text" name="username" class="form-control" value="{{user.username}}">
-
-                <label for="category">Gmail</label>
-                <input type="text" name="email" class="form-control" value="{{user.email}}">
-
-                
-                <label for="price">Number</label>
-                <input type="number" name="number" class="form-control" value="{{user.number}}">
-
-
-                <button type="submit" class="btn btn-primary mt-4">Save</button>
-
-                </form>
-            </div>
-
-
-        </div>
-
-
-        </div>
-       </section> 
-
-
-
-        <h5 style="margin-top:20px;">Change Password</h5>
-        <div class="col-md-6">
-                
-                <form action="/changepassword" method="post">
-                <label for="name">Current Password</label>
-                <input type="password" name="existingpassword" class="form-control">
-
-                <label for="category">New Password</label>
-                <input type="password" name="newpassword" class="form-control">
-
-                
-                <label for="price">Conform New Password</label>
-                <input type="password" name="conformpassword" class="form-control">
-
-
-                <button type="submit" class="btn btn-success mt-4">Change Password</button>
-
-                </form>
-            </div>
-
-
-    </div>
-
-  </div>
- 
 </div>
+<!-- Shop End -->
 
 <script>
-    function show(){
-        document.getElementById('addAddress').classList.remove('hidden')
+    function deleteThisAddress(id) {
+        swal({
+            title: "",
+            text: `Are you sure to delete Your Address "${id}" Permenently ?`,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+
+                $.ajax({
+                    url: `/deleteaddress/${id}`,
+                    method: 'get'
+
+                })
+
+                swal("", "Address Deleted", "success").then(() => {
+                    location.reload()
+                })
+            }
+        })
+
     }
+
+
 </script>
 
 
 
 
-
-            </div>
-        </div>
-    </div>
-    <!-- Shop End -->
-
 {{>user_footer}}
+<script>
 
-
+</script>

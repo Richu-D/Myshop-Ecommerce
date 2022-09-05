@@ -2,6 +2,14 @@ var db = require('../confic/connection')
 var collection = require('../confic/collections')
 const { response } = require('../app')
 var objectId = require('mongodb').ObjectId
+const Razorpay = require('razorpay');
+const { resolve } = require('path');
+
+            var instance = new Razorpay({
+             key_id: process.env.RAZORPAY_KEY_ID,
+             key_secret: process.env.RAZORPAY_SECRET_KEY,
+                });
+
 module.exports={
 
     addProduct:(product,callback)=>{
@@ -47,7 +55,8 @@ let data = await db.get().collection(collection.USERS).findOne({email})
        
             db.get().collection(collection.USERS).updateOne({'email':email},{
                 $pull:{
-                    'address': `${data}`                  
+                    'address': `${data}`      
+                          
                 }
                 
         })
@@ -76,10 +85,13 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     })
     },
     getProductDetails:(id)=>{
+        console.log(`Some error is in here id ${id} and type is ${typeof id}`);
         return new Promise((resolve,reject)=>{
             db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{
+                
                 resolve(product)
             })
+            
         })
     },
     updateProduct:(id,data)=>{
@@ -139,6 +151,7 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     },
 
     addToCart:(userId,productId)=>{
+
         let proObj={
             item:objectId(productId),
             quantity:1
@@ -148,9 +161,13 @@ let data = await db.get().collection(collection.USERS).findOne({email})
         return new Promise(async(resolve,reject)=>{
             let userCart = await db.get().collection(collection.CART).findOne({user:userId})
             if(userCart){
+
                 let proExist = userCart.products.findIndex(product => product.item==productId)
-                if(proExist!=-1){
-                    db.get().collection(collection.CART).updateOne({user:objectId(userId),'products.item':objectId(productId)},
+                if(proExist != -1){
+
+                    console.log(`product exist`);
+
+                    db.get().collection(collection.CART).updateOne({user:userId,'products.item':objectId(productId)},
                     {
                         $inc:{'products.$.quantity':1}
                     }
@@ -161,14 +178,15 @@ let data = await db.get().collection(collection.USERS).findOne({email})
 
                 db.get().collection(collection.CART).updateOne({user:userId},{$push:{products:proObj}})
                 }
+
+
+
+
             }else{
-                console.log("No cart for this user");
                 let cartObj = {
                             user:userId,
                             products:[proObj]
                         }
-                        console.log(cartObj);
-                        console.log(typeof cartObj);
                         db.get().collection(collection.CART).insertOne(cartObj)
 
             }
@@ -247,9 +265,9 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             addOrder:(order,details)=>{
 
                 return new Promise((resolve,reject)=>{
-                    db.get().collection(collection.ORDER).insertOne({order,details})
-                }).then((response)=>{
-                    resolve()
+                    db.get().collection(collection.ORDER).insertOne({order,details}).then((response)=>{
+                        resolve(response.insertedId)
+                    })
                 })
                 
             },
@@ -260,8 +278,11 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             // getAllOrder(req.user.email)
             getAllOrder:(userId)=>{
                 return new Promise(async(resolve,reject)=>{
-                  let orders =await  db.get().collection(collection.ORDER).find({"details.userId":`${userId}`}).toArray()
-                    resolve(orders)
+                let orders =await  db.get().collection(collection.ORDER).aggregate([{$match:{"details.userId":`${userId}`}},{$sort:{_id:-1}}
+
+                ]).toArray()
+                resolve(orders)
+
                 })
 
             },
@@ -279,8 +300,57 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             },
             getAllOrderAvailable:()=>{
                 return new Promise(async(resolve,reject)=>{
-                    let orderslist = await db.get().collection(collection.ORDER).find().toArray()
+                    // let orderslist = await db.get().collection(collection.ORDER).find().toArray()
+
+                    let orderslist = await db.get().collection(collection.ORDER).aggregate([{$sort:{_id:-1}}]).toArray()
+
+
+
+
+
+
                     resolve(orderslist)
+                })
+            },
+            search:(data)=>{
+                return new Promise(async(resolve,reject)=>{
+
+                    let products = await db.get().collection(collection.PRODUCT_COLLECTION).find({$or:[{name:data},{category:data}]}).toArray()
+                    resolve(products)
+                })
+            },
+            addWishlist:(userId,productId)=>{
+
+                    db.get().collection(collection.WISHLIST).updateOne({user:userId},{ $addToSet: { wishlistItems: objectId(productId)} },{upsert:true})
+
+            },
+            getWishlistItems:(userId)=>{
+
+                console.log(`Inside helpers `,userId);
+                return new Promise(async (resolve,reject)=>{
+
+                   let products = await db.get().collection(collection.WISHLIST).aggregate([
+                        {$match:{user:userId}},
+                        {$project:{_id:0,wishlistItems:1}},
+                        // {$unwind:"wishlistItems"}
+                        {
+                            $lookup:
+                              {
+                                from: collection.PRODUCT_COLLECTION,
+                                localField: "wishlistItems",
+                                foreignField: "_id",
+                                as: "product"
+                              }
+                         },
+                         {$project:{product:1}},
+                         {
+                            $unwind:"$product"
+                         }
+                         
+                    ]).toArray()
+
+                    
+                   resolve(products)
                 })
             },
 
@@ -291,17 +361,12 @@ let data = await db.get().collection(collection.USERS).findOne({email})
 
 
     addAddress:(email,data)=>{
-        console.log(data);
-        console.log(email);
-        data = data.address
-        console.log(data);
     
         return new Promise( async(resolve,reject)=>{
 
             
 
          let  userdata = await db.get().collection(collection.USERS).findOne({email:email})
-            console.log(userdata.address);
             if(userdata.address==undefined){
                 db.get().collection(collection.USERS).updateOne({email:email},{
                         $set:{
@@ -320,6 +385,115 @@ let data = await db.get().collection(collection.USERS).findOne({email})
         )
 
     },
+    generateRazorpay:(orderId,grantTotal)=>{
+        orderId = ""+orderId;
+
+        return new Promise((resolve,reject)=>{
+
+           var options = {
+            amount: grantTotal*100,
+            currency:"INR",
+            receipt:orderId
+           };
+           instance.orders.create(options,(err,order)=>{
+            resolve(order)
+           })
+                
+        })
+
+
+    },
+    verifyPayment:(details)=>{
+        return new Promise((resolve,reject)=>{
+            const crypto = require('crypto');
+            let hmac = crypto.createHmac('sha256',process.env.RAZORPAY_SECRET_KEY)
+
+            hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]'])
+            hmac = hmac.digest('hex')
+            if(hmac==details['payment[razorpay_signature]']){
+                resolve()
+            }else{
+                reject()
+            }
+        })
+    },
+    changePaymentStatus:(orderId)=>{
+        return new Promise((resolve,reject)=>{
+            db.get().collection(collection.ORDER).updateOne({_id:objectId(orderId)},{
+                $set:{
+                    'details.status':'placed'
+                }
+            }).then(()=>{
+                resolve()
+            })
+        })
+    },
+    changePassword:(email,password)=>{
+        db.get().collection(collection.USERS).updateOne({email:`${email}`},{
+            $set:{password:`${password}`}})
+
+
+        // return new Promise((resolve,reject)=>{
+        //     db.get().collection(collection.ORDER).updateOne({_id:objectId(orderId)},{
+        //         $set:{
+        //             'details.status':'placed'
+        //         }
+        //     }).then(()=>{
+        //         resolve()
+        //     })
+        // })
+    },
+    editAddress:(email,oldaddress,newaddress)=>{
+    
+    db.get().collection(collection.USERS).updateOne(
+        {$and:
+            [{"email":email},
+            {"address":oldaddress}]
+        },
+        {
+            $set:{"address.$":newaddress}
+        }
+        )
+    
+},
+removeItemFromWishlist:(userId,productId)=>{
+    console.log(`inside helpers and this is userId ${userId} and this is productId ${productId}`);
+    db.get().collection(collection.WISHLIST).updateOne({user:userId},{$pull:{wishlistItems:objectId(productId)}})
+},
+
+// ,oldaddress,newaddress
+// editAddress:(email)=>{
+    
+   
+//    db.get().collection(collection.USERS)
+    
+    // .updateOne(
+    //     {email:email},
+    //     {
+    //         $set:{
+    //             'address.$':"email"
+    //         }
+    //     }
+    // )
+    
+    
+    
+    
+//     .aggregate([
+//         {$match:email},
+//         {
+//           address:["hey"]
+//         },
+//         {
+//             $set:{
+//                 "hey":"hello"
+//             }
+//         }
+//     ])
+  
+
+// },
+
     getAddress:(email)=>{
         return new Promise( async(resolve,reject)=>{
 
@@ -327,6 +501,27 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             resolve(useraddress)
         })
 
+    },
+    salesReport:()=>{
+            // Today Sale
+            // Total Sale
+            // Today Revenue
+            // Total Revenue
+            // Weekly Sales
+            // Yearly Sales
+        return new Promise( async(resolve,reject)=>{
+        // var details = await db.get().collection(collection.CART).find('details.date')
+        // resolve(details.toArray)
+
+        // Total Sale
+        var totalSale = await db.get().collection(collection.CART).aggregate([
+            {
+                
+            }
+        ]).toArray()
+        console.log(totalSale);
+        resolve(totalSale)
+    })
     }
 
 

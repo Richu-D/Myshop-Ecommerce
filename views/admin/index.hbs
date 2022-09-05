@@ -1,4 +1,5 @@
 {{>admin_header}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
             <!-- Sale & Revenue Start -->
@@ -9,7 +10,7 @@
                             <i class="fa fa-chart-line fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Today Sale</p>
-                                <h6 class="mb-0">$1234</h6>
+                                <h6 class="mb-0">Rs. {{todaySale}}</h6>
                             </div>
                         </div>
                     </div>
@@ -18,16 +19,16 @@
                             <i class="fa fa-chart-bar fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Sale</p>
-                                <h6 class="mb-0">$1234</h6>
+                                <h6 class="mb-0">Rs. {{totalSale}}</h6>
                             </div>
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Today Revenue</p>
-                                <h6 class="mb-0">$1234</h6>
+                                <h6 class="mb-0">Rs. {{todayRevenue}}</h6>
                             </div>
                         </div>
                     </div>
@@ -36,7 +37,7 @@
                             <i class="fa fa-chart-pie fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Revenue</p>
-                                <h6 class="mb-0">$1234</h6>
+                                <h6 class="mb-0">Rs. {{totalRevenue}}</h6>
                             </div>
                         </div>
                     </div>
@@ -48,22 +49,28 @@
             <!-- Sales Chart Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
+                    {{!-- <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Daily Sales</h6>
+                            </div>
+                            <canvas id="dailysales"></canvas>
+                        </div>
+                    </div> --}}
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Worldwide Sales</h6>
-                                <a href="">Show All</a>
+                                <h6 class="mb-0">Weekly Sales</h6>
                             </div>
-                            <canvas id="worldwide-sales"></canvas>
+                            <canvas id="weeklysales"></canvas>
                         </div>
                     </div>
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Salse & Revenue</h6>
-                                <a href="">Show All</a>
+                                <h6 class="mb-0">Yearly Sales</h6>
                             </div>
-                            <canvas id="salse-revenue"></canvas>
+                            <canvas id="yearlysales"></canvas>
                         </div>
                     </div>
                 </div>
@@ -71,7 +78,7 @@
             <!-- Sales Chart End -->
 
 
-            <!-- Recent Sales Start -->
+            {{!-- <!-- Recent Sales Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-light text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -264,7 +271,84 @@
                     </div>
                 </div>
             </div>
-            <!-- Widgets End -->
+            <!-- Widgets End --> --}}
+
+        
+        {{!-- weekly sales --}}
+     <script>
+        const labels = [
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+          
+        ];
+      
+        const data = {
+          labels: labels,
+          datasets: [{
+            label: 'Weekly sales',
+            backgroundColor: 'green',
+            borderColor: 'green',
+            data: [450, 1200, 1500, 2700, 1400, 1670, 1450,1900],
+          }]
+        };
+      
+        const config = {
+          type: 'line',
+          data: data,
+          options: {}
+        };
+      </script>
+<script>
+    const weeklysales = new Chart(
+      document.getElementById('weeklysales'),
+      config
+    );
+  </script>
+
+
+{{!-- Yearly Sales --}}
+  <script>
+        const years = [
+          '2018',
+          '2019',
+          '2020',
+          '2021',
+          '2022',
+          
+        ];
+      
+        const data1 = {
+          labels: years,
+          datasets: [{
+            label: 'yearly sales',
+            backgroundColor: "blue",
+            borderColor: 'rgb(255, 99, 132)',
+            data: [10000, 150000, 160000, 200000, 250000],
+          }]
+        };
+      
+        const yeralyconfig = {
+          type: 'bar',
+          data: data1,
+          options: {}
+        };
+      </script>
+<script>
+    const yearlysales = new Chart(
+      document.getElementById('yearlysales'),
+      yeralyconfig
+    );
+  </script>
+
+  
+
+
+
 {{>admin_footer}}
 
 </body>

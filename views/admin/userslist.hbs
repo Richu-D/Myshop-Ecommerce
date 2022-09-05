@@ -21,8 +21,9 @@
                                             <td>{{this.username}}</td>
                                             <td>{{this.email}}</td>
                                             <td>{{this.number}}</td>
-                                            <td><a href="edit/{{this.email}}" class="btn btn-primary">Edit</a>
-                                             <a href="delete/{{this._id}}" class="btn btn-danger" onclick="return confirm('Are you want to delete {{this.username}} user ?')">Delete</a> 
+                                            <td>
+                                                {{!-- <a href="edit/{{this.email}}" class="btn btn-primary">Edit</a> --}}
+                                             <button type="button" class="btn btn-danger" onclick="deleteThisUser('{{this._id}}','{{this.username}}')">Delete</button> 
                                             {{#if this.block}}
                                             <a href="unblock/{{this._id}}" class="btn btn-success">Unblock</a></td>
                                             {{else}}
@@ -38,5 +39,36 @@
                 </div>
             </div>
             <!-- Table End -->
+
+            {{!-- Sweet Alert --}}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+    function deleteThisUser(id,name) {
+        swal({
+            title: "",
+            text: `Are you sure to delete This User "${name}" Permenently ?`,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+
+                $.ajax({
+                    url: `delete/${id}`,
+                    method: 'get'
+
+                })
+
+                swal("", "Product Deleted", "success").then(() => {
+                    location.reload()
+                })
+            }
+        })
+
+    }
+
+
+</script>
 
 {{>admin_footer}}
