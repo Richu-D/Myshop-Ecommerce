@@ -3,6 +3,9 @@
     .hide {
         display: none;
     }
+    .inline-block{
+        display:inline-block;
+    }
 </style>
 
 <!-- Shop Start -->
@@ -80,7 +83,7 @@
             {{!-- manage Address --}}
             <div>
                 <div id="manageAddress">
-                    <h3>Manage Address</h3>
+                    <h2><u>Manage Address</u></h2><br>
 
                     {{!-- Add address --}}
                     <div>
@@ -100,12 +103,22 @@
 
 
                     {{!-- show existing addresses --}}
-                    <h3 style="margin-top:25px;">Existing Addresses </h3>
+                    <br>
+                    <h3 style="margin-top:25px;"><u>Existing Addresses</u></h3>
+                    <br>
                     {{#each address}}
 
 
                     <div style="margin-bottom:20px;">
-                        <form action="/editAddress" method="post">
+
+                    <div id="id{{this}}" class="inline-block" style="width: 500px;">
+                    <label for="">{{this}}</label>
+                    <button type="button" onclick="deleteThisAddress('{{this}}')" style="float: right;" class="btn btn-danger">Delete</button>
+                    <button class="btn btn-primary mx-2" onclick="showAddressEditOption('{{this}}')" style="float: right;">Edit</button>
+
+                    </div>
+
+                        <form action="/editAddress" method="post" class="hide" id="{{this}}">
 
                             <div class="form-group ">
 
@@ -113,15 +126,15 @@
                                         </textarea>
                                 <textarea name="oldaddress" class="form-control hide" id="" rows="3">
                                             {{this}}
-                                        </textarea>
+                                </textarea>
 
                             </div>
                             <br>
 
-                            <button type="submit" class="btn btn-primary">Edit Address</button>
-                            <button type="button" onclick="deleteThisAddress('{{this}}')"
-                                class="btn btn-danger">Delete</button>
-                            {{!-- <a class="btn btn-danger" href="/deleteaddress/{{this}}">Delete</a> --}}
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <a class="btn btn-primary mx-2" onclick="hideAddressEditOption('{{this}}')">Cancel</a>
+
+                            {{!-- <button type="button" onclick="deleteThisAddress('{{this}}')" class="btn btn-danger">Delete</button> --}}
                         </form>
 
 
@@ -130,6 +143,27 @@
                     {{/each}}
 
                 </div>
+
+                <script>
+                    function showAddressEditOption(id){
+                        document.getElementById(id).classList.remove('hide')
+                        document.getElementById(id).classList.add('inline-block')
+                        document.getElementById(`id${id}`).classList.add('hide')
+                        document.getElementById(`id${id}`).classList.remove('inline-block')
+                    }
+                    function hideAddressEditOption(id){
+                        document.getElementById(id).classList.add('hide')
+                        document.getElementById(id).classList.remove('inline-block')
+                        document.getElementById(`id${id}`).classList.remove('hide')
+                        document.getElementById(`id${id}`).classList.add('inline-block')
+                    }
+                </script>
+
+
+
+
+
+
                 <div id="profileInfo" class="hide">
                     <section>
                         <div class="container mt-4">

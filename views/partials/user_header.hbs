@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>Myshop</title>
     <meta content="width=device-width, initial-scale=1.0 maximum-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta content="Shopping Shirts Pants Shoes Buy" name="keywords">
+    <meta content="Best online store to buy dress" name="description">
 
     
 <style>
@@ -129,8 +129,6 @@
 
 </style>
 
-    <!-- Favicon -->
-    <link href="" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -138,14 +136,6 @@
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
@@ -202,7 +192,7 @@ function topFunction() {
             <div>
             </div>
             <div>
-            <a href="/home"><img src="Blue dotted.jpg" alt="logo"></a>
+            <a href="/home"><img src="" alt="logo"></a>
             </div>
         </div>
         <div class="search">
@@ -211,10 +201,19 @@ function topFunction() {
             </form>
         </div>
         <div class="icons">
-            <a href="/wishlist" class="fa fa-heart"></a>
-            <a href="/cart" class="fa fa-shopping-cart"></a>           
+            <a href="/wishlist" 
+            {{#if wishlist}}
+             style="color: red;" 
+             {{/if}}
+             class="fa fa-heart"></a>
+            <a href="/cart" {{#if cart}}
+             style="color: orange;" 
+             {{/if}} class="fa fa-shopping-cart"></a>           
             <a class="dropdown">
-                <a class=" dropdown-toggle fa fa-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="profile">                  
+                <a class=" dropdown-toggle fa fa-user" {{#if user}}
+             style="color: green;" 
+             {{/if}}
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="profile">                  
                 </a>
                 <div class="dropdown-menu mt-4">
                   <a class="dropdown-item" href="/myprofile">Profile</a>
@@ -226,4 +225,7 @@ function topFunction() {
 
         </div>
     </div>
-  
+{{!--     
+    <div class="category">
+        hello
+    </div> --}}

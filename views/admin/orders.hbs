@@ -47,7 +47,8 @@
             <table style="margin-bottom: 150px;" class="table" id="table">
                 <thead>
                     <tr>
-
+                        
+                        <th scope="col">No.</th>
                         <th scope="col">Image</th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
@@ -63,60 +64,20 @@
                
                 {{#each data}}
                     <tr>
-                       <td>
-                        {{#each order}}
-                        <img style="width: 50px;height:50px" src="/product_image/{{this.item}}.jpg"
-                                alt="product image">
-                                 {{/each}}
-                        </td>
-
+                      <td>{{order @index}}</td>
+                       <td>{{#each order}}<img style="width: 50px;height:50px" src="/product_image/{{this.item}}.jpg" alt="product image">{{/each}}</td>
                         <td>{{this.details.name}}</td>
                         <td>{{this.details.userId}}</td>
-                        <td>
-                                        {{#each order}}
-                                        {{this.productname}} x 
-                                        {{this.quantity}} = 
-                                        {{this.totalAmount}}
-                                        <br>
-                                        {{/each}}
-                                        <br>
-                                        Address : {{this.details.address}}
-                                        <br>
-                                        Ph: {{this.details.number}}
-                                        </td>
+                        <td>{{#each order}}{{this.productname}} x {{this.quantity}} = {{this.totalAmount}}  <br>{{/each}}<br> Address : {{this.details.address}}<br> Ph: {{this.details.number}}</td>
                         <td>{{this.details.date}}</td>
                         <td>{{this.details.grantTotal}}</td>
                         <td>{{this.details.paymentMethod}}</td>
                         <td>{{this.details.status}}</td>
+
+                        {{adminOrder this.details.status this._id}}
                         
-                        
-
-                        <td>
-
-                            <div class="dropdown">
-  <button class="dropbtn">status</button>
-  <div class="dropdown-content">
-    <a href="/admin/orderstatus/?status=shipped&id={{this._id}}">Shipped</a>
-    <a href="/admin/orderstatus/?status=Out for delevery&id={{this._id}}">Out for delevery</a>
-    <a href="/admin/orderstatus/?status=Delevered&id={{this._id}}">Delivered</a>
-    <a href="/admin/orderstatus/?status=Order Cancelled by Admin&id={{this._id}}" class="btn btn-danger">Cancel Order</a>
-  </div>
-</div>
-
-
-
-
-
-
-                            {{!-- <a href="edit_product/{{this._id}}" class="btn btn-primary">Edit</a> <a
-                                href="delete_product/{{this._id}}" class="btn btn-danger"
-                                onclick="return confirm('Are you want to delete {{this.name}} product ?')">Delete</a> --}}
-                        </td>
-
-                        {{!-- <td>Member</td> --}}
-                    </tr>
-                                            {{/each}}
-
+                      
+                      </tr>{{/each}}
                 </tbody>
             </table>
         </div>

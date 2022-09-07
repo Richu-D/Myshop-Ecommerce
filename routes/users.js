@@ -191,8 +191,6 @@ router.get('/shop',checkuser, function(req, res) {
 });
 
 router.get('/detail/:id',checkuser, function(req, res) {
-  console.log(req.url);
-  console.log(req.params.id);
   helpers.getProductDetails(req.params.id).then((data)=>{
     res.render('users/detail',{data})
   }).catch(err =>{
@@ -202,23 +200,24 @@ router.get('/detail/:id',checkuser, function(req, res) {
   })
 });
 
-// router.post('/getTotalAmount',(req,res)=>{
-//   console.log(req.body);
-//   helpers.getTotalAmount(req.body.userId).then((response)=>{
-//     console.log(`Resposne of getTotalAmount is ${response}`);
-//     res.json(response)
-//   })
-// })
-
 router.get('/cart',checkuser, async function(req, res) {
 
   let products = await helpers.getAllCartItems(req.user.email)
 let grantTotal = 0;   
+console.log(products[0]);
+if(products[0]){
 products.forEach(data => {
   data.total=data.quantity*data.product.price;
   grantTotal += data.total;
 });
-  res.render('users/cart',{products,grantTotal:grantTotal})
+console.log(products);
+
+
+  res.render('users/cart',{products,grantTotal:grantTotal,cart:true})
+}else{
+  res.render('users/emptyCart',{cart:true})
+}
+
    });
 
 router.post('/addtocart/:id',checkuser, function(req, res) {
@@ -321,11 +320,18 @@ helpers.cancelOrder(req.params.id,"Order Cancelled By User")
   res.redirect('/orders')
 })
 
-router.get('/wishlist',checkuser,async (req,res)=>{
- let data = await helpers.getWishlistItems(req.user.email)
- console.log(data);
-    res.render('users/wishlist',{products:data})
-  })
+router.get('/wishlist',checkuser,(req,res)=>{
+  helpers.getWishlistItems(req.user.email).then((data)=>{
+        if(data[0]){
+          res.render('users/wishlist',{products:data,wishlist:true})
+        }else{
+          res.render('users/emptyWishlist',{wishlist:true})
+        }
+    }).catch(err =>{
+      console.log(err);
+    })
+ })
+ 
 
  router.post('/wishlist/:id',checkuser,(req,res)=>{
  
@@ -355,7 +361,11 @@ helpers.getAllOrder(req.user.email).then((data)=>{
   //   console.log(data.order);
 
   // }) 
+  if(data[0]){
   res.render('users/orders',{data})
+  }else{
+    res.render('users/emptyOrders')
+  }
 
 })
 

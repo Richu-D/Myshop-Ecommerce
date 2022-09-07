@@ -3,7 +3,6 @@ var express = require('express');
 const jwt = require('jsonwebtoken')
 var router = express.Router();
 var helpers = require('../helpers/helpers')
-var fs = require('fs')
 // Authentication
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -53,7 +52,7 @@ router.use((req,res,next)=>{
 router.get('/home', function(req, res) {
    helpers.salesReport().then((data)=>{
      console.log(data);
-     res.render('admin/index',{details:data})
+     res.render('admin/index',{details:data,dashboard:true})
    })
 
  
@@ -62,7 +61,7 @@ router.get('/home', function(req, res) {
 
 router.get('/add_product', function(req, res) {
   helpers.getCategory().then((category)=>{
-    res.render('admin/add_product',{category})
+    res.render('admin/add_product',{category,addProduct:true})
 
   })
 
@@ -102,12 +101,12 @@ helpers.editCategory(req.params.id,req.body)
 })
 
 router.get('/categorydelete/:id',(req,res)=>{
-  fs.unlink(`/public/product_image/${id}.jpg`,()=>{
+ 
     helpers.deleteCategory(req.params.id)
     res.redirect('/admin/add_product')
 
   })
- })
+ 
 
 
 router.get('/form', function(req, res){
@@ -116,7 +115,7 @@ router.get('/form', function(req, res){
 
 router.get('/allproducts', function(req, res) {
   helpers.getAllProducts().then((products)=>{
-  res.render('admin/allproducts',{products})
+  res.render('admin/allproducts',{products,allProduct:true})
   })
 })
 
@@ -193,7 +192,7 @@ router.get('/unblock/:id',(req,res)=>{
 
 router.get('/allusers', function(req, res) {
   helpers.getAllUsers().then((users)=>{
-    res.render('admin/userslist',{users})
+    res.render('admin/userslist',{users,allUsers:true})
     })
 });
 
@@ -211,7 +210,7 @@ router.get('/orders',(req,res)=>{
 
   helpers.getAllOrderAvailable().then((data)=>{
     console.log(data[0]);
-    res.render('admin/orders',{data})
+    res.render('admin/orders',{data,orders:true})
   })
 
   

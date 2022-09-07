@@ -85,7 +85,6 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     })
     },
     getProductDetails:(id)=>{
-        console.log(`Some error is in here id ${id} and type is ${typeof id}`);
         return new Promise((resolve,reject)=>{
             db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{
                 
@@ -315,7 +314,7 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             search:(data)=>{
                 return new Promise(async(resolve,reject)=>{
 
-                    let products = await db.get().collection(collection.PRODUCT_COLLECTION).find({$or:[{name:data},{category:data}]}).toArray()
+                    let products = await db.get().collection(collection.PRODUCT_COLLECTION).find({$text:{$search:data}}).toArray()
                     resolve(products)
                 })
             },
@@ -328,29 +327,33 @@ let data = await db.get().collection(collection.USERS).findOne({email})
 
                 console.log(`Inside helpers `,userId);
                 return new Promise(async (resolve,reject)=>{
-
-                   let products = await db.get().collection(collection.WISHLIST).aggregate([
-                        {$match:{user:userId}},
-                        {$project:{_id:0,wishlistItems:1}},
-                        // {$unwind:"wishlistItems"}
-                        {
-                            $lookup:
-                              {
-                                from: collection.PRODUCT_COLLECTION,
-                                localField: "wishlistItems",
-                                foreignField: "_id",
-                                as: "product"
-                              }
-                         },
-                         {$project:{product:1}},
-                         {
-                            $unwind:"$product"
-                         }
-                         
-                    ]).toArray()
-
-                    
-                   resolve(products)
+                        try {
+                            let products = await db.get().collection(collection.WISHLIST).aggregate([
+                                {$match:{user:userId}},
+                                {$project:{_id:0,wishlistItems:1}},
+                                // {$unwind:"wishlistItems"}
+                                {
+                                    $lookup:
+                                      {
+                                        from: collection.PRODUCT_COLLECTION,
+                                        localField: "wishlistItems",
+                                        foreignField: "_id",
+                                        as: "product"
+                                      }
+                                 },
+                                 {$project:{product:1}},
+                                 {
+                                    $unwind:"$product"
+                                 }
+                                 
+                            ]).toArray()
+        
+                            
+                           resolve(products)
+                        } catch (error) {
+                            reject(error)
+                        }
+                   
                 })
             },
 
