@@ -8,178 +8,194 @@
     <meta content="Shopping Shirts Pants Shoes Buy" name="keywords">
     <meta content="Best online store to buy dress" name="description">
 
-    
-<style>
-    body{
-        margin-top: 15vh;
-    }
-    
-    .header{
-        background-color: #007bff;
-        display: grid;
-        grid-template-columns: repeat(3,1fr);
-        padding:0px 25px;
-        height: 60px;
-        align-items: center;
-        position: fixed;
-        top:0;
-        width:100%;
-        z-index: 100;
-    }
-    #one{
-        display: grid;
-        grid-template-columns:1fr 35px;
-    }
-    .logo img{
-        height: 40px;
-    }
-    .logo{
-        display: flex;
-        align-items: center;
-    }
-    .search input{
-        height: 35px;
-        width:100%;
-        border: none;
-        outline: none;
-        border-radius: 3px 0px 0px 3px;
-        padding:10px;
-        font-size: 16px;
-    }
-    .search button{
-        height: 35px;
-        border: none;
-        outline: none;
-        border-radius: 0px 3px 3px 0px;
-        font-size: 16px;
-        background-color:white;
-    }
-   
-    .icons{
-        text-align: right;
-    }
-    .icons a{
-        text-decoration: none;
-    }
-    .fa{
-        color:white;
-        font-size: 22px;
-        padding:0px 10px;
-        transition: 0.4s;
-    }
 
-    #profile{
-        color:white;
-    }
-    #profile:hover{
-        color:black;
-    }
-
-    #profile::after{
-        display: none;
-    }
-
-    .search .fa{
-        color:#007bff
-    }
-    .fa:hover{
-        color:black
-    }
-    form *{
-        display: inline-block;
-    }
-   
-#myBtn {
-  display: none;
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  z-index: 99;
-  font-size: 18px;
-  border: none;
-  outline: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  padding: 15px;
-  border-radius: 4px;
-}
-
-#myBtn:hover {
-  background-color: #007bffdc;
-}
-    @media only screen and (max-width:600px){
-        .header{
-            grid-template-columns: auto auto;
-            padding: 10px 7px;
-            height: auto;
+    <style>
+        body {
+            margin-top: 15vh;
         }
-        .search{
-            grid-column: 2;
-            grid-row:2;
-            grid-column: 1/span 2;
-            padding-top:10px;
 
+        #profile{
+            cursor: pointer;
         }
-        .fa{
-            padding:5px;
+
+        .header {
+            background-color: #007bff;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            padding: 0px 25px;
+            height: 60px;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
         }
-    }
 
+        #one {
+            display: grid;
+            grid-template-columns: 1fr 35px;
+        }
 
-</style>
+        .logo img {
+            height: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .search input {
+            height: 35px;
+            width: 100%;
+            border: none;
+            outline: none;
+            border-radius: 3px 0px 0px 3px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .search button {
+            height: 35px;
+            border: none;
+            outline: none;
+            border-radius: 0px 3px 3px 0px;
+            font-size: 16px;
+            background-color: white;
+        }
+
+        .icons {
+            text-align: right;
+        }
+
+        .icons a {
+            text-decoration: none;
+        }
+
+        .fa {
+            color: white;
+            font-size: 22px;
+            padding: 0px 10px;
+            transition: 0.4s;
+        }
+
+        #profile {
+            color: white;
+        }
+
+        #profile:hover {
+            color: black;
+        }
+
+        #profile::after {
+            display: none;
+        }
+
+        .search .fa {
+            color: #007bff
+        }
+
+        .fa:hover {
+            color: black
+        }
+
+        form * {
+            display: inline-block;
+        }
+
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 99;
+            font-size: 18px;
+            border: none;
+            outline: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #007bffdc;
+        }
+
+        @media only screen and (max-width:600px) {
+            .header {
+                grid-template-columns: auto auto;
+                padding: 10px 7px;
+                height: auto;
+            }
+
+            .search {
+                grid-column: 2;
+                grid-row: 2;
+                grid-column: 1/span 2;
+                padding-top: 10px;
+
+            }
+
+            .fa {
+                padding: 5px;
+            }
+        }
+    </style>
 
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 
-<script>
-window.onscroll = ()=>{
-    scrollFunction()
-}
-// When the user scrolls down 20px from the top of the document, show the button
+    <script>
+        window.onscroll = () => {
+            scrollFunction()
+        }
+        // When the user scrolls down 20px from the top of the document, show the button
 
 
-function scrollFunction() {
-  if (document.body.scrollTop > 250 || document.documentElement.scrollTop > 250) {
-    
-    document.getElementById("myBtn").style.display = "block";
-  } else {
-    document.getElementById("myBtn").style.display = "none";
-  }
-}
+        function scrollFunction() {
+            if (document.body.scrollTop > 250 || document.documentElement.scrollTop > 250) {
 
-// When the user clicks on the button, scroll to the top of the document
-function topFunction() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
-</script>
+                document.getElementById("myBtn").style.display = "block";
+            } else {
+                document.getElementById("myBtn").style.display = "none";
+            }
+        }
 
-{{!-- Sweet Alert --}}
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        // When the user clicks on the button, scroll to the top of the document
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 
-<style>
-    .product-item:hover{
-        box-shadow: 0 1px 2px rgba(0,0,0,0.07), 
-                0 2px 4px rgba(0,0,0,0.07), 
-                0 4px 8px rgba(0,0,0,0.07), 
-                0 8px 16px rgba(0,0,0,0.07),
-                0 16px 32px rgba(0,0,0,0.07), 
-                0 32px 64px rgba(0,0,0,0.07);
-    }
-    .title{
-        color: #007bff;
-        margin: 10px;
-    }
-</style>
+    {{!-- Sweet Alert --}}
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <style>
+        .product-item:hover {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07),
+                0 2px 4px rgba(0, 0, 0, 0.07),
+                0 4px 8px rgba(0, 0, 0, 0.07),
+                0 8px 16px rgba(0, 0, 0, 0.07),
+                0 16px 32px rgba(0, 0, 0, 0.07),
+                0 32px 64px rgba(0, 0, 0, 0.07);
+        }
+
+        .title {
+            color: #007bff;
+            margin: 10px;
+        }
+    </style>
 
 </head>
 
@@ -192,40 +208,63 @@ function topFunction() {
             <div>
             </div>
             <div>
-            <a href="/home"><img src="" alt="logo"></a>
+                <a href="/home"><img src="" alt="logo"></a>
+            </div>
+            <div> 
+
+                
+                <div class="dropdown">
+                    <a class="dropdown-toggle"  id="dropdownMenuButton" style="color:white;text-decoration:none;cursor:pointer"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                       category
+                    </a>
+                    <div class="dropdown-menu mt-4" aria-labelledby="dropdownMenuButton">
+                        {{#each category}}
+                        <form action="/search" method="get">
+                        <input type="text" name="searchKey" value="{{this.category}}" style="display:none;">
+                        <button  type="submit" class="dropdown-item">{{this.category}}</button></form>
+                        {{/each}}
+                        
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
         </div>
         <div class="search">
             <form action="/search" method="get" id="one">
-                <input type="text" name="searchKey" id="" placeholder="Search Here" autocomplete="off"><button class="fa fa-search" ></button>
+                <input type="text" name="searchKey" id="" placeholder="Search Here" autocomplete="off"><button
+                    class="fa fa-search"></button>
             </form>
         </div>
         <div class="icons">
-            <a href="/wishlist" 
-            {{#if wishlist}}
-             style="color: red;" 
-             {{/if}}
-             class="fa fa-heart"></a>
-            <a href="/cart" {{#if cart}}
-             style="color: orange;" 
-             {{/if}} class="fa fa-shopping-cart"></a>           
+            <a href="/wishlist" {{#if wishlist}} style="color: red;" {{/if}} class="fa fa-heart"></a>
+            <a href="/cart" {{#if cart}} style="color: orange;" {{/if}} class="fa fa-shopping-cart"></a>
             <a class="dropdown">
-                <a class=" dropdown-toggle fa fa-user" {{#if user}}
-             style="color: green;" 
-             {{/if}}
-             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="profile">                  
+                <a class=" dropdown-toggle fa fa-user" id="profile" {{#if user}} style="color: green;" {{/if}} data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" id="profile">
                 </a>
                 <div class="dropdown-menu mt-4">
-                  <a class="dropdown-item" href="/myprofile">Profile</a>
-                  <a class="dropdown-item" href="/orders">Order</a>
-                  <a class="dropdown-item" href="/logout">Logout</a>
+                    <a class="dropdown-item" href="/myprofile">Profile</a>
+                    <a class="dropdown-item" href="/orders">Order</a>
+                    <a class="dropdown-item" href="/logout">Logout</a>
                 </div>
-              </a>
+            </a>
 
 
         </div>
     </div>
-{{!--     
+    {{!--
     <div class="category">
         hello
     </div> --}}

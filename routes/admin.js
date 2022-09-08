@@ -51,12 +51,24 @@ router.use((req,res,next)=>{
 
 router.get('/home', function(req, res) {
    helpers.salesReport().then((data)=>{
-     console.log(data);
+    //  console.log(data);
      res.render('admin/index',{details:data,dashboard:true})
    })
+});
 
- 
+router.post('/graphdata',(req, res)=>{
+  // helpers.salesReport().then((data)=>{
+    helpers.graphdata().then(data=>{
 
+      console.log(data);
+      
+
+
+
+      res.json({data})
+    })
+    // res.render('admin/index',{details:data,dashboard:true})
+  // })
 });
 
 router.get('/add_product', function(req, res) {

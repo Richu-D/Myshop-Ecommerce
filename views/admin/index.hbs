@@ -109,9 +109,9 @@
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Yearly Sales</h6>
+                                <h6 class="mb-0">Monthly Sales</h6>
                             </div>
-                            <canvas id="yearlysales"></canvas>
+                            <canvas id="monthlysales"></canvas>
                         </div>
                     </div>
                 </div>
@@ -317,16 +317,144 @@
         
         {{!-- weekly sales --}}
      <script>
-        const labels = [
-          'Sunday',
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-          
-        ];
+       let  weekly = [0,0,0,0,0,0,0]
+       let weekName = ["Sunday","Monday","Tuesday","WednesDay","Thursday","Friday","Saturday"]
+       let monthName = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+       let monthlyProfit = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+
+
+
+      $.ajax({
+      type: "post",
+      url: "/admin/graphdata",  
+      success: (data)=>{
+            for(i=0;i<data.data.weeklySales.length;++i){
+
+
+                
+                switch(data.data.weeklySales[i].date){
+                    
+                    case 1: 
+                            weekly[0] = data.data.weeklySales[i].total
+                            break;
+
+                    case 2: 
+                            weekly[1] = data.data.weeklySales[i].total
+                            break;
+
+                    case 3: 
+                            weekly[2] = data.data.weeklySales[i].total
+                            break;
+
+                    case 4: 
+                            weekly[3] = data.data.weeklySales[i].total
+                            break;
+
+                    case 5:
+                            weekly[4] = data.data.weeklySales[i].total
+                            break;
+
+                    case 6: 
+                            weekly[5] = data.data.weeklySales[i].total
+                            break;
+
+                    case 7: weekly[6] = data.data.weeklySales[i].total
+                            break;
+                }
+
+            }
+
+
+            for(i=0;i<data.data.monthlySales.length;++i){
+
+
+                
+                switch(data.data.monthlySales[i].month){                    
+
+                    case 1: 
+                            monthlyProfit[0] = data.data.monthlySales[i].total
+                            break;
+
+                    case 2: 
+                            monthlyProfit[1] = data.data.monthlySales[i].total
+                            break;
+
+                    case 3: 
+                            monthlyProfit[2] = data.data.monthlySales[i].total
+                            break;
+
+                    case 4: 
+                            monthlyProfit[3] = data.data.monthlySales[i].total
+                            break;
+
+                    case 5:
+                            monthlyProfit[4] = data.data.monthlySales[i].total
+                            break;
+
+                    case 6: 
+                            monthlyProfit[5] = data.data.monthlySales[i].total
+                            break;
+
+                    case 7: 
+                            monthlyProfit[6] = data.data.monthlySales[i].total
+                            break;
+
+                    case 8: 
+                            monthlyProfit[7] = data.data.monthlySales[i].total
+                            break;
+
+                    case 9: 
+                            monthlyProfit[8] = data.data.monthlySales[i].total
+                            break;
+
+                    case 10: 
+                            monthlyProfit[9] = data.data.monthlySales[i].total
+                            break;
+
+                    case 11:
+                            monthlyProfit[10] = data.data.monthlySales[i].total
+                            break;
+
+                    case 12: 
+                            monthlyProfit[11] = data.data.monthlySales[i].total
+                            break;
+
+
+                }
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            const weeklysales = new Chart(
+            document.getElementById('weeklysales'),
+            config
+            );
+
+            const monthlysales = new Chart(
+            document.getElementById('monthlysales'),
+            yeralyconfig
+    );
+      }
+});
+
+
+        const labels = weekName;
       
         const data = {
           labels: labels,
@@ -334,7 +462,7 @@
             label: 'Weekly sales',
             backgroundColor: 'green',
             borderColor: 'green',
-            data: [450, 1200, 1500, 2700, 1400, 1670, 1450,1900],
+            data: weekly,
           }]
         };
       
@@ -343,33 +471,20 @@
           data: data,
           options: {}
         };
-      </script>
-<script>
-    const weeklysales = new Chart(
-      document.getElementById('weeklysales'),
-      config
-    );
-  </script>
 
 
-{{!-- Yearly Sales --}}
-  <script>
-        const years = [
-          '2018',
-          '2019',
-          '2020',
-          '2021',
-          '2022',
-          
-        ];
+
+//Yearly Sales
+
+        const months = monthName;
       
         const data1 = {
-          labels: years,
+          labels: months,
           datasets: [{
-            label: 'yearly sales',
+            label: 'Monthly sales',
             backgroundColor: "blue",
             borderColor: 'rgb(255, 99, 132)',
-            data: [10000, 150000, 160000, 200000, 250000],
+            data: monthlyProfit,
           }]
         };
       
@@ -379,12 +494,7 @@
           options: {}
         };
       </script>
-<script>
-    const yearlysales = new Chart(
-      document.getElementById('yearlysales'),
-      yeralyconfig
-    );
-  </script>
+
 
   
 

@@ -575,11 +575,118 @@ removeItemFromWishlist:(userId,productId)=>{
                  }
           } }
           ]).toArray()
+
+     
                            
        
           resolve({data:totalSale[0],totalUsers:totalUsers,todayOrders:todayOrders[0],deliveredTotalSale:deliveredTotalSale[0],TodayrevenueAndDelevered:TodayrevenueAndDelevered[0]})
     })
+    },
+
+graphdata:()=>{
+    return new Promise( async(resolve,reject)=>{
+   //   WeeklySales
+   var weeklySales = await db.get().collection(collection.ORDER).aggregate([
+    {$match:{"details.status":"Delevered"}},
+    {
+        $project:{
+         date:{$convert: { input: "$_id", to: "date" } },total:"$details.grantTotal"
+        }
+    },
+   {
+    $match:{
+    date:{
+    $lt:new Date(),$gt:new Date(new Date().getTime()-(24*60*60*1000*7))
     }
+     }
+   },
+   {
+    $group:{
+       _id:{ $dayOfWeek:"$date"},
+       total:{$sum:"$total"}
+    }           
+   },
+   {
+    $project:{
+        date:"$_id",
+        total:"$total",
+        _id:0
+    }
+   }
+  ]).toArray()
+
+//   console.log(weeklySales[0]);
+
+// monthly Sales
+var monthlySales = await db.get().collection(collection.ORDER).aggregate([
+    {$match:{"details.status":"Delevered"}},
+    {
+        $project:{
+         date:{$convert: { input: "$_id", to: "date" } },total:"$details.grantTotal"
+        }
+    },
+   {
+    $match:{
+    date:{
+    $lt:new Date(),$gt:new Date(new Date().getTime()-(24*60*60*1000*365))
+    }
+     }
+   },
+   {
+    $group:{
+       _id:{ $month:"$date"},
+       total:{$sum:"$total"}
+    }           
+   },
+   {
+    $project:{
+        month:"$_id",
+        total:"$total",
+        _id:0
+    }
+   }
+]).toArray()
+
+// console.log(monthlySales);
+
+
+// Yearly Sales
+var yearlySales = await db.get().collection(collection.ORDER).aggregate([
+    {$match:{"details.status":"Delevered"}},
+    {
+        $project:{
+         date:{$convert: { input: "$_id", to: "date" } },total:"$details.grantTotal"
+        }
+    },
+   
+   {
+    $group:{
+       _id:{ $year:"$date"},
+       total:{$sum:"$total"}
+    }           
+   },
+   {
+    $project:{
+        year:"$_id",
+        total:"$total",
+        _id:0
+    }
+   }
+]).toArray()
+
+// console.log(yearlySales);
+resolve({weeklySales,monthlySales,yearlySales})
+
+    })
+}
+
+
+
+
+
+
+
+
 
 
 

@@ -180,10 +180,14 @@ let token = req.cookies.jwt;
         next()
     })}
 
-router.get('/home',checkuser, function(req, res) {
-  helpers.getAllProducts().then((products)=>{
-    res.render('users/home',{products})
-    })
+    
+
+router.get('/home',checkuser,async function(req, res) {
+ let products = await helpers.getAllProducts()
+  let category = await helpers.getCategory()
+
+    res.render('users/home',{products,category})
+    
 });
 
 router.get('/shop',checkuser, function(req, res) {
@@ -204,18 +208,17 @@ router.get('/cart',checkuser, async function(req, res) {
 
   let products = await helpers.getAllCartItems(req.user.email)
 let grantTotal = 0;   
-console.log(products[0]);
+let category = await helpers.getCategory()
 if(products[0]){
 products.forEach(data => {
   data.total=data.quantity*data.product.price;
   grantTotal += data.total;
 });
-console.log(products);
 
 
-  res.render('users/cart',{products,grantTotal:grantTotal,cart:true})
+  res.render('users/cart',{products,grantTotal:grantTotal,cart:true,category})
 }else{
-  res.render('users/emptyCart',{cart:true})
+  res.render('users/emptyCart',{cart:true,category})
 }
 
    });
@@ -294,9 +297,9 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
 
 router.get('/search',(req,res)=>{
   
-  helpers.search(req.query.searchKey).then(data =>{
-console.log(data);
-    res.render('users/shop',{data:data})
+  helpers.search(req.query.searchKey).then(async data =>{
+    let category = await helpers.getCategory()
+    res.render('users/shop',{data:data,category})
   })
 
   // res.send(req.query.searchKey)
@@ -307,8 +310,9 @@ console.log(data);
 
 
 router.get('/myprofile',checkuser,(req,res)=>{
-    helpers.getUser(req.user.email).then((user)=>{
-    res.render('users/profile',{address:user.address,user})
+    helpers.getUser(req.user.email).then(async(user)=>{
+      let category = await helpers.getCategory()
+    res.render('users/profile',{address:user.address,user,category})
     })
   })
 
@@ -321,11 +325,12 @@ helpers.cancelOrder(req.params.id,"Order Cancelled By User")
 })
 
 router.get('/wishlist',checkuser,(req,res)=>{
-  helpers.getWishlistItems(req.user.email).then((data)=>{
+  helpers.getWishlistItems(req.user.email).then(async(data)=>{
+    let category = await helpers.getCategory()
         if(data[0]){
-          res.render('users/wishlist',{products:data,wishlist:true})
+          res.render('users/wishlist',{products:data,wishlist:true,category})
         }else{
-          res.render('users/emptyWishlist',{wishlist:true})
+          res.render('users/emptyWishlist',{wishlist:true,category})
         }
     }).catch(err =>{
       console.log(err);
@@ -354,17 +359,18 @@ router.post('/addAddress',checkuser,(req,res)=>{
 })
 
 router.get('/orders',checkuser,(req,res)=>{
-helpers.getAllOrder(req.user.email).then((data)=>{
+helpers.getAllOrder(req.user.email).then(async(data)=>{
   // let grantTotal = 0
   // data.forEach(data=>{
   //   grantTotal += data.grantTotal.grantTotal;
   //   console.log(data.order);
 
   // }) 
+  let category = await helpers.getCategory()
   if(data[0]){
-  res.render('users/orders',{data})
+  res.render('users/orders',{data,category})
   }else{
-    res.render('users/emptyOrders')
+    res.render('users/emptyOrders',{category})
   }
 
 })
