@@ -9,7 +9,9 @@
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+    <link href="/images/myshop.png" rel="icon">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
 
    <!-- CSS only -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
@@ -46,7 +48,7 @@ body {
 }
 
 
-.box input[type="text"],
+.box input[type="email"],
 .box input[type="password"] {
     border: 0;
     background: none;
@@ -68,13 +70,13 @@ body {
     font-weight: 500
 }
 
-.box input[type="text"]:focus,
+.box input[type="email"]:focus,
 .box input[type="password"]:focus {
     border-radius: 24px;
     border-color: var(--focus)
 }
 
-.box input[type="submit"] {
+.box button[type="submit"] {
     border: 0;
     background: none;
     display: block;
@@ -89,7 +91,7 @@ body {
     cursor: pointer
 }
 
-.box input[type="submit"]:hover {
+.box button[type="submit"]:hover {
     background: var(--hover)
 }
 
@@ -100,23 +102,86 @@ body {
     bottom: 5%;
 }
 
+p{
+    color:red
+}
+</style>
 
 
-    </style>
+
 </head>
 
 <body>
-    <form action="/" method="post" class="box">
-                <h1>MYSHOP</h1>
+    <form action="/" method="post" class="box" id="login">
+                <h1><span style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:800;"><span style="color:yellow">MY</span>SHOP</a></span></h1>
                 <p class="{{err_class}}">{{err}}</p>
-                <input type="text" name="email" placeholder="Email" />
-                <input type="password" name="password" placeholder="Password" />
-                <input type="submit" name="" value="Login" href="#" />
+                <input type="email" name="email" id="email" placeholder="Email" onfocusout="validateEmail()"  autocomplete="off">
+                <p class="alert alert-danger" id="email-error" style="display: none;"></p>
+                <input type="password" name="password" id="password" placeholder="Password" onfocusout="validatePassword()">
+                <p class="alert alert-danger" id="password-error" style="display: none;"></p>
+                <button type="submit" >Submit</button>
                 <a class="signup text-muted" href="signup">Don't have an Account? Sign up</a>
             </form>
-    <script src="js/main.js"></script>
+    
     <script>
-        document.getElementById("changeg").style.display = "none";
+        const form = document.getElementById('login')
+        var emailErr = document.getElementById('email-error');
+        var passwordErr = document.getElementById('password-error');
+
+        
+        function validateEmail(){
+            var email = document.getElementById('email').value;
+            emailErr.style.display = 'block';
+            if(email.length == 0) {
+                emailErr.innerHTML = 'Email is required';
+                setTimeout(function(){
+                emailErr.style.display = 'none';
+                }, 3000)
+                return false;
+            }
+
+            if(!email.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)){
+                emailErr.innerHTML = 'Enter a valid email';
+                setTimeout(function(){
+                emailErr.style.display = 'none';
+                }, 3000)
+                return false;
+            }
+            emailErr.innerHTML = ""
+            emailErr.style.display = 'none';
+            return true
+        }
+
+
+            function validatePassword(){
+        var password = document.getElementById('password').value;
+        passwordErr.style.display = 'block';
+        if(password.length == 0){
+            passwordErr.innerHTML='Password is required';
+            setTimeout(function(){
+            passwordErr.style.display = 'none';
+            }, 3000)
+            return false;
+        }
+    
+        if(password.length < 8) {
+            passwordErr.innerHTML = 'Password is Atleast 8 characters';
+            setTimeout(function(){
+            passwordErr.style.display = 'none';
+            }, 3000)
+            return false;
+        }
+
+        passwordErr.innerHTML = ""
+        passwordErr.style.display = 'none';
+        return true
+        }
+
+        form.addEventListener('submit',(e)=>{
+   if( !validateEmail() || !validatePassword() ){
+    e.preventDefault()
+} 
+})
     </script>
 
 </body>

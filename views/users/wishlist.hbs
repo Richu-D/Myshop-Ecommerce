@@ -40,9 +40,21 @@
 </div>
 
 <script>
-    function removeWishlistItem(productId) {
 
-        $.ajax({
+
+
+
+    function removeWishlistItem(productId) {
+        swal({
+            title: "",
+            text: `Are you sure to delete ?`,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+
+                $.ajax({
             url: '/removeItemFromWishlist',
             data: {
                 productId: productId
@@ -55,19 +67,22 @@
                         })
                
             }
-
-
+        })
+                
+            }
         })
 
-
-
-
-
-
-
-
-
     }
+
+
+
+
+
+
+
+
+
+    
 
 </script>
 {{>user_footer}}

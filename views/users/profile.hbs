@@ -6,6 +6,7 @@
     .inline-block{
         display:inline-block;
     }
+    
 </style>
 
 <!-- Shop Start -->
@@ -89,10 +90,10 @@
                     <div>
                         <button class="btn btn-primary" id="addAddressBtn" onclick="show()">Add Address</button>
                         <div class="hide" id="addAddress">
-                            <form action="/addAddress" method="post">
+                            <form action="/addAddress" method="post" id="addAddress">
                                 <div class="form-group">
                                     <label for="exampleFormControlTextarea1">Enter Address</label>
-                                    <textarea class="form-control" id="" rows="3" cols="35" name="address"></textarea>
+                                    <textarea class="form-control" id="" rows="3" cols="35" name="address" id="newAddingAddress"></textarea>
                                 </div>
                                 <br>
                                 <button class="btn btn-success" type="submit">Submit</button>
@@ -171,17 +172,21 @@
 
                                 <div class="col-md-6">
                                     <h2><u>Edit Information</u></h2>
-                                    <form action="/editpersonaldetails" method="post">
+                                    <form action="/editpersonaldetails" id="editPersonalDetailsForm" method="post">
+                                        
                                         <label for="name">Name</label>
-                                        <input type="text" name="username" class="form-control"
-                                            value="{{user.username}}">
+                                        <input type="text" name="username" id="username" class="form-control" value="{{user.username}}" onkeyup="validateName()" autocomplete="off">
+                                        <p class="alert alert-danger" id="name-error" style="display: none; width:100%"></p>
+
 
                                         <label for="category">Gmail</label>
-                                        <input type="text" name="email" class="form-control" value="{{user.email}}">
+                                        <input type="text" name="email" id="email" class="form-control" value="{{user.email}}" onkeyup="validateEmail()" autocomplete="off">
+                                        <p class="alert alert-danger" id="email-error" style="display: none; width:100%"></p>
 
 
                                         <label for="price">Number</label>
-                                        <input type="number" name="number" class="form-control" value="{{user.number}}">
+                                        <input type="number" name="number" id="number" class="form-control" value="{{user.number}}" onkeyup="validatePhone()" autocomplete="off"> 
+                                        <p class="alert alert-danger" id="phone-error" style="display: none;width:100%"></p> 
 
 
                                         <button type="submit" class="btn btn-primary mt-4">Save</button>
@@ -197,22 +202,26 @@
                     </section>
                 </div>
 
-                <div class="hide" id="changePassword">
+                <div class="" id="changePassword">
 
 
                     <h2 style="margin-top:20px;"><u>Change Password</u></h2>
                     <div class="col-md-6">
 
-                        <form action="/changepassword" method="post">
+                        <form action="/changepassword" id="changePasswordForm" method="post">
                             <label for="name">Current Password</label>
-                            <input type="password" name="existingpassword" class="form-control">
+                            <input type="password" id="existingPassword" name="existingpassword" class="form-control" onfocusout="passwordFormValidatePassword('existingPassword','existingPasswordError')">
+                            <p class="alert alert-danger" id="existingPasswordError" style="display: none; width:100%"></p>
+
 
                             <label for="category">New Password</label>
-                            <input type="password" name="newpassword" class="form-control">
+                            <input type="password" id="newPassword" name="newpassword" class="form-control" onfocusout="passwordFormValidatePassword('newPassword','newPasswordError')">
+                            <p class="alert alert-danger" id="newPasswordError" style="display: none; width:100%"></p>
 
 
                             <label for="price">Conform New Password</label>
-                            <input type="password" name="conformpassword" class="form-control">
+                            <input type="password" id="conformPassword" name="conformpassword" class="form-control"  onfocusout="checkConformPassword('conformPassword','conformPasswordError','newPassword')">
+                            <p class="alert alert-danger" id="conformPasswordError" style="display: none; width:100%"></p>
 
 
                             <button type="submit" class="btn btn-success mt-4">Change Password</button>
@@ -234,6 +243,152 @@
     </div>
 </div>
 <!-- Shop End -->
+
+
+
+<script>
+
+const form = document.getElementById('editPersonalDetailsForm')
+var nameErr = document.getElementById('name-error');
+var emailErr = document.getElementById('email-error');
+var phoneErr = document.getElementById('phone-error');
+
+
+function validateName(){
+    var name = document.getElementById('username').value;
+    nameErr.style.display = 'block';
+
+    if(name.length == 0) {
+        nameErr.innerHTML = 'Name is required';
+        return false;
+    }
+
+
+    if(!name.match(/^[A-Za-z]*$/)){
+        nameErr.innerHTML = 'Enter Valid name';
+        return false;
+
+    }
+    nameErr.innerHTML = ''; 
+    nameErr.style.display = 'none';
+    return true;
+}
+
+function validateEmail(){
+    var email = document.getElementById('email').value;
+    emailErr.style.display = 'block';
+    if(email.length == 0) {
+        emailErr.innerHTML = 'Email is required';
+        return false;
+    }
+
+    if(!email.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)){
+        emailErr.innerHTML = 'Enter a valid email';
+        return false;
+    }
+    emailErr.innerHTML = ""
+    emailErr.style.display = 'none';
+    return true
+}
+
+function validatePhone(){
+    var phone = document.getElementById('number').value;
+    phoneErr.style.display = 'block';
+    if(phone.length == 0){
+      phoneErr.innerHTML='Phone number is required';
+      return false;
+    }
+    
+    if(phone.length !== 10){
+      phoneErr.innerHTML='Phone number should 10 digit';
+      return false;
+    }
+    
+    if(!phone.match(/^[0-9]{10}$/)){
+      phoneErr.innerHTML = 'Phone number should be 10 digit';      
+      return false;
+    }
+    phoneErr.style.display = 'none';
+    return true;
+
+}     
+
+
+
+form.addEventListener('submit',(e)=>{
+   if(!validateName() || !validateEmail() || !validatePhone() ){
+    e.preventDefault()
+}
+
+
+    
+})
+
+</script>
+<script>
+//current new conform
+const passwordForm = document.getElementById('changePasswordForm')
+var existingPasswordError = document.getElementById('existingPasswordError');
+var newPasswordError = document.getElementById('newPasswordError');
+var conformPasswordError = document.getElementById('conformPasswordError');
+
+
+function passwordFormValidatePassword(inputId,errorId){
+    var PasswordError = document.getElementById(`${errorId}`) 
+    var password = document.getElementById(`${inputId}`).value;
+    PasswordError.style.display = 'block';
+    if(password.length == 0){
+        PasswordError.innerHTML='Password is required'; 
+        setTimeout(function(){
+            PasswordError.style.display = 'none';
+            }, 3000)
+        return false;
+      }
+  
+     if(password.length < 8) {
+        PasswordError.innerHTML = 'Password is Atleast 8 characters';
+        setTimeout(function(){
+            PasswordError.style.display = 'none';
+            }, 3000)
+        return false;
+    }
+
+    PasswordError.innerHTML = ""
+    PasswordError.style.display = 'none';
+    return true
+}
+
+
+function checkConformPassword(inputId,errorId,oldInputId){
+    var PasswordError = document.getElementById(`${errorId}`) 
+    var password1 = document.getElementById(`${inputId}`).value;
+    var password2 = document.getElementById(`${oldInputId}`).value;
+    
+    PasswordError.style.display = 'block';
+    if(password1 !== password2){
+        PasswordError.innerHTML='Password doest match'; 
+        setTimeout(function(){
+            PasswordError.style.display = 'none';
+            }, 3000)
+        return false;
+      }
+    
+
+    PasswordError.innerHTML = ""
+    PasswordError.style.display = 'none';
+    return true
+}
+
+
+
+passwordForm.addEventListener('submit',(e)=>{
+   if(!validatePassword()||!passwordFormValidatePassword() || !conformPassword()){
+    e.preventDefault()
+}
+})
+
+</script>
+
 
 <script>
     function deleteThisAddress(id) {
@@ -262,6 +417,7 @@
 
 
 </script>
+
 
 
 

@@ -1,7 +1,7 @@
 {{>user_header}}
 
     <!-- Checkout Start -->
-<form action="" id="checkOutForm">
+<form action="" id="checkOutForm" name="checkOutForm">
     <div class="container-fluid mt-2">
         <div class="row px-xl-5">
             <div class="col-md-8">
@@ -11,26 +11,30 @@
                        <br>
                         <div class="col-md-6 form-group">
                             <label>First Name</label>
-                            <input class="form-control" name="name" type="text" value="{{name}}" >
+                            <input class="form-control" id="name" name="name" type="text" value="{{name}}" onkeyup="validateName()">
+                            <p class="alert alert-danger"  id="name-error" style="visibility: hidden;width:100%;"></p>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Mobile No</label>
-                            <input class="form-control" name="number" type="number" value="{{number}}">
+                            <input class="form-control" id="number" name="number" type="number" value="{{number}}" onkeyup="validatePhone()">
+                            <p class="alert alert-danger" id="phone-error" style="visibility: hidden;width:100%;"></p>    
                         </div>
 
                         <br>
                         <br>
+                        <div class="col-md-6 form-group">
                        <h4 class="title"> Select Your Address</h4>
-                       <br>
+                       <p class="alert alert-danger" id="address-error" style="visibility: hidden;width:100%;"></p>    
+
                         {{#each address}}
-                        <br>
+                     
                         <input type="radio" id="{{this}}" name="address" value="{{this}}">
                         <label for="{{this}}">{{this}}</label>
                         <br>
                       
                         {{/each}}
                         
-                       
+                       </div>
                         {{!-- <div class="col-md-6 form-group">
                             <label>Address Line 2</label>
                             <input class="form-control" type="text" placeholder="123 Street">
@@ -108,6 +112,8 @@
                 <br>
                 <div class="mb-5">
                     <h5 class="section-title position-relative text-uppercase mb-3"><span class="title pr-3">Payment</span></h5>
+                    <p class="alert alert-danger" id="payment-error" style="visibility: hidden;width:100%;"></p>    
+
                     <br>
                     <div class="p-30">
                         <div class="form-group">
@@ -142,8 +148,106 @@
     </div>
     </form>
     <!-- Checkout End --> 
+
+
+<script>
+
+const form = document.getElementById('checkOutForm')
+var nameErr = document.getElementById('name-error');
+var phoneErr = document.getElementById('phone-error');
+var addressErr = document.getElementById('address-error');
+var paymentErr = document.getElementById('payment-error');
+
+
+function validateName(){
+    var name = document.getElementById('name').value;
+    nameErr.style.visibility = 'visible';
+
+    if(name.length == 0) {
+        nameErr.innerHTML = 'Name is required';
+        return false;
+    }
+
+
+    if(!name.match(/^[A-Za-z]*$/)){
+        nameErr.innerHTML = 'Enter Valid name';
+        return false;
+
+    }
+    nameErr.innerHTML = ''; 
+    nameErr.style.visibility = 'hidden';
+    return true;
+}
+
+function validatePhone(){
+    var phone = document.getElementById('number').value;
+    phoneErr.style.visibility = 'visible';
+    if(phone.length == 0){
+      phoneErr.innerHTML='Phone number is required';
+      return false;
+    }
+    
+    if(phone.length !== 10){
+      phoneErr.innerHTML='Phone number should 10 digit';
+      return false;
+    }
+    
+    if(!phone.match(/^[0-9]{10}$/)){
+      phoneErr.innerHTML = 'Phone number should be 10 digit';      
+      return false;
+    }
+    phoneErr.style.visibility = 'hidden';
+    return true;
+
+}    
+
+function validateAddress(){
+
+    let address = document.checkOutForm.address;
+    for(let i = 0;i<address.length;++i){
+      if(address[i].checked){
+    addressErr.style.visibility = 'hidden';
+        return true
+        break;
+      }
+    }
+
+    addressErr.style.visibility = 'visible';
+      addressErr.innerHTML = 'Select A Address';      
+
+    return false
+   
+}
+
+
+
+function validatePayment(){
+
+    let payment = document.checkOutForm.paymentMethod;
+    console.log(payment)
+    for(let i = 0;i<payment.length;++i){
+      if(payment[i].checked){
+    paymentErr.style.visibility = 'hidden';
+        return true
+        break;
+      }
+    }
+
+    paymentErr.style.visibility = 'visible';
+    paymentErr.innerHTML = 'Select A Payment Method';      
+
+    return false
+   
+}
+
+</script>
+
 <script>
     $("#checkOutForm").submit((e)=>{
+
+        if(!validateName() || !validatePhone() || !validateAddress() || !validatePayment() ){
+    e.preventDefault()
+}else{
         e.preventDefault()
         $.ajax({
             url:'/placeorder',
@@ -157,7 +261,9 @@
                 }
             }
         })
+}
     })
+    
 //"rzp_test_9osRhNEeYctsvv"
 //`${{{razorpay_key}}}`
 function razorpayPayment(order){
@@ -173,9 +279,9 @@ var options = {
         verifyPayment(response,order)
     },
     "prefill": {
-        "name": "Gaurav Kumar",
-        "email": "gaurav.kumar@example.com",
-        "contact": "9999999999"
+        "name": "MY SHOP",
+        "email": "myshop@gmail.com",
+        "contact": "9080706010"
     },
     "notes": {
         "address": "Razorpay Corporate Office"
@@ -205,6 +311,7 @@ function verifyPayment(payment,order){
         }
     })
 }
+
 </script>
 
 

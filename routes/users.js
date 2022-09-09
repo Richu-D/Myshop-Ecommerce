@@ -29,7 +29,7 @@ let token = req.cookies.jwt;
 /* GET users listing. */
 router.get('/', function(req, res) {
   if(req.cookies.err){
-    res.render('users/signin')
+    // res.render('users/signin')
 
     res.render('users/signin',{err:"Invalid Username or Password",err_class:"alert alert-warning"})
     res.clearCookie('err')
@@ -86,6 +86,7 @@ router.get('/signup', function(req, res) {
 
 router.post('/signup', async function (req, res) {
 
+if(req.body.password){
 req.body.password = await bcrypt.hash(req.body.password,10)
 otp = Math.floor(100000 + Math.random() * 900000);
 console.log(otp);
@@ -94,6 +95,9 @@ req.body.otp = await bcrypt.hash(`${otp}`,10)
 res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.email}`,`password=${req.body.password}`,`number=${req.body.number}`,`otp=${req.body.otp}`])
 
 // verify
+
+
+
 
 
   try{
@@ -115,7 +119,17 @@ res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.em
 console.log(`Some error cames in catch /signup post  ${err}`);
 
 }
+
+
+
+
+
   res.redirect('/verifyotp')
+
+}else{
+ res.send("Error pass cheyyanam User script block cheyyuva")
+}
+
 });
 
 router.get('/verifyotp', function(req, res, next) {
@@ -173,10 +187,15 @@ let token = req.cookies.jwt;
         req.user = user
         // check block or not
         helpers.getUser(req.user.email).then((data)=>{
+          if(data){
           if(data.block){
             res.send('Your are blocked')
           }
+        }else{
+          res.redirect('/')
+        }
         })
+        
         next()
     })}
 
@@ -313,6 +332,8 @@ router.get('/myprofile',checkuser,(req,res)=>{
     helpers.getUser(req.user.email).then(async(user)=>{
       let category = await helpers.getCategory()
     res.render('users/profile',{address:user.address,user,category})
+    }).catch(err =>{
+      console.log(err);
     })
   })
 

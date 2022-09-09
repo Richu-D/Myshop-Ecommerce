@@ -1,108 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>User Signup</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>login page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <style>
 
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+:root{
+    --background:#191919;
+    --focus:#2ecc71;
+    --hover:#2ecc71;
+    --text:white;
+    --border:#3498db;
+}
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+body {
+    margin: 0;
+    padding: 0;
+    width: fit-content;
+    font-family: sans-serif;
+    background-color: var(--border);
+}
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+.box {
+    margin-top: 10vh;
+    padding: 3rem;
+    background: var(--background);
+    text-align: center;
+    transition: 0.25s;
+    transform: translate(-50%,-50%);
+    position: absolute;
+    top:50vh;
+    left: 50vw;    
+}
 
-    <!-- Template Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
+.box input {
+    border: 0;
+    background: none;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    border: 2px solid var(--border);
+    padding: 10px 10px;
+    width: 250px;
+    outline: none;
+    color: var(--text);
+    border-radius: 10px;
+    transition: 0.30s
+}
+
+.box h1 {
+    color: var(--text);
+    text-transform: uppercase;
+    font-weight: 500
+}
+
+.box input:focus {
+    border-radius: 24px;
+    border-color: var(--focus)
+}
+
+.box button[type="submit"] {
+    border: 0;
+    background: none;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    border: 2px solid var(--hover);
+    padding: 10px 35px;
+    outline: none;
+    color: var(--text);
+    border-radius: 24px;
+    transition: 0.25s;
+    cursor: pointer
+}
+
+.box button[type="submit"]:hover {
+    background: var(--hover)
+}
+
+
+.signup {
+    text-decoration: none;
+    position: absolute;
+    left: 5%;
+    bottom: 5%;
+}
+#warning{
+visibility:hidden;
+}
+
+    </style>
 </head>
-
 <body>
-    <div class="container-xxl position-relative bg-white d-flex p-0">
-        {{!-- <!-- Spinner Start -->
-        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div> --}}
-        <!-- Spinner End -->
+    
+    
+<form action="/signup" id="signup" method="post" class="box">
+    <h1><span style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:400;"><span style="color:yellow">MY</span>SHOP <br> SIGNUP</a></span></h1>
+                
+    <p class="text-danger" id="warning">Please enter Valid Email and password</p>
 
+    <input type="text" name="username" id="username" placeholder="Name" onfocusout="validateName()">
+    <p class="alert alert-danger" id="name-error" style="display: none;"></p>
 
-        <!-- Sign Up Start -->
-       
-        <div class="container-fluid">
-            <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
-                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-                    <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
+    <input type="email" id="email" name="email"  placeholder="Email" onfocusout="validateEmail()">
+    <p class="alert alert-danger" id="email-error" style="display: none;"></p>
                             
-                            <h3>User Sign Up</h3> 
-                        </div>
-                         <form action="/signup" id="form" method="post">
-                        <div class="form-floating mb-3">
-                            <label for="username">Username</label>
-                            <p class="alert alert-danger" id="name-error" style="visibility: hidden;"></p>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="User Name" onkeyup="validateName()">
-                        </div>
-                        <div class="form-floating mb-3">
-                            <label for="email">Email address</label>
-                            <p class="alert alert-danger" id="email-error" style="visibility: hidden;"></p>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" onkeyup="validateEmail()">
-                        </div>
-                        <div class="form-floating mb-4">
-                            <label for="Password">Password</label>
-                            <p class="alert alert-danger" id="password-error" style="visibility: hidden;"></p>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" onkeyup="validatePassword()">
-                        </div>
-                        <div class="form-floating mb-4">
-                            <label for="phone-number">Phone Number</label>
-                            <p class="alert alert-danger" id="phone-error" style="visibility: hidden;"></p>                            
-                            <input type="number" class="form-control" id="phone-number" name="number" onkeyup="validatePhone()" placeholder="Number">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary py-3 w-100 mb-4" onclick="return validateForm()">Sign Up</button>
-                         </form>
-                        <p class="text-center mb-0">Already have an Account? <a href="/">Sign In</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-       
-        <!-- Sign Up End -->
-    </div>
+    <input type="password" id="password" name="password" placeholder="Password" onfocusout="validatePassword()">
+    <p class="alert alert-danger" id="password-error" style="display: none;"></p>
+                            
+    <input type="number" id="phone-number" name="number" placeholder="Phone Number" onfocusout="validatePhone()">
+    <p class="alert alert-danger" id="phone-error" style="display: none;"></p>                            
+                            
+    <button type="submit">Submit</button> 
+    <a class="signup text-muted" href="/">Already have an Account? Sign In</a>
+</form>
 
-{{!-- js form validation --}}
-<script src="/javascripts/form_validation.js"></script>
+
+<script>
+
+const form = document.getElementById('signup')
+var nameErr = document.getElementById('name-error');
+var emailErr = document.getElementById('email-error');
+var phoneErr = document.getElementById('phone-error');
+var passwordErr = document.getElementById('password-error');
+
+
+function validateName(){
+    var name = document.getElementById('username').value;
+    nameErr.style.display = 'block';
+
+    if(name.length == 0) {
+        nameErr.innerHTML = 'Name is required';
+        return false;
+    }
+
+
+    if(!name.match(/^[A-Za-z]*$/)){
+        nameErr.innerHTML = 'Enter Valid name';
+        return false;
+
+    }
+    nameErr.innerHTML = ''; 
+    nameErr.style.display = 'none';
+    return true;
+}
+
+function validateEmail(){
+    var email = document.getElementById('email').value;
+    emailErr.style.display = 'block';
+    if(email.length == 0) {
+        emailErr.innerHTML = 'Email is required';
+        return false;
+    }
+
+    if(!email.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)){
+        emailErr.innerHTML = 'Enter a valid email';
+        return false;
+    }
+    emailErr.innerHTML = ""
+    emailErr.style.display = 'none';
+    return true
+}
+
+function validatePhone(){
+    var phone = document.getElementById('phone-number').value;
+    phoneErr.style.display = 'block';
+    if(phone.length == 0){
+      phoneErr.innerHTML='Phone number is required';
+      return false;
+    }
+    
+    if(phone.length !== 10){
+      phoneErr.innerHTML='Phone number should 10 digit';
+      return false;
+    }
+    
+    if(!phone.match(/^[0-9]{10}$/)){
+      phoneErr.innerHTML = 'Phone number should be 10 digit';      
+      return false;
+    }
+    phoneErr.style.display = 'none';
+    return true;
+
+}     
+
+function validatePassword(){
+    var password = document.getElementById('password').value;
+    passwordErr.style.display = 'block';
+    if(password.length == 0){
+        passwordErr.innerHTML='Password is required';
+        return false;
+      }
   
+     if(password.length < 8) {
+        passwordErr.innerHTML = 'Password is Atleast 8 characters';
+        return false;
+    }
+
+    passwordErr.innerHTML = ""
+    passwordErr.style.display = 'none';
+    return true
+}
 
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/chart/chart.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+
+
+form.addEventListener('submit',(e)=>{
+   if(!validateName() || !validateEmail() || !validatePhone() || !validatePassword() ){
+    e.preventDefault()
+}
+
+
+    
+})
+
+</script>
+
 </body>
-
 </html>
+
+
+
+
+
+

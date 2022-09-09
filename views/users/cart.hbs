@@ -159,9 +159,19 @@
 
         }
 
-        function removeCartItem(cartId,productId){
-            
-            $.ajax({
+       
+
+    function removeCartItem(cartId,productId) {
+        swal({
+            title: "",
+            text: `Are you sure to delete ?`,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+
+                $.ajax({
                 url:'/removeCartItem',
                 data:{
                     cartId:cartId,
@@ -177,8 +187,11 @@
                     }
                 }
             })
-        }
+                
+            }
+        })
 
+    }
 
 
 
