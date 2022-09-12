@@ -98,8 +98,8 @@
                             <canvas id="dailysales"></canvas>
                         </div>
                     </div> --}}
-                    <div class="col-sm-12 col-xl-6">
-                        <div class="bg-light text-center rounded p-4">
+                    <div class="col-sm-12">
+                        <div class="bg-light text-center rounded p-4 col-sm-8 mx-auto">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">Weekly Sales</h6>
                             </div>
@@ -112,6 +112,14 @@
                                 <h6 class="mb-0">Monthly Sales</h6>
                             </div>
                             <canvas id="monthlysales"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Yearly Sales</h6>
+                            </div>
+                            <canvas id="yearlySales"></canvas>
                         </div>
                     </div>
                 </div>
@@ -318,6 +326,8 @@
         {{!-- weekly sales --}}
      <script>
        let  weekly = [0,0,0,0,0,0,0]
+       let yearName = []
+       let  yearly = []
        let weekName = ["Sunday","Monday","Tuesday","WednesDay","Thursday","Friday","Saturday"]
        let monthName = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
        let monthlyProfit = [0,0,0,0,0,0,0,0,0,0,0,0]
@@ -424,6 +434,12 @@
                 }
 
             }
+            for(i=0;i<data.data.yearlySales.length;++i){
+
+                 yearName.push(data.data.yearlySales[i].year)                     
+                 yearly.push(data.data.yearlySales[i].total)                     
+
+                }
 
 
 
@@ -440,6 +456,10 @@
 
 
 
+            const yearlysales = new Chart(
+            document.getElementById('yearlySales'),
+            yearlyconfig
+            );
 
             const weeklysales = new Chart(
             document.getElementById('weeklysales'),
@@ -453,7 +473,7 @@
       }
 });
 
-
+//weekly sales
         const labels = weekName;
       
         const data = {
@@ -474,7 +494,7 @@
 
 
 
-//Yearly Sales
+//monthly Sales
 
         const months = monthName;
       
@@ -493,6 +513,28 @@
           data: data1,
           options: {}
         };
+
+//yearly sales
+        const yearlyLabel = yearName;
+      
+        const data2 = {
+          labels: yearlyLabel,
+          datasets: [{
+            label: 'Yearly sales',
+            backgroundColor: 'yellow',
+            borderColor: 'yellow',
+            data: yearly,
+          }]
+        };
+      
+        const yearlyconfig = {
+          type: 'bar',
+          data: data2,
+          options: {}
+        };
+
+
+
       </script>
 
 

@@ -103,16 +103,16 @@ visibility:hidden;
                 
     <p class="text-danger" id="warning">Please enter Valid Email and password</p>
 
-    <input type="text" name="username" id="username" placeholder="Name" onfocusout="validateName()">
+    <input type="text" name="username" id="username" placeholder="Name" onfocus="removeError('name-error')" onfocusout="validateName()">
     <p class="alert alert-danger" id="name-error" style="display: none;"></p>
 
-    <input type="email" id="email" name="email"  placeholder="Email" onfocusout="validateEmail()">
+    <input type="email" id="email" name="email"  placeholder="Email" onfocus="removeError('email-error')" onfocusout="validateEmail()">
     <p class="alert alert-danger" id="email-error" style="display: none;"></p>
                             
-    <input type="password" id="password" name="password" placeholder="Password" onfocusout="validatePassword()">
+    <input type="password" id="password" name="password" placeholder="Password" onfocus="removeError('password-error')" onfocusout="validatePassword()">
     <p class="alert alert-danger" id="password-error" style="display: none;"></p>
                             
-    <input type="number" id="phone-number" name="number" placeholder="Phone Number" onfocusout="validatePhone()">
+    <input type="number" id="phone-number" name="number" placeholder="Phone Number" onfocus="removeError('phone-error')" onfocusout="validatePhone()">
     <p class="alert alert-danger" id="phone-error" style="display: none;"></p>                            
                             
     <button type="submit">Submit</button> 
@@ -206,6 +206,9 @@ function validatePassword(){
     return true
 }
 
+        function removeError(errId){
+         document.getElementById(`${errId}`).style.display = "none"
+        }
 
 
 

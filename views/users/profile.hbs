@@ -10,35 +10,37 @@
 </style>
 
 <!-- Shop Start -->
+
+
+
+
+
+
+
+
+
 <div class="container-fluid mt-2">
     <div class="row px-xl-5">
         <!-- Shop Sidebar Start -->
-        <div class="col-md-4">
-            <div class="bg-light p-4 mb-30">
+        <div class="col-md-4">          
 
-                <div></div>
-                <div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div></div>
+<div class="sidebar pe-4 pb-3" style="margin-top: 140px;">
+            <nav class="navbar bg-light navbar-light" style="justify-content: center;">
+                <div class="navbar-nav w-90">
 
-
-                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                    <button onclick="manageAddress()" class="btn btn-primary">Manage Address</button>
+                    <button class="nav-item nav-link" onclick="manageAddress()">Manage Address</button>               
+                    <button onclick="profileInformations()" class=" nav-link">Profile Informations</button>
+                    <button onclick="changePassword()" class="nav-item nav-link">Change password</button>
+                    
                 </div>
-                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                    <button onclick="profileInformations()" class="btn btn-primary">Profile Informations</button>
-                </div>
-                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                    <button onclick="changePassword()" class="btn btn-primary">Change password</button>
-                </div>
-                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                    <a class="btn btn-secondary" href="/logout"> Logout</a>
-                </div>
+            </nav>
+        </div>
 
 
-            </div>
+
+
+
+
 
         </div>
         <!-- Shop Sidebar End -->
@@ -202,7 +204,7 @@
                     </section>
                 </div>
 
-                <div class="" id="changePassword">
+                <div class="hide" id="changePassword">
 
 
                     <h2 style="margin-top:20px;"><u>Change Password</u></h2>

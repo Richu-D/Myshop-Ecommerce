@@ -37,6 +37,9 @@
 
   
 <style>
+    body{
+        background-color: white;
+    }
     .boxShadow{
         box-shadow: rgba(0, 0, 0, 0.100) 0px 0px 5px 2px;
     }
@@ -47,9 +50,11 @@
         margin:10px;
         background-color:#7b9dbbc5 ;
         border:none;
+        transition:500ms all;
     }
 
-    .buttons-copy:hover,.buttons-csv:hover,.buttons-excel:hover,.buttons-pdf:hover,.buttons-print:hover{        border-radius: 50px;
+    .buttons-copy:hover,.buttons-csv:hover,.buttons-excel:hover,.buttons-pdf:hover,.buttons-print:hover{        
+        border-radius: 50px;
         padding:4px 20px;
         margin:0px;
         background-color:#7b9dbb ;     
@@ -86,6 +91,7 @@
                     <a href="allproducts" class="nav-item nav-link" {{#if allProduct}} style="background-color: #236ffcc6;" {{/if}} ><i class="fa fa-table me-2"></i>All Products</a>
                     <a href="allusers" class="nav-item nav-link" {{#if allUsers}} style="background-color: #236ffcc6;" {{/if}} ><i class="fa fa-keyboard me-2"></i>All Users</a>
                     <a href="orders" class="nav-item nav-link" {{#if orders}} style="background-color: #236ffcc6;" {{/if}} ><i class="fa fa-table me-2"></i>Orders</a>
+                    <a href="sales_report" class="nav-item nav-link" {{#if salesReport}} style="background-color: #236ffcc6;" {{/if}} ><i class="fa fa-table me-2"></i>Sales Report</a>
                     {{!-- <a href="chart" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a> --}}
                     {{!-- <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
@@ -184,7 +190,7 @@
                             
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="profile" class="dropdown-item">My Profile</a>
+                            <a href="profile" class="dropdown-item">Profile</a>
                             <a href="settings" class="dropdown-item">Settings</a>
                             <a href="logout" class="dropdown-item">Log Out</a>
                         </div>

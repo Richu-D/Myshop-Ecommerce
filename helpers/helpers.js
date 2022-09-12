@@ -26,6 +26,32 @@ module.exports={
             resolve(products)
         }) 
     },
+    wishlistAndCartCount:(email)=>{
+      
+            
+        
+        return new Promise(async(resolve,reject)=>{
+        let wishlistCount = await db.get().collection(collection.WISHLIST).aggregate([
+                {$match:{user:email}},
+                {$project:{_id:0,'wishlistSize':{$size:"$wishlistItems"}}}
+            ]).toArray()
+
+        let cartCount = await db.get().collection(collection.CART).aggregate([
+            {$match:{user:email}},
+            {$project:{_id:0,'cartSize':{$size:"$products"}}}
+        ]).toArray()
+        if(wishlistCount[0]===undefined && cartCount[0] === undefined){
+            resolve({wishlistCount:0,cartCount:0})
+        }else if(cartCount[0]===undefined){
+            resolve({wishlistCount:wishlistCount[0].wishlistSize,cartCount:0})
+        }else if(wishlistCount[0]===undefined){
+            resolve({wishlistCount:0,cartCount:cartCount[0].cartSize})
+        }else{
+            resolve({wishlistCount:wishlistCount[0].wishlistSize,cartCount:cartCount[0].cartSize})
+        }
+
+        })
+    },
     addUser:(userDetail)=>{
         db.get().collection(collection.USERS).insertOne(userDetail)
     },
@@ -318,6 +344,20 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                     resolve(products)
                 })
             },
+            //searchByParamsAndRate(params,lessRate,rate)
+            searchByParamsAndRate:(params,rate)=>{
+                return new Promise(async(resolve,reject)=>{
+                    rate = Number(rate)
+                    lessRate = rate - 500;
+                    let products = await db.get().collection(collection.PRODUCT_COLLECTION).aggregate([
+                     {$match:{$text:{$search:params}}},
+                     {$match:{price:{$gt:lessRate,$lt:rate}}}
+                    ]).toArray()
+                    console.log(products);
+                    resolve(products)
+                })
+            },
+
             addWishlist:(userId,productId)=>{
 
                     db.get().collection(collection.WISHLIST).updateOne({user:userId},{ $addToSet: { wishlistItems: objectId(productId)} },{upsert:true})
@@ -356,7 +396,6 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                    
                 })
             },
-
 
 
 
@@ -612,6 +651,9 @@ graphdata:()=>{
         total:"$total",
         _id:0
     }
+   },
+   {
+     $sort: {date:1}
    }
   ]).toArray()
 

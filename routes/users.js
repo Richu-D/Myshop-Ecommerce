@@ -314,9 +314,9 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
 })
 
 
-router.get('/search',(req,res)=>{
+router.get('/search',checkuser,(req,res)=>{
   
-  helpers.search(req.query.searchKey).then(async data =>{
+  helpers.search(req.query.searchKey).then(async data =>{ 
     let category = await helpers.getCategory()
     res.render('users/shop',{data:data,category})
   })
@@ -325,10 +325,31 @@ router.get('/search',(req,res)=>{
   })
 
   
+  router.post('/wishlistAndCartCount',checkuser,async (req,res)=>{
+  
+   let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email).catch(err =>{
+    console.log(err);
+   })
+
+
+    res.json(wishlistCountAndCartCount)
+   
+    })
+
+
+router.post('/searchratewise',(req,res)=>{
+  console.log(req.body.params);
+  console.log(req.body.rate);
+  helpers.searchByParamsAndRate(req.body.params,req.body.rate).then(async data =>{
+    
+    res.json({data:data})
+  })
+})
+  
 
 
 
-router.get('/myprofile',checkuser,(req,res)=>{
+router.get('/myprofile',checkuser,(req,res)=>{ 
     helpers.getUser(req.user.email).then(async(user)=>{
       let category = await helpers.getCategory()
     res.render('users/profile',{address:user.address,user,category})

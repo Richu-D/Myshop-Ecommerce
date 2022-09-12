@@ -56,6 +56,11 @@ router.get('/home', function(req, res) {
    })
 });
 
+router.get('/sales_report', function(req, res) {
+  
+  res.render('admin/salesReport',{salesReport:true})
+});
+
 router.post('/graphdata',(req, res)=>{
   // helpers.salesReport().then((data)=>{
     helpers.graphdata().then(data=>{

@@ -22,7 +22,7 @@ Handlebars.registerHelper("orderfinished",(a,id)=>{
 
 Handlebars.registerHelper("adminOrder",(status,id)=>{
   if(status!=="Delevered" && status!=="Order Cancelled By User" && status!=="Order Cancelled by Admin"){
-    return new Handlebars.SafeString(` <td><div class="dropdown">
+    return new Handlebars.SafeString(`<div class="dropdown">
     <button class="dropbtn">status</button>
     <div class="dropdown-content">
       <a href="/admin/orderstatus/?status=shipped&id=${id}">Shipped</a>
@@ -30,9 +30,14 @@ Handlebars.registerHelper("adminOrder",(status,id)=>{
       <a href="/admin/orderstatus/?status=Delevered&id=${id}">Delivered</a>
       <a href="/admin/orderstatus/?status=Order Cancelled by Admin&id=${id}" class="btn btn-danger">Cancel Order</a>
     </div>
-  </div></td> `)
+  </div> `)
   }
 })
+
+Handlebars.registerHelper("oldPrice",(oldPrice)=>{
+  return new Handlebars.SafeString(`<span style="margin-left:5px;font-size:16px;color:red"><s>${oldPrice+200}</s><span>`)
+})
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -43,13 +43,14 @@
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px; display:flex;justify-content: center; align-items: center;">
                                  
-                                    <div class="input-group-btn" >
+                                    <div class="input-group-btn" id="minus">
                                         <button class="btn btn-primary btn-minus mr-1 p-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">
                                         <i class="fa fa-minus" style="font-size:13px;"></i>
                                         </button>
                                     </div>
-                                    <span class="mx-2" id="{{this.product._id}}">{{this.quantity}}</span>
-                                    
+                                    <span id="quantity">
+                                    <span class="mx-2" id="{{this.product._id}}" on="count()">{{this.quantity}}</span>
+                                    </span>
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus ml-1 p-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">
                                             <i class="fa fa-plus" style="font-size:14px;"></i>
@@ -107,11 +108,32 @@
     <!-- Cart End -->
 
     <script>
+    
+{{!-- $( document ).ready(function() {
+
+$('#quantity').on('DOMSubtreeModified',function (e){
+    let count = e.target.firstChild.data
+    console.log(count)
+  if(count==1){
+  console.log("count is oldkjflksne")
+$('#minus').css("visibility","hidden")
+  }
+
+})
+}); --}}
+
+
+
+
+
+
         function changeQuantity(cartId,productId,count){
             let quantity = parseInt(document.getElementById(productId).innerHTML)
             let quantity1 = parseInt(document.getElementById(`${productId}1`).innerHTML)
             let unique = document.getElementsByClassName('unique')
             let unique1 = document.getElementsByClassName('unique1')
+
+            
             
             $.ajax({
                 url:'/change-product-quantity',
@@ -158,6 +180,8 @@
             })
 
         }
+
+
 
        
 

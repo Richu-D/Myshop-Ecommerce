@@ -115,9 +115,9 @@ p{
     <form action="/" method="post" class="box" id="login">
                 <h1><span style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:800;"><span style="color:yellow">MY</span>SHOP</a></span></h1>
                 <p class="{{err_class}}">{{err}}</p>
-                <input type="email" name="email" id="email" placeholder="Email" onfocusout="validateEmail()"  autocomplete="off">
+                <input type="email" name="email" id="email" placeholder="Email" onfocusout="validateEmail()" onfocus="removeError('email-error')" autocomplete="off">
                 <p class="alert alert-danger" id="email-error" style="display: none;"></p>
-                <input type="password" name="password" id="password" placeholder="Password" onfocusout="validatePassword()">
+                <input type="password" name="password" id="password" placeholder="Password" onfocus="removeError('password-error')" onfocusout="validatePassword()">
                 <p class="alert alert-danger" id="password-error" style="display: none;"></p>
                 <button type="submit" >Submit</button>
                 <a class="signup text-muted" href="signup">Don't have an Account? Sign up</a>
@@ -128,23 +128,24 @@ p{
         var emailErr = document.getElementById('email-error');
         var passwordErr = document.getElementById('password-error');
 
+
+        function removeError(errId){
+            setTimeout(()=>{
+                document.getElementById(`${errId}`).style.display = "none"
+            },1000)
+         
+        }
         
         function validateEmail(){
             var email = document.getElementById('email').value;
             emailErr.style.display = 'block';
             if(email.length == 0) {
-                emailErr.innerHTML = 'Email is required';
-                setTimeout(function(){
-                emailErr.style.display = 'none';
-                }, 3000)
+                emailErr.innerHTML = 'Email is required';                
                 return false;
             }
 
             if(!email.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)){
-                emailErr.innerHTML = 'Enter a valid email';
-                setTimeout(function(){
-                emailErr.style.display = 'none';
-                }, 3000)
+                emailErr.innerHTML = 'Enter a valid email';                
                 return false;
             }
             emailErr.innerHTML = ""
@@ -157,18 +158,12 @@ p{
         var password = document.getElementById('password').value;
         passwordErr.style.display = 'block';
         if(password.length == 0){
-            passwordErr.innerHTML='Password is required';
-            setTimeout(function(){
-            passwordErr.style.display = 'none';
-            }, 3000)
+            passwordErr.innerHTML='Password is required';            
             return false;
         }
     
         if(password.length < 8) {
-            passwordErr.innerHTML = 'Password is Atleast 8 characters';
-            setTimeout(function(){
-            passwordErr.style.display = 'none';
-            }, 3000)
+            passwordErr.innerHTML = 'Password is Atleast 8 characters';            
             return false;
         }
 

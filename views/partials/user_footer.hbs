@@ -58,6 +58,20 @@
         </div>       
     </div>
     <!-- Footer End -->
+    <script>
+        let wishlist = document.getElementById('wishlist-icon')
+        let cart = document.getElementById('cart-icon')
+        
+        $.ajax({
+                url:'/wishlistAndCartCount',                
+                method:'post',
+                success:(response)=>{
+                   wishlist.innerText = response.wishlistCount
+                   cart.innerText = response.cartCount
+                }
+            })
+
+    </script>
 
 
 

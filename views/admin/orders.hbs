@@ -44,7 +44,7 @@
     <div class="bg-light rounded h-100 p-4">
         <h6 class="mb-4">Order Table</h6>
         <div class="table-responsive">
-            <table style="margin-bottom: 150px;" class="table" id="table">
+          <table style="margin-bottom: 150px;" class="table" id="table">
                 <thead>
                     <tr>
                         
@@ -73,9 +73,7 @@
                         <td>{{this.details.grantTotal}}</td>
                         <td>{{this.details.paymentMethod}}</td>
                         <td>{{this.details.status}}</td>
-
-                        {{adminOrder this.details.status this._id}}
-                        
+                       <td> {{adminOrder this.details.status this._id}}</td>                      
                       
                       </tr>{{/each}}
                 </tbody>
@@ -89,4 +87,4 @@
 
 
 
-{{>admin_footer}}
+{{>admin_footer}} 

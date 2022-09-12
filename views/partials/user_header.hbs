@@ -141,6 +141,7 @@
             .fa {
                 padding: 5px;
             }
+           
         }
     </style>
 
@@ -163,7 +164,7 @@
 
 
         function scrollFunction() {
-            if (document.body.scrollTop > 250 || document.documentElement.scrollTop > 250) {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
 
                 document.getElementById("myBtn").style.display = "block";
             } else {
@@ -198,6 +199,26 @@
         .title {
             color: #007bff;
             margin: 10px;
+        }
+        .navBadge{
+            color:white;
+            padding: 0;
+            position: relative;
+            right: 0;
+            top: 0;
+        }
+        .customBadge{
+            display: inline-block;
+padding: .35em .65em;
+font-size: .75em;
+font-weight: 700;
+line-height: 1;
+color: #fff;
+background-color: green;
+text-align: center;
+white-space: nowrap;
+vertical-align: baseline;
+border-radius: .25rem;
         }
     </style>
 
@@ -253,8 +274,14 @@
             </form>
         </div>
         <div class="icons">
-            <a href="/wishlist" {{#if wishlist}} style="color: red;" {{/if}} class="fa fa-heart"></a>
-            <a href="/cart" {{#if cart}} style="color: orange;" {{/if}} class="fa fa-shopping-cart"></a>
+            <a href="/wishlist" {{#if wishlist}} style="color: red;" {{/if}} class="fa fa-heart">
+            <span class="badge navBadge badge-light" id="wishlist-icon"></span>
+            <span class="sr-only">Items in wishlist</span>
+            </a>
+            <a href="/cart" {{#if cart}} style="color: orange;" {{/if}} class="fa fa-shopping-cart">
+            <span class="badge navBadge badge-light" id="cart-icon"></span>
+            <span class="sr-only">Items in cart</span>
+            </a>
             <a class="dropdown">
                 <a class=" dropdown-toggle fa fa-user" id="profile" {{#if user}} style="color: green;" {{/if}} data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false" id="profile">
