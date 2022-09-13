@@ -19,7 +19,7 @@
         }
 
         .header {
-            background-color: #007bff;
+            background-color: #6f6ad0;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             padding: 0px 25px;
@@ -72,7 +72,7 @@
             text-decoration: none;
         }
 
-        .fa {
+        .header .fa {
             color: white;
             font-size: 22px;
             padding: 0px 10px;
@@ -84,7 +84,7 @@
         }
 
         #profile:hover {
-            color: black;
+            color: #b9e3fb
         }
 
         #profile::after {
@@ -92,11 +92,11 @@
         }
 
         .search .fa {
-            color: #007bff
+            color: #6f6ad0;
         }
 
-        .fa:hover {
-            color: black
+        .header .fa:hover {
+            color: #b9e3fb
         }
 
         form * {
@@ -234,7 +234,7 @@ border-radius: .25rem;
             </div>
             <div>
                 {{!-- <a href="/home"><img src="" alt="logo"></a> --}}
-               <span style="margin-right:10px;"><a href="/home" style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:800;"><span style="color:yellow">MY</span>SHOP</a></span>
+               <span style="margin-right:20px;"><a href="/home" style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:800;"><span style="color:#29edeb">MY</span>SHOP</a></span>
             </div>
             <div> 
 
@@ -269,21 +269,21 @@ border-radius: .25rem;
         </div>
         <div class="search">
             <form action="/search" method="get" id="one">
-                <input type="text" name="searchKey" id="" placeholder="Search Here" autocomplete="off"><button
+                <input type="text" name="searchKey" id="searchBar" placeholder="Search Here" autocomplete="off"><button
                     class="fa fa-search"></button>
             </form>
         </div>
         <div class="icons">
-            <a href="/wishlist" {{#if wishlist}} style="color: red;" {{/if}} class="fa fa-heart">
+            <a href="/wishlist" {{#if wishlist}} style="color: #29edeb;" {{/if}} class="fa fa-heart">
             <span class="badge navBadge badge-light" id="wishlist-icon"></span>
             <span class="sr-only">Items in wishlist</span>
             </a>
-            <a href="/cart" {{#if cart}} style="color: orange;" {{/if}} class="fa fa-shopping-cart">
+            <a href="/cart" {{#if cart}} style="color: #29edeb;" {{/if}} class="fa fa-shopping-cart">
             <span class="badge navBadge badge-light" id="cart-icon"></span>
             <span class="sr-only">Items in cart</span>
             </a>
             <a class="dropdown">
-                <a class=" dropdown-toggle fa fa-user" id="profile" {{#if user}} style="color: green;" {{/if}} data-toggle="dropdown"
+                <a class=" dropdown-toggle fa fa-user" id="profile" {{#if user}} style="color: #29edeb;" {{/if}} data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false" id="profile">
                 </a>
                 <div class="dropdown-menu mt-4">

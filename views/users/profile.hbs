@@ -6,6 +6,10 @@
     .inline-block{
         display:inline-block;
     }
+    .nav-link{
+        border: none;
+        
+    }
     
 </style>
 
@@ -25,12 +29,12 @@
         <div class="col-md-4">          
 
 <div class="sidebar pe-4 pb-3" style="margin-top: 140px;">
-            <nav class="navbar bg-light navbar-light" style="justify-content: center;">
+            <nav class="navbar  navbar-light" style="justify-content: center;">
                 <div class="navbar-nav w-90">
 
-                    <button class="nav-item nav-link" onclick="manageAddress()">Manage Address</button>               
-                    <button onclick="profileInformations()" class=" nav-link">Profile Informations</button>
-                    <button onclick="changePassword()" class="nav-item nav-link">Change password</button>
+                    <button class="nav-link" onclick="manageAddress()" style="padding: 15px 25px;" id="manageAddressButton">Manage Address</button>               
+                    <button onclick="profileInformations()" class=" nav-link" style="padding: 15px 25px;">Profile Informations</button>
+                    <button onclick="changePassword()" class="nav-link" >Change password</button>
                     
                 </div>
             </nav>
@@ -66,6 +70,8 @@
                     changePassword.classList.add('hide')
                 }
                 function manageAddress() {
+                    
+                  //  document.getElementById('manageAddressButton').style.background="blue"
                     let manageAddress = document.getElementById('manageAddress')
                     let profileInfo = document.getElementById('profileInfo')
                     let changePassword = document.getElementById('changePassword')

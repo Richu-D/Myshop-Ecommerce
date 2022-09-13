@@ -344,14 +344,14 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                     resolve(products)
                 })
             },
-            //searchByParamsAndRate(params,lessRate,rate)
-            searchByParamsAndRate:(params,rate)=>{
+
+            searchRateRange:(params,min,max)=>{
                 return new Promise(async(resolve,reject)=>{
-                    rate = Number(rate)
-                    lessRate = rate - 500;
+                    let minimum = Number(min)
+                    let maximum = Number(max)
                     let products = await db.get().collection(collection.PRODUCT_COLLECTION).aggregate([
                      {$match:{$text:{$search:params}}},
-                     {$match:{price:{$gt:lessRate,$lt:rate}}}
+                     {$match:{price:{$gte:minimum,$lte:maximum}}}
                     ]).toArray()
                     console.log(products);
                     resolve(products)

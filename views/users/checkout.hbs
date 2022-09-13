@@ -23,8 +23,8 @@
                         <br>
                         <br>
                         <div class="col-md-6 form-group"> 
-                       <h4 class="title"> Select Your Address</h4>
-                       <p class="alert alert-danger" id="address-error" style="visibility: hidden;width:100%;"></p>    
+                       <h4 class="title"> Select Your Address</h4><br>
+                       <p class="alert alert-danger" id="address-error" style="display: none;width:100%;"></p>    
 
                         <input type="radio" id="" name="address" value="" style="display:none;">
                         {{#each address}}
@@ -213,7 +213,7 @@ function validateAddress(){
       }
     }
 
-    addressErr.style.visibility = 'visible';
+    addressErr.style.display = 'block';
       addressErr.innerHTML = 'Select A Address';      
 
     return false

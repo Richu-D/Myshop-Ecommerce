@@ -330,24 +330,15 @@ router.get('/search',checkuser,(req,res)=>{
    let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email).catch(err =>{
     console.log(err);
    })
-
-
     res.json(wishlistCountAndCartCount)
-   
     })
 
-
-router.post('/searchratewise',(req,res)=>{
-  console.log(req.body.params);
-  console.log(req.body.rate);
-  helpers.searchByParamsAndRate(req.body.params,req.body.rate).then(async data =>{
+router.post('/searchRateRange',(req,res)=>{
+  helpers.searchRateRange(req.body.params,req.body.min,req.body.max).then(async data =>{
     
     res.json({data:data})
   })
 })
-  
-
-
 
 router.get('/myprofile',checkuser,(req,res)=>{ 
     helpers.getUser(req.user.email).then(async(user)=>{
@@ -394,8 +385,11 @@ helpers.addWishlist(req.user.email,req.params.id)
 router.post('/addAddress',checkuser,(req,res)=>{
   let address = req.body.address
   let stringAdress = address.replace(/\s+/g, ' ').trim()
-
+  if(stringAdress.length > 10){
   helpers.addAddress(req.user.email,stringAdress)
+}else{
+  res.cookie('Address_error',"Invalid Address", { httpOnly: true })
+}
 
   res.redirect('myprofile')
 })
@@ -489,7 +483,11 @@ router.post('/editaddress',checkuser,(req,res)=>{
   let stringoldAddress = oldaddress.replace(/\s+/g, ' ').trim()
   let stringnewAddress = newaddress.replace(/\s+/g, ' ').trim()
 
-  helpers.editAddress(req.user.email,stringoldAddress,stringnewAddress)
+  if(stringnewAddress.length > 10){
+    helpers.editAddress(req.user.email,stringoldAddress,stringnewAddress)
+  }else{
+    
+  }
   
 res.redirect('/myprofile')
 })
