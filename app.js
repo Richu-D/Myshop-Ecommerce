@@ -16,7 +16,8 @@ Handlebars.registerHelper("order",(a)=>{
 
 Handlebars.registerHelper("orderfinished",(a,id)=>{
   if(a!=="Delevered" && a!=="Order Cancelled By User" && a!=="Order Cancelled by Admin"){
-    return new Handlebars.SafeString(' <a href="/cancelorder/'+id+'" class="btn btn-danger" >Cancel Order</a>')
+    return new Handlebars.SafeString(`<a class="btn btn-danger" onclick="cancelOrder('${id}')" >Cancel Order</a>`)
+    // href="/cancelorder/'+id+'" 
   }
 })
 
