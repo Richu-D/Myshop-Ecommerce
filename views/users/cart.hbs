@@ -13,6 +13,7 @@
         </div>
     </div> --}}
     <!-- Breadcrumb End -->
+    
 
 
     <!-- Cart Start -->
@@ -39,21 +40,23 @@
                         <tr>
                             <td class="align-middle"><img src="/product_image/{{this.product._id}}.jpg" alt="" style="width: 50px;"></td>
                             <td class="align-middle">{{this.product.name}}</td>
-                            <td class="align-middle">Rs.{{this.product.price}}</td>
+                            <td class="align-middle">Rs.
+                                {{#if this.product.offerPrice}}{{this.product.offerPrice}}{{else}}{{this.product.price}}{{/if}}
+                            </td>
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px; display:flex;justify-content: center; align-items: center;">
                                  
-                                    <div class="input-group-btn" id="minus">
-                                        <button class="btn btn-primary btn-minus mr-1 p-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">
-                                        <i class="fa fa-minus" style="font-size:13px;"></i>
+                                    <div class="input-group-btn minusContainer">
+                                        <button class="btn btn-primary btn-minus mr-1 px-1 py-0" style="height: 1.5rem;" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">
+                                        <i class="fa fa-minus" style="font-size:15px;" ></i>
                                         </button>
                                     </div>
                                     <span id="quantity">
-                                    <span class="mx-2" id="{{this.product._id}}" on="count()">{{this.quantity}}</span>
+                                    <span class="mx-2 count" id="{{this.product._id}}">{{this.quantity}}</span>
                                     </span>
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus ml-1 p-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">
-                                            <i class="fa fa-plus" style="font-size:14px;"></i>
+                                        <button class="btn btn-sm btn-primary btn-plus ml-1 px-1 py-0" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">
+                                            <i class="fa fa-plus" style="font-size:15px;"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -111,34 +114,25 @@
         </div>
     </div>
     <!-- Cart End -->
-
     <script>
+       let a = document.getElementsByClassName('minusContainer')
+       let b = document.getElementsByClassName('count')
+        for(let i = 0; i<a.length;++i){
+        if(b[i].innerHTML == 1)
+        {
+            a[i].style.visibility = "hidden";
+        }
+        }
+
+    </script>
     
-{{!-- $( document ).ready(function() {
-
-$('#quantity').on('DOMSubtreeModified',function (e){
-    let count = e.target.firstChild.data
-    console.log(count)
-  if(count==1){
-  console.log("count is oldkjflksne")
-$('#minus').css("visibility","hidden")
-  }
-
-})
-}); --}}
-
-
-
-
-
+    <script>
 
         function changeQuantity(cartId,productId,count){
             let quantity = parseInt(document.getElementById(productId).innerHTML)
             let quantity1 = parseInt(document.getElementById(`${productId}1`).innerHTML)
             let unique = document.getElementsByClassName('unique')
             let unique1 = document.getElementsByClassName('unique1')
-
-            
             
             $.ajax({
                 url:'/change-product-quantity',
@@ -170,6 +164,16 @@ $('#minus').css("visibility","hidden")
                     }
 
                     document.getElementById('grantTotal').innerHTML=response.grantTotal;
+                     let a = document.getElementsByClassName('minusContainer')
+                     let b = document.getElementsByClassName('count')
+                        for(let i = 0; i<a.length;++i){
+                        if(b[i].innerHTML == 1)
+                        {
+                            a[i].style.visibility = "hidden";
+                        }else{
+                            a[i].style.visibility = "visible";
+                        }
+                        }
                     
                 }
             })

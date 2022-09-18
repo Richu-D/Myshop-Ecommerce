@@ -56,9 +56,33 @@ router.get('/home', function(req, res) {
    })
 });
 
-router.get('/sales_report', function(req, res) {
-  
-  res.render('admin/salesReport',{salesReport:true})
+router.get('/categoryOffer',async function(req, res) {
+  helpers.categoryOffersStatusUpdate()
+  let categorys = await helpers.getCategoryOfferProducts()
+  helpers.getCategory().then(categoryList =>{
+    res.render('admin/categoryOffer',{categoryOffer:true,categoryList,categorys})
+  })
+});
+// coupons
+router.get('/coupons',async function(req, res) {
+    res.render('admin/coupons',{coupon:true})
+});
+
+router.post('/addCategoryOffer', function(req, res) {
+  helpers.addCategoryOffer(req.body)
+  res.redirect("/admin/categoryOffer")
+});
+
+// addCoupon
+router.post('/addCoupon', function(req, res) {
+  helpers.addCoupon(req.body)
+  res.redirect("/admin/categoryOffer")
+});
+
+// deleteCategoryOffer
+router.get('/deleteCategoryOffer/:id', function(req, res) {
+  helpers.removeCategoryOffer(req.params.id)
+  res.json()
 });
 
 router.post('/graphdata',(req, res)=>{
@@ -66,10 +90,6 @@ router.post('/graphdata',(req, res)=>{
     helpers.graphdata().then(data=>{
 
       console.log(data);
-      
-
-
-
       res.json({data})
     })
     // res.render('admin/index',{details:data,dashboard:true})

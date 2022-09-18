@@ -52,8 +52,36 @@ module.exports={
 
         })
     },
-    addUser:(userDetail)=>{
-        db.get().collection(collection.USERS).insertOne(userDetail)
+    addUser:async(userDetail)=>{
+    db.get().collection(collection.USERS).insertOne(userDetail)
+        // update wallet if user have whoReferedMe field value and valid referel
+       let whoReferedMeId = await db.get().collection(collection.USERS).aggregate([
+            {$match:{email:userDetail.email}},
+            {$project:{"whoReferedMe":"$wallet.whoReferedMe",_id:0}},
+            {
+                $lookup:
+                  {
+                    from: collection.USERS,
+                    localField: "whoReferedMe",
+                    foreignField: "wallet.myReferelId",
+                    as: "result"
+                  }
+             },
+             {
+                $project:{whoReferedMe:0}
+             }
+
+        ]).toArray()
+        whoReferedMeId = whoReferedMeId[0].result[0]._id;
+        console.log(whoReferedMeId);
+        // Adding 50 rs to whoreferedMe
+    db.get().collection(collection.USERS).updateOne({"_id":whoReferedMeId},{ $inc: { "wallet.balance": 50}}).then(result =>{
+        if(result.modifiedCount){
+            // Adding 100 rs to new user after referer get money
+            db.get().collection(collection.USERS).updateOne({"email":userDetail.email},{ $inc: { "wallet.balance": 100}})
+        }
+    })
+    
     },
     getUser:(email)=>{
         return new Promise(async(resolve,reject)=>{
@@ -87,7 +115,16 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                 
         })
     },
-
+    // walletDetails
+    walletDetails:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let users =await db.get().collection(collection.USERS).aggregate([
+               {$match:{email:userId}} ,
+            {$project:{"_id":0,"balance":"$wallet.balance","myReferelId":"$wallet.myReferelId","whoReferedMe":"$wallet.whoReferedMe"}}
+            ]).toArray()
+            resolve(users[0])
+        }) 
+    },
     
 
     getAllUsers:()=>{
@@ -720,10 +757,84 @@ var yearlySales = await db.get().collection(collection.ORDER).aggregate([
 resolve({weeklySales,monthlySales,yearlySales})
 
     })
-}
+},
+// addCoupon
+addCategoryOffer:(categoryOffer)=>{
+    console.log(categoryOffer);
+    db.get().collection(collection.CATEGORY).updateOne({"category":categoryOffer.categoryName},{$set:{"offer":Number(categoryOffer.offer),"offerStarts":new Date(categoryOffer.offerStarts),"offerExpire":new Date(categoryOffer.offerExpire)}})
+},
+// getCategoryOfferProducts
+getCategoryOfferProducts:()=>{
+    return new Promise( async(resolve,reject)=>{
+       let categorys = await db.get().collection(collection.CATEGORY).find({"offer":{$exists: true}}).toArray()
+       resolve(categorys)
+    })
+    
+},
+//removeCategoryOffer(req.params.id)
+removeCategoryOffer:(categoryName)=>{
+    console.log(categoryName);
+    db.get().collection(collection.CATEGORY).updateOne({"category":categoryName},{$unset:{"offer":1,"offerStarts":1,"offerExpire":1,"status":1,"updated":1,"offerPercentage":1}})
+    db.get().collection(collection.PRODUCT_COLLECTION).updateMany({$and:[{offerPrice:{ $exists: true }},{category:categoryName}]},{$unset:{offerPrice:1,offerPercentage:1}})
+},
+
+// activateOffers
+categoryOffersStatusUpdate:async ()=>{
+    // setting Active status for active offers in category
+ db.get().collection(collection.CATEGORY).updateMany({$and:[{offerStarts:{$lte:new Date()}},{offerExpire:{$gte:new Date()}}]},{$set:{status:true}}).then(async result =>{
+    console.log(result);
+    if(result.modifiedCount){
+        console.log("change the modifide category products price");
+        // updated true
+
+       let modifyProductCollections = await db.get().collection(collection.CATEGORY).aggregate([
+        {$match:{status:true,updated:{ $exists: false }}},
+        {$project:{category:true,offer:true,_id:0}},
+        {
+            $lookup:
+            {
+            from: collection.PRODUCT_COLLECTION,
+            localField: "category",
+            foreignField: "category",
+            as: "items"
+            }
+        },
+        {
+            $unwind:"$items"
+        },
+        {
+            $project:{
+                category:true,
+                offer:true,
+                _id:"$items._id",
+                price:"$items.price",                
+            }
+        } 
+        ]).toArray()
+       console.log(modifyProductCollections);
+
+        for(let i = 0;i<modifyProductCollections.length;++i){
+     db.get().collection(collection.PRODUCT_COLLECTION).updateMany({_id:modifyProductCollections[i]._id},{$set:{"offerPrice":modifyProductCollections[i].price-(modifyProductCollections[i].offer*(modifyProductCollections[i].price/100)),"offerPercentage":modifyProductCollections[i].offer}})
+        }
+   
 
 
 
+    //    updated true set cheyyanam so that no repitation again
+    db.get().collection(collection.CATEGORY).updateMany({status:true},{$set:{updated:true}})
+
+
+    }
+ }
+    // udate offer price inside product collection
+    
+ )
+
+//  setting Not Active status for active offers in category
+db.get().collection(collection.CATEGORY).updateMany({$or:[{offerStarts:{$gt:new Date()}},{offerExpire:{$lt:new Date()}}]},{$set:{status:false}}).then(
+    // remove offer price inside product collection
+)
+},
 
 
 

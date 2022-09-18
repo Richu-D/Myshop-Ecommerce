@@ -14,6 +14,12 @@
             margin-top: 15vh;
         }
 
+        .productName{
+
+            text-transform: capitalize;
+            text-decoration: none;
+        }
+
         #profile{
             cursor: pointer;
         }
@@ -121,6 +127,13 @@
 
         #myBtn:hover {
             background-color: #007bffdc;
+        }
+
+        .oldRate{
+            margin-left:5px;
+            font-size:16px;
+            color:rgba(239, 33, 33, 0.986);
+            font-weight: 700;
         }
 
         @media only screen and (max-width:600px) {
@@ -289,6 +302,7 @@ border-radius: .25rem;
                 <div class="dropdown-menu mt-4">
                     <a class="dropdown-item" href="/myprofile">Profile</a>
                     <a class="dropdown-item" href="/orders">Order</a>
+                    <a class="dropdown-item" href="/wallet">Wallet</a>
                     <a class="dropdown-item" href="/logout">Logout</a>
                 </div>
             </a>

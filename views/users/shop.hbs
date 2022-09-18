@@ -1,4 +1,15 @@
 {{>user_header}}
+<style>
+    .undefined{
+        display: none;
+    }
+    .hide{
+        display: none;
+    }
+    .notundefined{
+        display: block;
+    }
+</style>
 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
@@ -140,14 +151,18 @@
                             <div class="product-img position-relative overflow-hidden">
                                 <img class="img-fluid w-100 img" id="i" src="/product_image/{{this._id}}.jpg"
                                     alt="{{this.name}}" style="height:300px" ;>
-
-
+                                    {{#if this.offerPercentage}}
+                                    <span style="position:absolute;top:10px;right:10px;z-index:10;"><span class="customBadge">{{this.offerPercentage}}% OFF</span></span>
+                                    {{/if}}
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="">{{this.name}}</a>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
-                                    <h5>&#8377; {{this.price}}</h5>
-                                    <h6 class="text-muted ml-2"></h6>
+                                     <h5>&#8377;{{#if this.offerPrice}}{{this.offerPrice}}{{else}}{{this.price}}{{/if}}</h5>
+                                     {{#if this.offerPrice}}
+                                     <s class="oldRate">{{this.price}}</s>
+                                     {{/if}}
+                                    
                                 </div>
                                 {{!-- <div class="d-flex align-items-center justify-content-center mb-1">
                                     <small class="fa fa-star text-primary mr-1"></small>
@@ -216,14 +231,21 @@
                             <div class="product-img position-relative overflow-hidden">
                                 <img class="img-fluid w-100 img" id="i" src="/product_image/${data.data[i]._id}.jpg"
                                     alt="${data.data[i].name}" style="height:300px" ;>
-
+                                <div class="${data.data[i].offerPercentage}">
+                                    <span style="position:absolute;top:10px;right:10px;z-index:10;"><span class="customBadge">${data.data[i].offerPercentage}% OFF</span></span>
+                                </div>
 
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="">${data.data[i].name}</a>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
-                                    <h5>&#8377; ${data.data[i].price}</h5>
-                                    <h6 class="text-muted ml-2"></h6>
+                                    
+                                    <div class="${data.data[i].offerPrice}">
+                                    <h5>&#8377;${data.data[i].offerPrice}
+                                    <s class="oldRate">${data.data[i].price}</s></h5></div>
+                                    <div class="not${data.data[i].offerPrice} hide">
+                                    <h5>&#8377;${data.data[i].price}</h5>
+                                    </div> 
                                 </div>
                                 
                             </div>

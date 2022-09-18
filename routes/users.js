@@ -5,6 +5,7 @@ var helpers = require('../helpers/helpers')
 const twilio = require('twilio');
 const { Db } = require('mongodb');
 var moment = require('moment')
+let referralCodeGenerator = require('referral-code-generator')
 const { response } = require('../app');
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -85,40 +86,41 @@ router.get('/signup', function(req, res) {
 });
 
 router.post('/signup', async function (req, res) {
-
+console.log(req.body);
 if(req.body.password){
 req.body.password = await bcrypt.hash(req.body.password,10)
 otp = Math.floor(100000 + Math.random() * 900000);
 console.log(otp);
 req.body.otp = await bcrypt.hash(`${otp}`,10)
 // send to cookie
-res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.email}`,`password=${req.body.password}`,`number=${req.body.number}`,`otp=${req.body.otp}`])
+res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.email}`,`password=${req.body.password}`,`number=${req.body.number}`,`otp=${req.body.otp}`,`referelCode=${req.body.referelCode}`])
 
 // verify
 
 
 
 
+//Twilio otp send uncomment
 
-  try{
-  client.messages
-  .create({
-    body: `Your one time password for login is ${otp} `,
-    from: +16415521519,
-    to: `+91` + req.body.number,
-  })
-  .then((message) => {
+//   try{
+//   client.messages
+//   .create({
+//     body: `Your one time password for login is ${otp} `,
+//     from: +16415521519,
+//     to: `+91` + req.body.number,
+//   })
+//   .then((message) => {
   
-    res.redirect('/verifyotp')
-  })
-  .catch((err) => {
-    console.error(err);
-  });
-}catch (err){
+//     res.redirect('/verifyotp')
+//   })
+//   .catch((err) => {
+//     console.error(err);
+//   });
+// }catch (err){
 
-console.log(`Some error cames in catch /signup post  ${err}`);
+// console.log(`Some error cames in catch /signup post  ${err}`);
 
-}
+// }
 
 
 
@@ -137,15 +139,20 @@ router.get('/verifyotp', function(req, res, next) {
 });
 
 router.post('/verifyotp', function(req, res, next) {
-  // console.log(req.cookies.otp); 
-var {username,email,number,password,otp} = req.cookies;
+var {username,email,number,password,otp,referelCode} = req.cookies;
   
 var userdata ={username,email,number,password}
 
   // verifying otp 
-  bcrypt.compare(req.body.otp,req.cookies.otp).then((data)=>{
+  bcrypt.compare(req.body.otp,otp).then((data)=>{
     if(data){
-// push data into database
+
+
+userdata.wallet = {
+  balance:0,
+  myReferelId:referralCodeGenerator.alphaNumeric('uppercase', 4, 4),
+  whoReferedMe:referelCode
+};
 helpers.addUser(userdata)
     const email = req.cookies.email
     const user = { email: email}
@@ -204,7 +211,7 @@ let token = req.cookies.jwt;
 router.get('/home',checkuser,async function(req, res) {
  let products = await helpers.getAllProducts()
   let category = await helpers.getCategory()
-
+console.log(products);
     res.render('users/home',{products,category})
     
 });
@@ -228,10 +235,18 @@ router.get('/cart',checkuser, async function(req, res) {
   let products = await helpers.getAllCartItems(req.user.email)
 let grantTotal = 0;   
 let category = await helpers.getCategory()
+console.log(products);
 if(products[0]){
 products.forEach(data => {
-  data.total=data.quantity*data.product.price;
+
+  if(data.product.offerPrice){    
+    data.total=data.quantity*data.product.offerPrice;
+  }else{
+    data.total=data.quantity*data.product.price;
+  }
+
   grantTotal += data.total;
+  console.log(grantTotal);
 });
 
 
@@ -257,7 +272,7 @@ router.post('/addtocart/:id',checkuser, function(req, res) {
 });
 
 router.post('/change-product-quantity',(req,res)=>{
-  helpers.changeProductQuantity(req.body).then((response)=>{    
+  helpers.changeProductQuantity(req.body).then((response)=>{ 
     res.json(response)
   })
 })
@@ -280,10 +295,20 @@ router.get('/checkout',checkuser, async function(req, res) {
     let grantTotal = 0;
     let productdata = [];
     products.forEach(data => {
+      console.log(data);
+      if(data.product.offerPrice){
+        data.total=data.quantity*data.product.offerPrice;
+         grantTotal += data.total;  
+      productdata.push({name:data.product.name,price:data.product.offerPrice,quantity:data.quantity})
+
+      }else{      
       data.total=data.quantity*data.product.price;
-      grantTotal += data.total;
+      grantTotal += data.total;    
       productdata.push({name:data.product.name,price:data.product.price,quantity:data.quantity})
+
+    }
     });
+    console.log(grantTotal,productdata);
     res.render('users/checkout',{address:data.address,productdata:productdata,razorpay_key:process.env.RAZORPAY_KEY_ID,grantTotal,name:data.username,number:data.number})
 });
 
@@ -305,8 +330,13 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
   let grantTotal = 0;
   let rates = [];
   products.forEach(data => {
-    rates.push(data.quantity*data.product.price)
-    grantTotal += data.quantity*data.product.price;
+    if(data.product.offerPrice){
+      rates.push(data.quantity*data.product.offerPrice)
+      grantTotal += data.quantity*data.product.offerPrice;
+    }else{
+      rates.push(data.quantity*data.product.price)
+      grantTotal += data.quantity*data.product.price;
+    }
   });
  
     res.json({rates,grantTotal})
@@ -429,6 +459,12 @@ router.post('/removeItemFromWishlist',checkuser,(req,res)=>{
   res.json({delete:true})
   })
 
+router.get('/wallet',checkuser,async(req,res)=>{
+
+  let walletDetails = await helpers.walletDetails(req.user.email)
+  console.log(walletDetails);
+  res.render('users/wallet.hbs',{walletDetails})
+})
 
 router.post('/changepassword',checkuser,async (req,res)=>{
   let existingpassword = req.body.existingpassword;
@@ -514,13 +550,29 @@ helpers.getAllCartItems(req.user.email).then((cartitems)=>{
   details = {}
   order = []
   cartitems.forEach(data =>{
-    order.push({item:data.item,quantity:data.quantity,price:data.product.price,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.price})
+
+
+  if(data.product.offerPrice){
+    order.push({item:data.item,quantity:data.quantity,price:data.product.offerPrice,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.offerPrice})
 
     details = { date: moment().format("MMM Do YY"),name:req.body.name,number:req.body.number,address:req.body.address,paymentMethod:req.body.paymentMethod,status: (req.body.paymentMethod=="COD")?"placed":"pending",userId:req.user.email}
 
-    grantTotal += data.quantity*data.product.price;
+    grantTotal += data.quantity*data.product.offerPrice;
+
+      }else{      
+
+        order.push({item:data.item,quantity:data.quantity,price:data.product.price,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.price})
+
+        details = { date: moment().format("MMM Do YY"),name:req.body.name,number:req.body.number,address:req.body.address,paymentMethod:req.body.paymentMethod,status: (req.body.paymentMethod=="COD")?"placed":"pending",userId:req.user.email}
+    
+        grantTotal += data.quantity*data.product.price;
+    }
+
+   
     
     let stringProductId = ""+data.product._id
+
+
     
     
   helpers.removeItemFromWishlist(req.user.email,stringProductId)

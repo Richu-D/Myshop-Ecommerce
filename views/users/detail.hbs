@@ -18,14 +18,17 @@
 
             <div class="col-lg-7 h-auto mb-30">
                 <div class="h-100 p-30">
-                    <h3>{{data.name}}</h3>
+                    <h3 class="productName">{{data.name}}</h3>
                     <div class="my-1">
                         <span class="customBadge" style="margin:0px 5px;">4.4 <span class="fa fa-star"
                                 style="font-size:small;padding:0px; "></span> </span> <small>99 Ratings &#38; 156
                             Reviews </small>
                     </div>                               
-
-                    <h3 class="font-weight-semi-bold my-4">Rs. {{data.price}} {{oldPrice data.price}}</h3>
+                    
+                  <span style="font-weight: 700;">&#8377;{{#if data.offerPrice}}{{data.offerPrice}}{{else}}{{data.price}}{{/if}}</span>  
+                        {{#if data.offerPrice}}
+                        <s class="oldRate">{{data.price}}</s>
+                        {{/if}}
                     <p class="my-4">{{data.description}}</p>
 
                     
@@ -190,7 +193,7 @@
                                 <div class="col-md-6">
                                     <h4 class="mb-4">Review Heading</h4>
                                     <div class="media mb-4">
-                                        <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1"
+                                        <img src="" alt="Image" class="img-fluid mr-3 mt-1"
                                             style="width: 45px;">
                                         <div class="media-body">
                                             <h6>John Doe<small> - <i>01 Jan 2045</i></small></h6>

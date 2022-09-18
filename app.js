@@ -35,10 +35,6 @@ Handlebars.registerHelper("adminOrder",(status,id)=>{
   }
 })
 
-Handlebars.registerHelper("oldPrice",(oldPrice)=>{
-  return new Handlebars.SafeString(`<span style="margin-left:5px;font-size:16px;color:red"><s>${oldPrice+200}</s><span>`)
-})
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
