@@ -138,6 +138,14 @@ router.get('/verifyotp', function(req, res, next) {
   res.render('users/verifyotp')
 });
 
+// applyCoupon
+router.post('/applyCoupon', (req, res) => {
+  console.log(req.body);
+  helpers.checkCoupon(req.body).then(coupon=>{
+    res.json({coupon})
+  })
+});
+
 router.post('/verifyotp', function(req, res, next) {
 var {username,email,number,password,otp,referelCode} = req.cookies;
   
@@ -538,18 +546,17 @@ res.redirect('/myprofile')
 
 
 // moment().format("MMM Do YY")
-router.post('/placeorder',checkuser,(req,res)=>{
+router.post('/placeorder',checkuser, (req,res)=>{
 
-  console.log("place order il vanna details",req.body);
-
+console.log("first");
     // inser details into order collection 
-helpers.getAllCartItems(req.user.email).then((cartitems)=>{
-
-  grantTotal =0
+ helpers.getAllCartItems(req.user.email).then(async (cartitems)=>{
+console.log("middle");
+  grantTotal = 0
   
   details = {}
   order = []
-  cartitems.forEach(data =>{
+  cartitems.forEach(async data =>{
 
 
   if(data.product.offerPrice){
@@ -568,8 +575,7 @@ helpers.getAllCartItems(req.user.email).then((cartitems)=>{
         grantTotal += data.quantity*data.product.price;
     }
 
-   
-    
+  
     let stringProductId = ""+data.product._id
 
 
@@ -580,9 +586,23 @@ helpers.getAllCartItems(req.user.email).then((cartitems)=>{
   })
 
 
-details['grantTotal'] = grantTotal
+  let off = await helpers.checkCoupon(req.body)
+  console.log(off);
+  if(off){
+  off = off.offer;
+  details['offer'] =  off                    
+  grantTotal = (grantTotal - ((grantTotal/100)*off)) 
+  }
+   console.log("Grand total inside loop ",grantTotal);
+ 
+
+details['grantTotal'] =  grantTotal                    
 
 
+console.log("isndie details grantTotal",details.grantTotal);
+
+console.log("Order details",order,"details",details)
+console.log("last");
 
   helpers.addOrder(order,details).then((orderId)=>{
     if(req.body.paymentMethod=="COD"){

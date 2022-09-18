@@ -28,17 +28,18 @@
                     </thead>
                     <tbody class="align-middle">
                          
-                        {{#each categorys}}
+                        {{#each coupons}}
                         
                         <tr>
                             <td>{{order @index}}</td>                        
-                            <td>{{this.coupon}}</td>                       
+                            <td>{{this.couponName}}</td>                       
                             <td>{{this.offer}}</td>
                             <td>{{this.offerStarts}}</td>
                             <td>{{this.offerExpire}}</td>
+                            <td>{{#if this.status}}Active{{else}}Not Active{{/if}}</td>
                             <td>
                             <button type="button" class="btn btn-danger"
-                                onclick="deleteCoupon('{{this.coupon}}')">Delete</button>
+                                onclick="deleteCoupon('{{this.couponName}}')">Delete</button>
                             </td>                                              
                         </tr>
                         
@@ -61,12 +62,12 @@
             if (willDelete) {
 
                 $.ajax({
-                    url: `deleteCoupon/${categoryName}`,
+                    url: `deleteCoupon/${couponName}`,
                     method: 'get'
                 })
 
                 swal("", "Coupon Offer Deleted", "success").then(() => {
-                  //  location.reload()
+                  location.reload()
                 })
             }
         })

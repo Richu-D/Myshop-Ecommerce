@@ -22,7 +22,7 @@
 
                         <br>
                         <br>
-                        <div class="col-md-9 form-group"> 
+                      <div class="col-md-9 form-group"> 
                        <h4 class="title"> Select Your Address</h4><br>
                        <p class="alert alert-danger" id="address-error" style="display: none;width:100%;"></p>    
 
@@ -34,7 +34,12 @@
                         <br>
                       
                         {{/each}}
+
+                        <input type="text" class="form-control mt-5 p-1" id="coupon" style="width: 300px;display:inline-block;" placeholder="Enter Coupon Code">
+                        <button class="btn btn-success" form="notAform" onclick="applyCoupon()">Apply</button>                      
+                        <input type="text"  name="coupon" style="display:none;" id="couponValue">
                         
+                       
                        </div>
                         {{!-- <div class="col-md-6 form-group">
                             <label>Address Line 2</label>
@@ -89,7 +94,11 @@
                         <div class="d-flex justify-content-between">
                             <p>{{this.name}} X {{this.quantity}} = {{this.price}}</p>
                         </div>
+                       
                         {{/each}}
+                         <div id="couponOffer" style="display: none;">
+                            Coupon Offer = <span id="couponOfferPercentage"></span>% OFF
+                        </div>
                     </div>
                     {{!-- <div class="border-bottom pt-3 pb-2">
                         <div class="d-flex justify-content-between mb-3">
@@ -106,7 +115,7 @@
                     <br>
                     <div class="pt-2">
                         <div class="d-flex mt-2">
-                            <h5>Total Rs. {{grantTotal}}<span></span> </h5>
+                            <h5>Total Rs. <span id="grantTotal">{{grantTotal}}</span><span></span> </h5>
                         </div>
                     </div>
                 </div>
@@ -152,6 +161,36 @@
 
 
 <script>
+
+    function applyCoupon(){
+    let coupon = document.getElementById("coupon").value;
+   
+$.ajax({
+            url:'/applyCoupon',
+            method:'post',
+            data:{"coupon":coupon},
+            success:(response)=>{
+                console.log(response.coupon)
+                if(response.coupon){      
+                let off = response.coupon.offer;   
+                document.getElementById("couponValue").value = coupon;
+                document.getElementById("couponOffer").style.display = "block"
+                document.getElementById("couponOfferPercentage").innerText = response.coupon.offer;
+                let grantTotal = Number(document.getElementById("grantTotal").innerText) 
+                let offerPrice = (grantTotal - ((grantTotal/100)*off))
+                document.getElementById("grantTotal").innerText = offerPrice;
+                
+                }else{
+                    console.log("res illa")
+                document.getElementById("couponValue").value = "";
+                document.getElementById("couponOffer").style.display = "none"
+                document.getElementById("grantTotal").innerText ={{grantTotal}}
+                }
+            }
+        })
+
+    }             
+                     
 
 $(function(){
     $('.address').click(function(){

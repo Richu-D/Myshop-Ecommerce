@@ -536,7 +536,6 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     
 },
 removeItemFromWishlist:(userId,productId)=>{
-    console.log(`inside helpers and this is userId ${userId} and this is productId ${productId}`);
     db.get().collection(collection.WISHLIST).updateOne({user:userId},{$pull:{wishlistItems:objectId(productId)}})
 },
 
@@ -771,11 +770,60 @@ getCategoryOfferProducts:()=>{
     })
     
 },
+// addCoupon
+addCoupon:(couponOffer)=>{
+    console.log(couponOffer);
+    db.get().collection(collection.COUPON).updateOne({"couponName":couponOffer.couponName},{$set:{"offer":Number(couponOffer.offer),"offerStarts":new Date(couponOffer.offerStarts),"offerExpire":new Date(couponOffer.offerExpire)}},{upsert:true}) 
+},
+// getCoupons
+getCoupons:()=>{
+    return new Promise( async(resolve,reject)=>{
+       let Coupons = await db.get().collection(collection.COUPON).find({}).toArray()
+       resolve(Coupons)
+    })
+    
+},
+
+// checkCoupon
+checkCoupon:(coupon)=>{
+    return new Promise( async(resolve,reject)=>{
+       let Coupon = await db.get().collection(collection.COUPON).aggregate([
+        {$match:{$and:[{"couponName":coupon.coupon},{"status":true}]}},
+        {$project:{
+            _id:0,
+            offer:1
+        }}
+    ]).toArray()
+       resolve(Coupon[0])
+    })
+    
+},
+
 //removeCategoryOffer(req.params.id)
 removeCategoryOffer:(categoryName)=>{
     console.log(categoryName);
     db.get().collection(collection.CATEGORY).updateOne({"category":categoryName},{$unset:{"offer":1,"offerStarts":1,"offerExpire":1,"status":1,"updated":1,"offerPercentage":1}})
     db.get().collection(collection.PRODUCT_COLLECTION).updateMany({$and:[{offerPrice:{ $exists: true }},{category:categoryName}]},{$unset:{offerPrice:1,offerPercentage:1}})
+},
+
+// removeCouponOffer
+removeCouponOffer:(couponName)=>{
+    db.get().collection(collection.COUPON).deleteOne({"couponName":couponName})    
+},
+
+// couponsOffersStatusUpdate
+
+couponsOffersStatusUpdate:async ()=>{
+    // Set offer status true
+db.get().collection(collection.COUPON).updateMany({$and:[{offerStarts:{$lte:new Date()}},{offerExpire:{$gte:new Date()}}]},{$set:{status:true}}).then(result =>{
+    console.log("inside helper set offer status true",result);
+})
+// set offer status false
+db.get().collection(collection.CATEGORY).updateMany({$or:[{offerStarts:{$gt:new Date()}},{offerExpire:{$lt:new Date()}}]},{$set:{status:false}}).then(result =>{
+    
+        console.log("inside helper set offer status false",result);
+    }
+)
 },
 
 // activateOffers

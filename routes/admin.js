@@ -65,7 +65,11 @@ router.get('/categoryOffer',async function(req, res) {
 });
 // coupons
 router.get('/coupons',async function(req, res) {
-    res.render('admin/coupons',{coupon:true})
+  await helpers.couponsOffersStatusUpdate()
+    helpers.getCoupons().then(coupons =>{
+      console.log(coupons);
+      res.render('admin/coupons',{coupons,coupon:true})
+    })
 });
 
 router.post('/addCategoryOffer', function(req, res) {
@@ -76,12 +80,17 @@ router.post('/addCategoryOffer', function(req, res) {
 // addCoupon
 router.post('/addCoupon', function(req, res) {
   helpers.addCoupon(req.body)
-  res.redirect("/admin/categoryOffer")
+  res.redirect("/admin/coupons")
 });
 
 // deleteCategoryOffer
 router.get('/deleteCategoryOffer/:id', function(req, res) {
   helpers.removeCategoryOffer(req.params.id)
+  res.json()
+});
+// deleteCoupon
+router.get('/deleteCoupon/:id', function(req, res) {
+  helpers.removeCouponOffer(req.params.id)
   res.json()
 });
 
