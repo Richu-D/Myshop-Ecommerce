@@ -10,7 +10,7 @@
         border: none;
         
     }
-    
+   
 </style>
 
 <!-- Shop Start -->
@@ -24,17 +24,23 @@
 
 
 <div class="container-fluid mt-2">
-    <div class="row px-xl-5">
+    <div class="row px-xl-5"> 
         <!-- Shop Sidebar Start -->
         <div class="col-md-4">          
-
-<div class="sidebar pe-4 pb-3" style="margin-top: 140px;">
+<label for="referenceId">Reference ID</label><br>
+<input type="text" id="referenceId" class="form-control" style="width:250px;display: inline-block;" value="{{walletDetails.myReferelId}}">
+<button class="btn btn-success" onclick="getTextCopied()" id="copyButtom">copy</button><br>
+<br>
+<label for="walletBalance">Wallet Balance : </label> &#8377;{{walletDetails.balance}}
+                                        
+<div class="sidebar pe-4 pb-3" style="margin-top: 40px;">
             <nav class="navbar  navbar-light" style="justify-content: center;">
                 <div class="navbar-nav w-90">
 
                     <button class="nav-link" onclick="manageAddress()" style="padding: 15px 25px;" id="manageAddressButton">Manage Address</button>               
                     <button onclick="profileInformations()" class=" nav-link" style="padding: 15px 25px;">Profile Informations</button>
                     <button onclick="changePassword()" class="nav-link" >Change password</button>
+                    <button onclick="coupons()" class="nav-link" >Coupons</button>
                     
                 </div>
             </nav>
@@ -53,10 +59,24 @@
 
 
             <script>
+
+                
+                function coupons(){
+                    let manageAddress = document.getElementById('manageAddress')
+                    let profileInfo = document.getElementById('profileInfo')
+                    let changePassword = document.getElementById('changePassword')
+                    let coupons = document.getElementById('coupons')
+                    manageAddress.classList.add('hide')
+                    profileInfo.classList.add('hide')
+                    changePassword.classList.add('hide')
+                    coupons.classList.remove('hide')
+                }
                 function changePassword() {
                     let manageAddress = document.getElementById('manageAddress')
                     let profileInfo = document.getElementById('profileInfo')
                     let changePassword = document.getElementById('changePassword')
+                    let coupons = document.getElementById('coupons')
+                    coupons.classList.add('hide')
                     manageAddress.classList.add('hide')
                     profileInfo.classList.add('hide')
                     changePassword.classList.remove('hide')
@@ -65,6 +85,8 @@
                     let manageAddress = document.getElementById('manageAddress')
                     let profileInfo = document.getElementById('profileInfo')
                     let changePassword = document.getElementById('changePassword')
+                    let coupons = document.getElementById('coupons')
+                    coupons.classList.add('hide')
                     manageAddress.classList.add('hide')
                     profileInfo.classList.remove('hide')
                     changePassword.classList.add('hide')
@@ -75,6 +97,8 @@
                     let manageAddress = document.getElementById('manageAddress')
                     let profileInfo = document.getElementById('profileInfo')
                     let changePassword = document.getElementById('changePassword')
+                    let coupons = document.getElementById('coupons')
+                    coupons.classList.add('hide')
                     manageAddress.classList.remove('hide')
                     profileInfo.classList.add('hide')
                     changePassword.classList.add('hide')
@@ -91,6 +115,7 @@
 
             {{!-- manage Address --}}
             <div>
+                
                 <div id="manageAddress">
                     <h2><u>Manage Address</u></h2><br>
 
@@ -112,9 +137,11 @@
 
 
                     {{!-- show existing addresses --}}
+                    {{#if address}}
                     <br>
                     <h3 style="margin-top:25px;"><u>Existing Addresses</u></h3>
                     <br>
+                    {{/if}}
                     {{#each address}}
 
 
@@ -181,6 +208,8 @@
                             <div class="row">
 
                                 <div class="col-md-6">
+
+
                                     <h2><u>Edit Information</u></h2>
                                     <form action="/editpersonaldetails" id="editPersonalDetailsForm" method="post">
                                         
@@ -240,6 +269,42 @@
                     </div>
 
                 </div>
+
+                <div class="container-fluid hide pt-4 px-4" id="coupons">
+                    <h2>Available Coupons</h2>
+                    <div class="row g-4">
+                        {{#each availableCoupons}}
+                        <div class="col-sm-6 col-xl-4">
+                            <div class="bg-light rounded justify-content-center d-flex p-4">
+                                {{!-- <i class="fa fa-chart-line fa-3x text-primary"></i> --}}
+                                <h3 class="mb-2 mr-2">{{this.couponName}}</h3>
+                                <p class="m-0 ml-2 customBadge" style="font-weight:400;color:#24dd3b;background-color:#f8f9fa;">{{this.offer}}%OFF</p>
+
+                            </div>
+                        </div>
+                        
+                        {{/each}}
+                        </div>
+                        {{#if usedCoupons}}
+                        <h2 class="mt-4">Used Coupons</h2>
+                        <div class="row g-4">
+                            {{#each usedCoupons}}
+                            <div class="col-sm-6 col-xl-4">
+                                <div class="bg-light rounded justify-content-center d-flex p-4">
+                                    {{!-- <i class="fa fa-chart-line fa-3x text-primary"></i> --}}
+                                    <h3 class="mb-2 mr-2">{{this.couponName}}</h3>
+                                    <p class="m-0 ml-2 customBadge" style="font-weight:400;color:#24dd3b;background-color:#f8f9fa;">{{this.offer}}%OFF</p>
+
+                                </div>
+                            </div>
+                            
+                            {{/each}}
+                        </div>
+                        {{/if}}
+                </div>
+
+
+
             </div>
 
 
@@ -257,6 +322,21 @@
 
 
 <script>
+
+function getTextCopied(){
+    let inputField = document.getElementById('referenceId');
+    inputField.select();
+    inputField.setSelectionRange(0,9999);
+    document.execCommand("copy")
+    document.getElementById('copyButtom').innerText = "copied"
+
+    }
+
+
+
+
+
+
 
 const form = document.getElementById('editPersonalDetailsForm')
 var nameErr = document.getElementById('name-error');

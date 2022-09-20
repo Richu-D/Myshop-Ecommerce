@@ -66,6 +66,34 @@ app.use('/admin', adminRouter);
 
 
 
+// // catch 404 and forward to error handler
+// app.use(function(req, res, next) {
+//   next(createError(404));
+// });
+
+// // error handler
+// app.use(function(err, req, res, next) {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+
+
+
+// custom error
+app.get('/error',(req,res)=>{
+  if (req.session.admin) {
+    res.render('error',{admin:true});
+  }
+  else{
+    res.render('error');
+  }
+})
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -76,10 +104,18 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  console.log(err.message);
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.redirect('/error')
+  
 });
+
+
+
+
+
+
+
 
 module.exports = app;

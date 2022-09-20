@@ -3,6 +3,7 @@ var collection = require('../confic/collections')
 const { response } = require('../app')
 var objectId = require('mongodb').ObjectId
 const Razorpay = require('razorpay');
+var moment = require('moment')
 const { resolve } = require('path');
 
             var instance = new Razorpay({
@@ -72,15 +73,18 @@ module.exports={
              }
 
         ]).toArray()
-        whoReferedMeId = whoReferedMeId[0].result[0]._id;
-        console.log(whoReferedMeId);
-        // Adding 50 rs to whoreferedMe
-    db.get().collection(collection.USERS).updateOne({"_id":whoReferedMeId},{ $inc: { "wallet.balance": 50}}).then(result =>{
-        if(result.modifiedCount){
-            // Adding 100 rs to new user after referer get money
-            db.get().collection(collection.USERS).updateOne({"email":userDetail.email},{ $inc: { "wallet.balance": 100}})
+        if(whoReferedMeId[0].result[0]){
+            whoReferedMeId = whoReferedMeId[0].result[0]._id;
+            console.log(whoReferedMeId);
+            // Adding 50 rs to whoreferedMe
+            db.get().collection(collection.USERS).updateOne({"_id":whoReferedMeId},{ $inc: { "wallet.balance": 50}}).then(result =>{
+                if(result.modifiedCount){
+                    // Adding 100 rs to new user after referer get money
+                    db.get().collection(collection.USERS).updateOne({"email":userDetail.email},{ $inc: { "wallet.balance": 100}})
+                }
+            })
+
         }
-    })
     
     },
     getUser:(email)=>{
@@ -759,8 +763,12 @@ resolve({weeklySales,monthlySales,yearlySales})
 },
 // addCoupon
 addCategoryOffer:(categoryOffer)=>{
-    console.log(categoryOffer);
-    db.get().collection(collection.CATEGORY).updateOne({"category":categoryOffer.categoryName},{$set:{"offer":Number(categoryOffer.offer),"offerStarts":new Date(categoryOffer.offerStarts),"offerExpire":new Date(categoryOffer.offerExpire)}})
+    return new Promise( async(resolve,reject)=>{
+    db.get().collection(collection.CATEGORY).updateOne({"category":categoryOffer.categoryName},{$set:{"offer":Number(categoryOffer.offer),"offerStarts":new Date(categoryOffer.offerStarts),"offerExpire":new Date(categoryOffer.offerExpire),starts:moment(new Date(categoryOffer.offerStarts)).format("MMM Do YY"),ends:moment(new Date(categoryOffer.offerExpire)).format("MMM Do YY")}}).then(() =>{
+        resolve()
+    }
+    )
+    })
 },
 // getCategoryOfferProducts
 getCategoryOfferProducts:()=>{
@@ -773,7 +781,7 @@ getCategoryOfferProducts:()=>{
 // addCoupon
 addCoupon:(couponOffer)=>{
     console.log(couponOffer);
-    db.get().collection(collection.COUPON).updateOne({"couponName":couponOffer.couponName},{$set:{"offer":Number(couponOffer.offer),"offerStarts":new Date(couponOffer.offerStarts),"offerExpire":new Date(couponOffer.offerExpire)}},{upsert:true}) 
+    db.get().collection(collection.COUPON).updateOne({"couponName":couponOffer.couponName},{$set:{"offer":Number(couponOffer.offer),"offerStarts":new Date(couponOffer.offerStarts),"offerExpire":new Date(couponOffer.offerExpire),starts:moment(new Date(couponOffer.offerStarts)).format("MMM Do YY"),ends:moment(new Date(couponOffer.offerExpire)).format("MMM Do YY")}},{upsert:true}) 
 },
 // getCoupons
 getCoupons:()=>{
@@ -791,12 +799,35 @@ checkCoupon:(coupon)=>{
         {$match:{$and:[{"couponName":coupon.coupon},{"status":true}]}},
         {$project:{
             _id:0,
-            offer:1
+            offer:1,
+            couponName:1
         }}
     ]).toArray()
        resolve(Coupon[0])
     })
     
+},
+
+// helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
+checkCouponUsedOrNot:(userId,coupon)=>{
+    return new Promise( async(resolve,reject)=>{
+       let Coupon = await db.get().collection(collection.USERS).findOne({$and:[{"email":userId},{"usedCoupons":coupon}]})
+    //    not match then null
+    if(Coupon){
+        resolve(true)       
+    }else{
+        resolve(false)
+    }
+    
+    })
+    
+},
+
+// addUsedCoupon(req.body.email,details['couponName'])
+addUsedCoupon: (userId,couponName)=>{
+    console.log(userId,couponName);
+db.get().collection(collection.USERS).updateOne({email:userId},{$addToSet:{usedCoupons:couponName}})
+
 },
 
 //removeCategoryOffer(req.params.id)
@@ -862,7 +893,7 @@ categoryOffersStatusUpdate:async ()=>{
        console.log(modifyProductCollections);
 
         for(let i = 0;i<modifyProductCollections.length;++i){
-     db.get().collection(collection.PRODUCT_COLLECTION).updateMany({_id:modifyProductCollections[i]._id},{$set:{"offerPrice":modifyProductCollections[i].price-(modifyProductCollections[i].offer*(modifyProductCollections[i].price/100)),"offerPercentage":modifyProductCollections[i].offer}})
+     db.get().collection(collection.PRODUCT_COLLECTION).updateMany({_id:modifyProductCollections[i]._id},{$set:{"offerPrice":Math.round(modifyProductCollections[i].price-(modifyProductCollections[i].offer*(modifyProductCollections[i].price/100))),"offerPercentage":modifyProductCollections[i].offer}})
         }
    
 
@@ -874,14 +905,30 @@ categoryOffersStatusUpdate:async ()=>{
 
     }
  }
-    // udate offer price inside product collection
+    
     
  )
+ // udate offer price inside product collection // remove offers
+ let a = await db.get().collection(collection.CATEGORY).aggregate([
+    {$match:{offerExpire:{$lt:new Date()}}},
+    {$project:{_id:0,category:1}}
 
-//  setting Not Active status for active offers in category
-db.get().collection(collection.CATEGORY).updateMany({$or:[{offerStarts:{$gt:new Date()}},{offerExpire:{$lt:new Date()}}]},{$set:{status:false}}).then(
+]).toArray()
+
+for(let i=0;i<a.length;++i){
+    console.log(a[i].category);
+    db.get().collection(collection.PRODUCT_COLLECTION).updateMany({category:a[i].category},{$unset:{offerPercentage:1,offerPrice:1}})
+    db.get().collection(collection.CATEGORY).updateMany({category:a[i].category},{$unset:{offer:1,offerExpire:1,offerStarts:1,status:1,updated:1}})
+}
+
+
+// removing expired category offer
+//
+
+
     // remove offer price inside product collection
-)
+    
+
 },
 
 

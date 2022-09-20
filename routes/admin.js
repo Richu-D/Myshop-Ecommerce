@@ -72,15 +72,36 @@ router.get('/coupons',async function(req, res) {
     })
 });
 
-router.post('/addCategoryOffer', function(req, res) {
-  helpers.addCategoryOffer(req.body)
-  res.redirect("/admin/categoryOffer")
+router.post('/addCategoryOffer',function(req, res) {
+console.log(req.body);
+helpers.getCategory().then(categoryList =>{
+  console.log(categoryList);
+  console.log(categoryList.length);
+  for(let i=0;i<categoryList.length;++i){
+    if(categoryList[i].offer && categoryList[i].category==req.body.categoryName){
+        console.log("offer avaliable");
+        // should pass error offer available msg by json
+        res.redirect("/admin/categoryOffer")
+        return;
+      }
+  }
+  console.log("offer is not available");    
+        helpers.addCategoryOffer(req.body)
+        .then(() =>{
+          res.redirect("/admin/categoryOffer")
+        })
+  
+})
 });
 
 // addCoupon
 router.post('/addCoupon', function(req, res) {
+console.log(req.body);
+req.body.couponName=req.body.couponName.replace(/\s+/g,'').trim()
+if(req.body.couponName.length>2){
   helpers.addCoupon(req.body)
-  res.redirect("/admin/coupons")
+}
+ res.redirect("/admin/coupons")
 });
 
 // deleteCategoryOffer

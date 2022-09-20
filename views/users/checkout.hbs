@@ -1,102 +1,128 @@
 {{>user_header}}
-
-    <!-- Checkout Start -->
+<style>
+    .hide {
+        display: none;
+    }
+</style>
+<!-- Checkout Start -->
 <form action="" id="checkOutForm" name="checkOutForm">
     <div class="container-fluid mt-2">
         <div class="row px-xl-5">
             <div class="col-md-5" style="margin-left:150px;">
-                <h5 class="title">Shipping Address</h5>
-               
-                   
-                       <br>
-                        <div class="col-md-9 form-group">
-                            <label>First Name</label>
-                            <input class="form-control" id="name" name="name" type="text" value="{{name}}" onkeyup="validateName()">
-                            <p class="alert alert-danger"  id="name-error" style="display: none;width:100%;"></p>
-                        </div>
-                        <div class="col-md-9 form-group">
-                            <label>Mobile No</label>
-                            <input class="form-control" id="number" name="number" type="number" value="{{number}}" onkeyup="validatePhone()">
-                            <p class="alert alert-danger" id="phone-error" style="display: none;width:100%;"></p>    
-                        </div>
+                <h5 class="title">Shipping Details</h5>
 
-                        <br>
-                        <br>
-                      <div class="col-md-9 form-group"> 
-                       <h4 class="title"> Select Your Address</h4><br>
-                       <p class="alert alert-danger" id="address-error" style="display: none;width:100%;"></p>    
 
-                        <input type="radio" id="" name="address" value="" style="display:none;">
-                        {{#each address}}
-                     
-                        <input type="radio" id="{{this}}" name="address" class="address" value="{{this}}">
-                        <label for="{{this}}">{{this}}</label>
-                        <br>
-                      
-                        {{/each}}
+                <br>
+                <div class="col-md-9 form-group">
+                    <label>First Name</label>
+                    <input class="form-control" id="name" name="name" type="text" value="{{name}}"
+                        onkeyup="validateName()">
+                    <p class="alert alert-danger" id="name-error" style="display: none;width:100%;"></p>
+                </div>
+                <div class="col-md-9 form-group">
+                    <label>Mobile No</label>
+                    <input class="form-control" id="number" name="number" type="number" value="{{number}}"
+                        onkeyup="validatePhone()">
+                    <p class="alert alert-danger" id="phone-error" style="display: none;width:100%;"></p>
+                </div>
 
-                        <input type="text" class="form-control mt-5 p-1" id="coupon" style="width: 300px;display:inline-block;" placeholder="Enter Coupon Code">
-                        <button class="btn btn-success" form="notAform" onclick="applyCoupon()">Apply</button>                      
-                        <input type="text"  name="coupon" style="display:none;" id="couponValue">
+                <br>
+                <br>
+                <div class="col-md-9 form-group">
+                    <h5 class="title mb-3"> Select Your Address</h5><button class="btn btn-primary" id="addAddressBtn" form="noForm" onclick="show()">Add Address</button><br>
+                   {{#if address}} <p class="alert alert-danger" id="address-error" style="display: none;width:100%;">Select An Address From Below</p>{{else}}<p class="alert alert-danger" id="address-error" style="display: none;width:100%;">Add A New Address Please</p>{{/if}}
+                    <div style="margin-bottom:20px;">
                         
-                       
-                       </div>
-                        {{!-- <div class="col-md-6 form-group">
-                            <label>Address Line 2</label>
-                            <input class="form-control" type="text" placeholder="123 Street">
-                        </div> --}}
-                        {{!-- <div class="col-md-6 form-group">
-                            <label>Country</label>
-                            <select class="custom-select">
-                                <option selected>United States</option>
-                                <option>Afghanistan</option>
-                                <option>Albania</option>
-                                <option>Algeria</option>
-                            </select>
-                        </div> --}}
-                        {{!-- <div class="col-md-6 form-group">
-                            <label>City</label>
-                            <input class="form-control" type="text" placeholder="New York">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>State</label>
-                            <input class="form-control" type="text" placeholder="New York">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>ZIP Code</label>
-                            <input class="form-control" type="text" placeholder="123">
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="newaccount">
-                                <label class="custom-control-label" for="newaccount">Create an account</label>
+                        <div class="hide" id="addAddress">
+
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">Enter Address</label>
+                                <textarea class="form-control" form="noForm" rows="3" cols="35" name="address"
+                                    id="newAddingAddress"></textarea>
                             </div>
+                            <br>
+                            <button class="btn btn-success" form="addAddressForm" onclick="addAddress()">Submit</button>
+                            <button class="btn btn-danger" form="noForm" onclick="hide()">cancel</button>
+
                         </div>
-                        <div class="col-md-12">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="shipto">
-                                <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
-                            </div>
-                        </div> --}}
-                
-               
-                
+
+                    </div>
+                    <br>
+
+                    <input type="radio" id="" name="address" value="" style="display:none;">
+                    {{#each address}}
+
+                    <input type="radio" id="{{this}}" name="address" class="address" value="{{this}}">
+                    <label for="{{this}}">{{this}}</label>
+                    <br>
+
+                    {{/each}}
+
+                    <input type="text" class="form-control mt-5 p-1" id="coupon" onfocus="removeCouponError()"
+                        style="width: 300px;display:inline-block;" placeholder="Enter Coupon Code">
+                    <button class="btn btn-success" form="notAform" onclick="applyCoupon()">Apply</button>
+                    <p class="alert alert-danger" id="coupon-error" style="display: none;width:100%;"></p>                    
+                    <input type="text" name="coupon" style="display:none;" id="couponValue">
+
+
+                </div>
+                {{!-- <div class="col-md-6 form-group">
+                    <label>Address Line 2</label>
+                    <input class="form-control" type="text" placeholder="123 Street">
+                </div> --}}
+                {{!-- <div class="col-md-6 form-group">
+                    <label>Country</label>
+                    <select class="custom-select">
+                        <option selected>United States</option>
+                        <option>Afghanistan</option>
+                        <option>Albania</option>
+                        <option>Algeria</option>
+                    </select>
+                </div> --}}
+                {{!-- <div class="col-md-6 form-group">
+                    <label>City</label>
+                    <input class="form-control" type="text" placeholder="New York">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>State</label>
+                    <input class="form-control" type="text" placeholder="New York">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>ZIP Code</label>
+                    <input class="form-control" type="text" placeholder="123">
+                </div>
+                <div class="col-md-12 form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="newaccount">
+                        <label class="custom-control-label" for="newaccount">Create an account</label>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="shipto">
+                        <label class="custom-control-label" for="shipto" data-toggle="collapse"
+                            data-target="#shipping-address">Ship to different address</label>
+                    </div>
+                </div> --}}
+
+
+
             </div>
             <div class="col-md-5">
                 <h5 class="title pr-3">Order Total</span></h5>
                 <br>
                 <div class="p-10 mb-2">
-                    
-                    
+
+
                     <div class="border-bottom">
                         <h6 class="mb-3">Products</h6>
                         {{#each productdata}}
                         <div class="d-flex justify-content-between">
                             <p>{{this.name}} X {{this.quantity}} = {{this.price}}</p>
                         </div>
-                       
+
                         {{/each}}
-                         <div id="couponOffer" style="display: none;">
+                        <div id="couponOffer" style="display: none;">
                             Coupon Offer = <span id="couponOfferPercentage"></span>% OFF
                         </div>
                     </div>
@@ -120,17 +146,20 @@
                     </div>
                 </div>
                 <br>
-                <div class="mb-5">
-                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="title pr-3">Payment</span></h5>
-                    <p class="alert alert-danger" id="payment-error" style="display:none;width:100%; margin:0"></p>    
+                <div style="margin-top:25px;">
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span
+                            class="title pr-3">Payment</span></h5>
+                    <p class="alert alert-danger" id="payment-error" style="display:none;width:100%; margin:0"></p>
 
                     <br>
                     <div class="p-20">
                         <div class="form-group">
                             <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input paymentMethod" name="paymentMethod" value="COD" id="COD">
+                                <input type="radio" class="custom-control-input paymentMethod" name="paymentMethod"
+                                    value="COD" id="COD">
                                 <label class="custom-control-label" for="COD">Cash On Delivery</label> <br>
-                                 <input type="radio" class="custom-control-input paymentMethod" name="paymentMethod" value="razorpay" id="razorpay">
+                                <input type="radio" class="custom-control-input paymentMethod" name="paymentMethod"
+                                    value="razorpay" id="razorpay">
                                 <label class="custom-control-label" for="razorpay">Razorpay</label>
 
                             </div>
@@ -148,219 +177,259 @@
                             </div>
                         </div> --}}
                         <br>
-                        <button type="submit" class="btn btn-block btn-primary font-weight-bold mt-2 py-3">Place Order</button>
-                        {{!-- <button type="submit" class="btn btn-block btn-primary font-weight-bold mt-2 py-3">Place Order</button> --}}
-                        
+                        <button type="submit" class="btn btn-block btn-primary font-weight-bold mt-2 py-3">Place
+                            Order</button>
+                        {{!-- <button type="submit" class="btn btn-block btn-primary font-weight-bold mt-2 py-3">Place
+                            Order</button> --}}
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </form>
-    <!-- Checkout End --> 
+</form>
+<!-- Checkout End -->
 
 
 <script>
 
-    function applyCoupon(){
-    let coupon = document.getElementById("coupon").value;
-   
-$.ajax({
-            url:'/applyCoupon',
-            method:'post',
-            data:{"coupon":coupon},
-            success:(response)=>{
-                console.log(response.coupon)
-                if(response.coupon){      
-                let off = response.coupon.offer;   
-                document.getElementById("couponValue").value = coupon;
-                document.getElementById("couponOffer").style.display = "block"
-                document.getElementById("couponOfferPercentage").innerText = response.coupon.offer;
-                let grantTotal = Number(document.getElementById("grantTotal").innerText) 
-                let offerPrice = (grantTotal - ((grantTotal/100)*off))
-                document.getElementById("grantTotal").innerText = offerPrice;
-                
-                }else{
-                    console.log("res illa")
-                document.getElementById("couponValue").value = "";
-                document.getElementById("couponOffer").style.display = "none"
-                document.getElementById("grantTotal").innerText ={{grantTotal}}
-                }
+    function removeCouponError(){
+        setTimeout(()=>{
+    var couponErr = document.getElementById('coupon-error');
+    couponErr.style.display = "none";
+        },700)
+    }
+
+    function show() {
+        let addAddress = document.getElementById('addAddress')
+        addAddress.classList.remove('hide')
+    }
+    function hide(){
+        let addAddress = document.getElementById('addAddress')
+        addAddress.classList.add('hide')
+    }
+  
+  function addAddress() {
+        // action="/addAddressCheckOut" method="post" 
+        let newAddress = document.getElementById("newAddingAddress").value;
+        $.ajax({
+            url: '/addAddressCheckOut',
+            method: 'post',
+            data: { "address": newAddress },
+            success: (response) => {
+                location.reload(); 
             }
         })
+    }
 
-    }             
-                     
 
-$(function(){
-    $('.address').click(function(){
-        if ($(this).is(':checked'))
-        {
-        validateAddress()
+
+
+
+
+
+
+    function applyCoupon() {
+        let coupon = document.getElementById("coupon").value;
+
+        $.ajax({
+            url: '/applyCoupon',
+            method: 'post',
+            data: { "coupon": coupon },
+            success: (response) => {
+                if(response.status && response.coupon) {
+                    document.getElementById("grantTotal").innerText = {{ grantTotal }}
+                    let off = response.coupon.offer;
+                    document.getElementById("couponValue").value = coupon;
+                    document.getElementById("couponOffer").style.display = "block"
+                    document.getElementById("couponOfferPercentage").innerText = response.coupon.offer;
+                    let grantTotal = Number(document.getElementById("grantTotal").innerText)
+                    let offerPrice = (grantTotal - ((grantTotal / 100) * off))                    
+                    document.getElementById("grantTotal").innerText = offerPrice;
+
+                } 
+                else{
+                    document.getElementById("couponValue").value = "";
+                    document.getElementById("couponOffer").style.display = "none"
+                    document.getElementById("grantTotal").innerText = {{ grantTotal }}
+                    var couponErr = document.getElementById('coupon-error');
+                    couponErr.innerText = response.ErrMsg
+                    couponErr.style.display = "block";
+
+                }
+                
+                
+            }
+        })
         }
+
+
+    $(function () {
+        $('.address').click(function () {
+            if ($(this).is(':checked')) {
+                validateAddress()
+            }
+        });
+        $('.paymentMethod').click(function () {
+            if ($(this).is(':checked')) {
+                validatePayment()
+            }
+        });
     });
-    $('.paymentMethod').click(function(){
-    if ($(this).is(':checked'))
-    {
-        validatePayment()
-    }
-    });
-});
 
 
-const form = document.getElementById('checkOutForm')
-var nameErr = document.getElementById('name-error');
-var phoneErr = document.getElementById('phone-error');
-var addressErr = document.getElementById('address-error');
-var paymentErr = document.getElementById('payment-error');
+    const form = document.getElementById('checkOutForm')
+    var nameErr = document.getElementById('name-error');
+    var phoneErr = document.getElementById('phone-error');
+    var addressErr = document.getElementById('address-error');
+    var paymentErr = document.getElementById('payment-error');
 
 
-function validateName(){
-    var name = document.getElementById('name').value;
-    nameErr.style.display = "block";
+    function validateName() {
+        var name = document.getElementById('name').value;
+        nameErr.style.display = "block";
 
-    if(name.length == 0) {
-        nameErr.innerHTML = 'Name is required';
-        return false;
-    }
+        if (name.length == 0) {
+            nameErr.innerHTML = 'Name is required';
+            return false;
+        }
 
 
-    if(!name.match(/^[A-Za-z]*$/)){
-        nameErr.innerHTML = 'Enter Valid name';
-        return false;
+        if (!name.match(/^[A-Za-z]*$/)) {
+            nameErr.innerHTML = 'Enter Valid name';
+            return false;
 
-    }
-    nameErr.innerHTML = ''; 
-    nameErr.style.display = "none";
-    return true;
-}
-
-function validatePhone(){
-    var phone = document.getElementById('number').value;
-    phoneErr.style.display = "block";
-    if(phone.length == 0){
-      phoneErr.innerHTML='Phone number is required';
-      return false;
-    }
-    
-    if(phone.length !== 10){
-      phoneErr.innerHTML='Phone number should 10 digit';
-      return false;
-    }
-    
-    if(!phone.match(/^[0-9]{10}$/)){
-      phoneErr.innerHTML = 'Phone number should be 10 digit';      
-      return false;
-    }
-    phoneErr.style.display = "none";
-    return true;
-
-}    
-
-function validateAddress(){
-
-    let address = document.checkOutForm.address;
-    for(let i = 0;i<address.length;++i){
-      if(address[i].checked){
-    addressErr.style.display = "none";
-        return true
-        break;
-      }
+        }
+        nameErr.innerHTML = '';
+        nameErr.style.display = "none";
+        return true;
     }
 
-    addressErr.style.display = 'block';
-      addressErr.innerHTML = 'Select A Address';      
+    function validatePhone() {
+        var phone = document.getElementById('number').value;
+        phoneErr.style.display = "block";
+        if (phone.length == 0) {
+            phoneErr.innerHTML = 'Phone number is required';
+            return false;
+        }
 
-    return false
-   
-}
+        if (phone.length !== 10) {
+            phoneErr.innerHTML = 'Phone number should 10 digit';
+            return false;
+        }
 
+        if (!phone.match(/^[0-9]{10}$/)) {
+            phoneErr.innerHTML = 'Phone number should be 10 digit';
+            return false;
+        }
+        phoneErr.style.display = "none";
+        return true;
 
-
-function validatePayment(){
-
-    let payment = document.checkOutForm.paymentMethod;
-    for(let i = 0;i<payment.length;++i){
-      if(payment[i].checked){
-    paymentErr.style.display = "none";
-        return true
-        break;
-      }
     }
 
-    paymentErr.style.display = "block";
-    paymentErr.innerHTML = 'Select A Payment Method';      
+    function validateAddress() {
 
-    return false
-   
-}
+        let address = document.checkOutForm.address;
+        for (let i = 0; i < address.length; ++i) {
+            if (address[i].checked) {
+                addressErr.style.display = "none";
+                return true
+                break;
+            }
+        }
+
+        addressErr.style.display = 'block';
+
+        return false
+
+    }
+
+
+
+    function validatePayment() {
+
+        let payment = document.checkOutForm.paymentMethod;
+        for (let i = 0; i < payment.length; ++i) {
+            if (payment[i].checked) {
+                paymentErr.style.display = "none";
+                return true
+                break;
+            }
+        }
+
+        paymentErr.style.display = "block";
+        paymentErr.innerHTML = 'Select A Payment Method';
+
+        return false
+
+    }
 
 </script>
 
 <script>
-    $("#checkOutForm").submit((e)=>{
-e.preventDefault()
-        if(!validateName() || !validatePhone() || !validateAddress() || !validatePayment() ){   
-        }else{        
+    $("#checkOutForm").submit((e) => {
+        e.preventDefault()
+        if (!validateName() || !validatePhone() || !validateAddress() || !validatePayment()) {
+        } else {
+            $.ajax({
+                url: '/placeorder',
+                method: 'post',
+                data: $('#checkOutForm').serialize(),
+                success: (response) => {
+                    if (response.codSuccess) {
+                        location.href = '/orders'
+                    } else {
+                        razorpayPayment(response)
+                    }
+                }
+            })
+        }
+    })
+    function razorpayPayment(order) {
+        var options = {
+            "key": "{{razorpay_key}}",
+            "amount": (order.amount * 100),
+            "currency": "INR",
+            "name": "MY SHOP",
+            "description": "Test Transaction",
+            "image": "/images/myshop.png",
+            "order_id": order.id,
+            "handler": function (response) {
+                verifyPayment(response, order)
+            },
+            "prefill": {
+                "name": "MY SHOP",
+                "email": "myshop@gmail.com",
+                "contact": "9080706010"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+
+    function verifyPayment(payment, order) {
         $.ajax({
-            url:'/placeorder',
-            method:'post',
-            data:$('#checkOutForm').serialize(),
-            success:(response)=>{
-                if(response.codSuccess){
-                    location.href='/orders'
-                }else{
-                    razorpayPayment(response)
+            url: '/verifyPayment',
+            data: {
+                payment,
+                order
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.status) {
+                    location.href = '/orders'
+                } else {
+                    alert("payment Failed")
                 }
             }
         })
-}
-})
-function razorpayPayment(order){
-var options = {
-    "key": "{{razorpay_key}}" , 
-    "amount": (order.amount*100), 
-    "currency": "INR",
-    "name": "MY SHOP",
-    "description": "Test Transaction",
-    "image": "/images/myshop.png",
-    "order_id":order.id, 
-    "handler":function (response){
-        verifyPayment(response,order)
-    },
-    "prefill": {
-        "name": "MY SHOP",
-        "email": "myshop@gmail.com",
-        "contact": "9080706010"
-    },
-    "notes": {
-        "address": "Razorpay Corporate Office"
-    },
-    "theme": {
-        "color": "#3399cc"
     }
-};
-var rzp1 = new Razorpay(options);
-rzp1.open(); 
-}
-
-function verifyPayment(payment,order){
-    $.ajax({
-        url:'/verifyPayment',
-        data:{
-            payment,
-            order
-        },
-        method:'post',
-        success:(response)=>{
-            if(response.status){
-                 location.href='/orders'
-            }else{
-                alert("payment Failed")
-            }
-        }
-    })
-}
 
 </script>
 

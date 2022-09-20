@@ -81,12 +81,15 @@ if(data){
  
 });
 
+router.get('/error', function(req, res) {
+  res.render('users/error')
+});
+
 router.get('/signup', function(req, res) {
   res.render('users/signup')
 });
 
 router.post('/signup', async function (req, res) {
-console.log(req.body);
 if(req.body.password){
 req.body.password = await bcrypt.hash(req.body.password,10)
 otp = Math.floor(100000 + Math.random() * 900000);
@@ -139,11 +142,34 @@ router.get('/verifyotp', function(req, res, next) {
 });
 
 // applyCoupon
-router.post('/applyCoupon', (req, res) => {
-  console.log(req.body);
-  helpers.checkCoupon(req.body).then(coupon=>{
-    res.json({coupon})
+router.post('/applyCoupon',checkuser, async (req, res) => {
+
+  let couponUsed = await helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
+  if(couponUsed){
+  // coupon is used 
+  console.log("used");
+  res.json({status:false,ErrMsg:"Coupen Code is already Used"})
+}else{
+  // coupon is not used
+  console.log("Not used");
+helpers.checkCoupon(req.body).then(coupon=>{
+  if(coupon){
+    // coupon is available
+    console.log(coupon.couponName);
+    console.log("available coupon");
+  res.json({status:true,coupon})
+
+
+
+  }else{
+    // coupon is not available
+    console.log(coupon);
+  res.json({status:false,ErrMsg:"Invalid Coupen Code"})
+  }
+
   })
+
+  }
 });
 
 router.post('/verifyotp', function(req, res, next) {
@@ -381,7 +407,24 @@ router.post('/searchRateRange',(req,res)=>{
 router.get('/myprofile',checkuser,(req,res)=>{ 
     helpers.getUser(req.user.email).then(async(user)=>{
       let category = await helpers.getCategory()
-    res.render('users/profile',{address:user.address,user,category})
+      let walletDetails = await helpers.walletDetails(req.user.email)
+      let coupons = await helpers.getCoupons();
+      let availableCoupons = []
+      let usedCoupons = []
+      // console.log(coupons);
+      for(let i=0;i<coupons.length;++i){ 
+      await helpers.checkCouponUsedOrNot(req.user.email,coupons[i].couponName).then(result =>{
+        if(result){
+          // coupon is used
+          usedCoupons.push(coupons[i])
+        }else{
+          // coupon is not used
+          availableCoupons.push(coupons[i])
+        }
+      })
+    }
+  
+    res.render('users/profile',{address:user.address,user,category,walletDetails,availableCoupons,usedCoupons})
     }).catch(err =>{
       console.log(err);
     })
@@ -432,6 +475,19 @@ router.post('/addAddress',checkuser,(req,res)=>{
   res.redirect('myprofile')
 })
 
+router.post('/addAddressCheckOut',checkuser,(req,res)=>{
+  let address = req.body.address
+  console.log(address);
+  let stringAdress = address.replace(/\s+/g, ' ').trim()
+  if(stringAdress.length > 10){
+  helpers.addAddress(req.user.email,stringAdress)
+}else{
+  res.cookie('Address_error',"Invalid Address", { httpOnly: true })
+}
+
+res.json({})
+})
+
 router.get('/orders',checkuser,(req,res)=>{
 helpers.getAllOrder(req.user.email).then(async(data)=>{
   // let grantTotal = 0
@@ -467,12 +523,6 @@ router.post('/removeItemFromWishlist',checkuser,(req,res)=>{
   res.json({delete:true})
   })
 
-router.get('/wallet',checkuser,async(req,res)=>{
-
-  let walletDetails = await helpers.walletDetails(req.user.email)
-  console.log(walletDetails);
-  res.render('users/wallet.hbs',{walletDetails})
-})
 
 router.post('/changepassword',checkuser,async (req,res)=>{
   let existingpassword = req.body.existingpassword;
@@ -548,17 +598,15 @@ res.redirect('/myprofile')
 // moment().format("MMM Do YY")
 router.post('/placeorder',checkuser, (req,res)=>{
 
-console.log("first");
     // inser details into order collection 
  helpers.getAllCartItems(req.user.email).then(async (cartitems)=>{
-console.log("middle");
   grantTotal = 0
   
   details = {}
   order = []
   cartitems.forEach(async data =>{
 
-
+  
   if(data.product.offerPrice){
     order.push({item:data.item,quantity:data.quantity,price:data.product.offerPrice,productname:data.product.name,category:data.product.category,description:data.product.description,totalAmount:data.quantity*data.product.offerPrice})
 
@@ -585,24 +633,42 @@ console.log("middle");
 
   })
 
+  let couponUsed = await helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
+if(couponUsed){
+// coupon is used 
+}else{
+
 
   let off = await helpers.checkCoupon(req.body)
-  console.log(off);
+  // console.log(off);
   if(off){
+  details['couponName'] =  off.couponName 
   off = off.offer;
-  details['offer'] =  off                    
+  details['offer'] =  off  
   grantTotal = (grantTotal - ((grantTotal/100)*off)) 
   }
-   console.log("Grand total inside loop ",grantTotal);
+
+// console.log("inside if");
+
+
+}
+
+
+
+  //  console.log("Grand total inside loop ",grantTotal);
  
 
 details['grantTotal'] =  grantTotal                    
 
 
-console.log("isndie details grantTotal",details.grantTotal);
+// console.log("isndie details grantTotal",details.grantTotal);
 
-console.log("Order details",order,"details",details)
-console.log("last");
+// console.log("Order details",order,"details",details)
+
+if(details['couponName']){
+  helpers.addUsedCoupon(req.user.email,details['couponName'])
+}
+
 
   helpers.addOrder(order,details).then((orderId)=>{
     if(req.body.paymentMethod=="COD"){
