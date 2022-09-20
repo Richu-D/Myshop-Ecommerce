@@ -117,7 +117,9 @@
             <div>
                 
                 <div id="manageAddress">
-                    <h2><u>Manage Address</u></h2><br>
+                  {{#if address}}  <h3><u>Manage Address</u></h3><br> {{else}} <div class="alert alert-info" role="alert">
+  Please Add Address
+</div>{{/if}}
 
                     {{!-- Add address --}}
                     <div>
@@ -271,7 +273,7 @@
                 </div>
 
                 <div class="container-fluid hide pt-4 px-4" id="coupons">
-                    <h2>Available Coupons</h2>
+                   {{#if availableCoupons}} <h2>Available Coupons</h2> {{else}}<div class="alert alert-warning" role="alert">No Coupons Available<div><br>{{/if}}
                     <div class="row g-4">
                         {{#each availableCoupons}}
                         <div class="col-sm-6 col-xl-4">

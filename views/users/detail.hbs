@@ -1,19 +1,10 @@
 {{>user_header}}
-<script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
-<style>
-    #img-container div{
-        z-index: 100;
-    }
-    .custom-radio{
-        margin-right: 10px;
-    }
-</style>
 <div>
     <!-- Shop Detail Start -->
     <div class="container-fluid pb-5">
         <div class="row px-xl-5">
             <div class="col-lg-4 mb-30" id="img-container">
-                <img class="w-100 h-100" src="/product_image/{{data._id}}.jpg" alt="Image">
+                <img id="zoom" class="w-100 h-100" src="/product_image/{{data._id}}.jpg" alt="Image">
             </div>
 
             <div class="col-lg-7 h-auto mb-30">
@@ -256,16 +247,19 @@
 </div>
 
 
-<script>
-    var options = {
-        width: 400,
-        zoomWidth: 500,
-        scale: 0.7,
-        zoomLensStyle: "background-color: white;",
-        offset: { vertical: 0, horizontal: 0 }
-    };
-    new ImageZoom(document.getElementById("img-container"), options);
+ <script src="/javascripts/zoomsl.js"></script>
 
+<script>
+  $(document).ready(function () {
+   // $('.small-images img').click(function(){
+    //  let image = $(this).attr('src')
+   // $('.pdtImg img').attr('src',image)
+    //})
+    $("#zoom").imagezoomsl({
+  
+      zoomrange: [4, 4]
+    });
+  })
 </script>
 
 {{>user_footer}}
