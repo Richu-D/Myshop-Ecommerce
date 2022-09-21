@@ -242,7 +242,7 @@ let token = req.cookies.jwt;
 
     
 
-router.get('/home',checkuser,async function(req, res) {
+router.get('/home',async function(req, res) {
  let products = await helpers.getAllProducts()
   let category = await helpers.getCategory()
 console.log(products);
@@ -254,13 +254,11 @@ router.get('/shop',checkuser, function(req, res) {
   res.render('users/shop')
 });
 
-router.get('/detail/:id',checkuser, function(req, res) {
+router.get('/detail/:id', function(req, res) {
   helpers.getProductDetails(req.params.id).then((data)=>{
     res.render('users/detail',{data})
-  }).catch(err =>{
-    console.log(`This is an cautch error ${err}`);
-    console.log(err);
-    res.json()
+  }).catch(() =>{
+    res.redirect('/error')
   })
 });
 
@@ -378,7 +376,7 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
 })
 
 
-router.get('/search',checkuser,(req,res)=>{
+router.get('/search',(req,res)=>{
   
   helpers.search(req.query.searchKey).then(async data =>{ 
     let category = await helpers.getCategory()
@@ -498,6 +496,7 @@ helpers.getAllOrder(req.user.email).then(async(data)=>{
   // }) 
   let category = await helpers.getCategory()
   if(data[0]){
+    console.log(data[0]);
   res.render('users/orders',{data,category})
   }else{
     res.render('users/emptyOrders',{category})

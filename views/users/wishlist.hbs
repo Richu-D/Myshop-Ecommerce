@@ -20,17 +20,19 @@
     }
     .left{
         display: flex;
-flex-direction: column;
-justify-content: inherit;
+    flex-direction: column;
+    justify-content: inherit;
     }
     .wishlistDeleteIcon{
-        color:rgba(69, 69, 69, 0.76)
+        color:rgba(69, 69, 69, 0.76);
+        font-size: 22px;
 
     }
     .wishlistDeleteIcon:hover{
         color:red;
     }
     .right{
+        display: flex;
         padding: 40px 0;
     }
 </style>
@@ -58,7 +60,10 @@ justify-content: inherit;
         </div>
 
         <div class="right">
-            <div class="fa fa-trash wishlistDeleteIcon" onclick="removeWishlistItem('{{this.product._id}}')"></div>
+            <div>
+            <form action="/addtocart/{{this.product._id}}" method="post"><button class="btn btn-primary px-2">Add To Cart</button></form>
+            </div>
+            <div class="fa fa-trash wishlistDeleteIcon my-auto" onclick="removeWishlistItem('{{this.product._id}}')"></div>
         </div>
     </div>  
 </div>

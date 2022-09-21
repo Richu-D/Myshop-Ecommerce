@@ -5,11 +5,10 @@ var objectId = require('mongodb').ObjectId
 const Razorpay = require('razorpay');
 var moment = require('moment')
 const { resolve } = require('path');
-
-            var instance = new Razorpay({
-             key_id: process.env.RAZORPAY_KEY_ID,
-             key_secret: process.env.RAZORPAY_SECRET_KEY,
-                });
+var instance = new Razorpay({
+key_id: process.env.RAZORPAY_KEY_ID,
+key_secret: process.env.RAZORPAY_SECRET_KEY,
+});
 
 module.exports={
 
@@ -25,13 +24,19 @@ module.exports={
         return new Promise(async(resolve,reject)=>{
             let products =await db.get().collection(collection.PRODUCT_COLLECTION).find().toArray()
             resolve(products)
-        }) 
+        })
     },
     wishlistAndCartCount:(email)=>{
       
-            
+        console.log("This is email",email);
         
         return new Promise(async(resolve,reject)=>{
+            try {
+        let userName = await db.get().collection(collection.USERS).aggregate([
+            {$match:{"email":email}},
+            {$project:{_id:0,username:1}}
+        ]).toArray()
+             
         let wishlistCount = await db.get().collection(collection.WISHLIST).aggregate([
                 {$match:{user:email}},
                 {$project:{_id:0,'wishlistSize':{$size:"$wishlistItems"}}}
@@ -41,17 +46,17 @@ module.exports={
             {$match:{user:email}},
             {$project:{_id:0,'cartSize':{$size:"$products"}}}
         ]).toArray()
-        if(wishlistCount[0]===undefined && cartCount[0] === undefined){
-            resolve({wishlistCount:0,cartCount:0})
-        }else if(cartCount[0]===undefined){
-            resolve({wishlistCount:wishlistCount[0].wishlistSize,cartCount:0})
-        }else if(wishlistCount[0]===undefined){
-            resolve({wishlistCount:0,cartCount:cartCount[0].cartSize})
-        }else{
-            resolve({wishlistCount:wishlistCount[0].wishlistSize,cartCount:cartCount[0].cartSize})
-        }
 
-        })
+        // if(wishlistCount[0]===undefined && cartCount[0] === undefined) return resolve({wishlistCount:0,cartCount:0,userName:userName[0]?.username||"Guest User"});
+        // if(cartCount[0]===undefined) return resolve({wishlistCount:wishlistCount[0].wishlistSize,cartCount:0,userName:userName[0]?.username||"Guest User"});
+        // if(wishlistCount[0]===undefined) return resolve({wishlistCount:0,cartCount:cartCount[0].cartSize,userName:userName[0]?.username||"Guest User"});
+        
+        resolve({wishlistCount:wishlistCount[0]?.wishlistSize||0,cartCount:cartCount[0]?.cartSize||0,userName:userName[0]?.username||"Guest User"});      
+    } catch (error) {
+        // Error Log
+        console.log(error);
+    }
+    })
     },
     addUser:async(userDetail)=>{
     db.get().collection(collection.USERS).insertOne(userDetail)
@@ -861,9 +866,8 @@ db.get().collection(collection.CATEGORY).updateMany({$or:[{offerStarts:{$gt:new 
 categoryOffersStatusUpdate:async ()=>{
     // setting Active status for active offers in category
  db.get().collection(collection.CATEGORY).updateMany({$and:[{offerStarts:{$lte:new Date()}},{offerExpire:{$gte:new Date()}}]},{$set:{status:true}}).then(async result =>{
-    console.log(result);
+    
     if(result.modifiedCount){
-        console.log("change the modifide category products price");
         // updated true
 
        let modifyProductCollections = await db.get().collection(collection.CATEGORY).aggregate([
@@ -890,7 +894,6 @@ categoryOffersStatusUpdate:async ()=>{
             }
         } 
         ]).toArray()
-       console.log(modifyProductCollections);
 
         for(let i = 0;i<modifyProductCollections.length;++i){
      db.get().collection(collection.PRODUCT_COLLECTION).updateMany({_id:modifyProductCollections[i]._id},{$set:{"offerPrice":Math.round(modifyProductCollections[i].price-(modifyProductCollections[i].offer*(modifyProductCollections[i].price/100))),"offerPercentage":modifyProductCollections[i].offer}})

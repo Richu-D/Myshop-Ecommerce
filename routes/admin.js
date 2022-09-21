@@ -60,6 +60,7 @@ router.get('/categoryOffer',async function(req, res) {
   helpers.categoryOffersStatusUpdate()
   let categorys = await helpers.getCategoryOfferProducts()
   helpers.getCategory().then(categoryList =>{
+    console.log(categoryList);
     res.render('admin/categoryOffer',{categoryOffer:true,categoryList,categorys})
   })
 });

@@ -51,6 +51,18 @@
                         {{/each}}
                     </tbody>
                 </table>
+
+{{else}}
+
+<div class="container" style="margin-top:100px;" id="emptyCategoryOfferId">
+<div style="margin:auto auto; width:fit-content">
+<div style="display:flex;flex-direction:column; justify-content: center; align-items: center;" style="position:relative;text-align:center;">
+<img src="/images/emptyCategoryOfferImage.png" alt="" style="width:30vw;">
+<h1 style="font-size:2rem;position:absolute; top:50%;left:50%;transform: translate(-5%,150%);color:rgba(249, 25, 25, 0.934)">No Category Offers</h1>
+</div>
+</div>
+</div>
+
 {{/if}}
 {{!-- Sweet Alert --}}
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -66,6 +78,7 @@ offerStartsDates[i].innerText=moment(offerStartsDates[i].innerText).format('MMM 
             function showAddCategoryOfferForm(){
                 document.getElementById('addCategoryOfferForm').style.display="block";
                 document.getElementById('addCategoryOfferButton').style.display="none";
+                document.getElementById('emptyCategoryOfferId').style.display="none";
 
             }
 

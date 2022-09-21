@@ -60,25 +60,9 @@
         </div>       
     </div>
     <!-- Footer End -->
-    <script>
-        let wishlist = document.getElementById('wishlist-icon')
-        let cart = document.getElementById('cart-icon')
-        
-        $.ajax({
-                url:'/wishlistAndCartCount',                
-                method:'post',
-                success:(response)=>{
-                   wishlist.innerText = response.wishlistCount
-                   cart.innerText = response.cartCount
-                }
-            })
-
-    </script>
+    
 
 
-
-    <!-- JavaScript Libraries -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
     
 

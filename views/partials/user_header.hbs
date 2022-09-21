@@ -192,6 +192,12 @@
         }
     </script>
 
+<script defer src="/javascripts/header.js"></script>
+
+<!-- JavaScript Libraries -->
+<script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+
     {{!-- Sweet Alert --}}
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
@@ -298,11 +304,15 @@ border-radius: .25rem;
             <a class="dropdown">
                 <a class=" dropdown-toggle fa fa-user" id="profile" {{#if user}} style="color: #29edeb;" {{/if}} data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false" id="profile">
+                <span style="font-size:medium;" id="userName"></span>
                 </a>
                 <div class="dropdown-menu mt-4">
                     <a class="dropdown-item" href="/myprofile">Profile</a>
                     <a class="dropdown-item" href="/orders">Order</a>
-                    <a class="dropdown-item" href="/logout">Logout</a>
+                 
+                    <a class="dropdown-item" id="loginDropdown" href="/">Login</a>
+                    <a class="dropdown-item" id="logoutDropdown" href="/logout">Logout</a>
+                    
                 </div>
             </a>
 
