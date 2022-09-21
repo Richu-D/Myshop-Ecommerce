@@ -156,10 +156,22 @@ router.post('/add_product', function(req, res) {
 
 });
 
+// makeit Ajax request
 router.post('/add_category',(req,res)=>{
-  // push category:value in document 
-  helpers.addCategory(req.body)
-  res.redirect('add_product')
+  // check category is already exist 
+  helpers.checkCategoryAvailable(req.body.category).then(exist =>{
+    if(exist){
+      console.log("exist ",exist);
+      res.redirect('add_product')
+    }else{
+      console.log("not exist ",exist);
+      // push category:value in document 
+      helpers.addCategory(req.body)
+      res.redirect('add_product')
+    }
+  })
+
+  
 })
 
 

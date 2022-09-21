@@ -158,9 +158,9 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     },
     getProductDetails:(id)=>{
         return new Promise((resolve,reject)=>{
-            db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{
-                
-                resolve(product)
+            db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{  
+                if(!product) reject()                
+                resolve(product)   
             })
             
         })
@@ -208,6 +208,12 @@ let data = await db.get().collection(collection.USERS).findOne({email})
         return new Promise(async(resolve,reject)=>{
         let category =await db.get().collection(collection.CATEGORY).find().toArray()
         resolve(category)
+    }) 
+    },
+    checkCategoryAvailable:(categoryName)=>{
+        return new Promise(async(resolve,reject)=>{
+        let availbleCategory =await db.get().collection(collection.CATEGORY).find({"category":categoryName}).toArray()
+        resolve(availbleCategory[0])
     }) 
     },
     editCategory:(id,data)=>{

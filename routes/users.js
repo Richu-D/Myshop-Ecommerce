@@ -172,6 +172,8 @@ helpers.checkCoupon(req.body).then(coupon=>{
   }
 });
 
+
+
 router.post('/verifyotp', function(req, res, next) {
 var {username,email,number,password,otp,referelCode} = req.cookies;
   
