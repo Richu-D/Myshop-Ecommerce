@@ -1,11 +1,11 @@
 require('dotenv').config()
 var express = require('express');
 const jwt = require('jsonwebtoken')
-var router = express.Router();
+var adminRouter = express.Router();
 var helpers = require('../helpers/helpers')
 // Authentication
 /* GET home page. */
-router.get('/', function(req, res) {
+adminRouter.get('/', function(req, res) {
   if(req.cookies.err){
     res.render('admin/signin',{err:"Enter Correct Username and Password",err_class:"alert alert-warning"})
     res.clearCookie('err')
@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
  
 });
 
-router.post('/', function(req, res) {
+adminRouter.post('/', function(req, res) {
   
  if(req.body.email==='r@gmail.com'&& req.body.password==='123'){
  console.log(process.env.ADMIN_TOKEN_SECRET)
@@ -36,7 +36,7 @@ router.post('/', function(req, res) {
   res.end()
 });
 // Authorisation 
-router.use((req,res,next)=>{
+adminRouter.use((req,res,next)=>{
 
   let token = req.cookies.jwt;
       if(token == null) return res.redirect('/admin')
@@ -49,14 +49,14 @@ router.use((req,res,next)=>{
       })   
 })
 
-router.get('/home', function(req, res) {
+adminRouter.get('/home', function(req, res) {
    helpers.salesReport().then((data)=>{
     //  console.log(data);
      res.render('admin/index',{details:data,dashboard:true})
    })
 });
 
-router.get('/categoryOffer',async function(req, res) {
+adminRouter.get('/categoryOffer',async function(req, res) {
   helpers.categoryOffersStatusUpdate()
   let categorys = await helpers.getCategoryOfferProducts()
   helpers.getCategory().then(categoryList =>{
@@ -65,7 +65,7 @@ router.get('/categoryOffer',async function(req, res) {
   })
 });
 // coupons
-router.get('/coupons',async function(req, res) {
+adminRouter.get('/coupons',async function(req, res) {
   await helpers.couponsOffersStatusUpdate()
     helpers.getCoupons().then(coupons =>{
       console.log(coupons);
@@ -73,7 +73,7 @@ router.get('/coupons',async function(req, res) {
     })
 });
 
-router.post('/addCategoryOffer',function(req, res) {
+adminRouter.post('/addCategoryOffer',function(req, res) {
 console.log(req.body);
 helpers.getCategory().then(categoryList =>{
   console.log(categoryList);
@@ -96,7 +96,7 @@ helpers.getCategory().then(categoryList =>{
 });
 
 // addCoupon
-router.post('/addCoupon', function(req, res) {
+adminRouter.post('/addCoupon', function(req, res) {
 console.log(req.body);
 req.body.couponName=req.body.couponName.replace(/\s+/g,'').trim()
 if(req.body.couponName.length>2){
@@ -106,17 +106,17 @@ if(req.body.couponName.length>2){
 });
 
 // deleteCategoryOffer
-router.get('/deleteCategoryOffer/:id', function(req, res) {
+adminRouter.get('/deleteCategoryOffer/:id', function(req, res) {
   helpers.removeCategoryOffer(req.params.id)
   res.json()
 });
 // deleteCoupon
-router.get('/deleteCoupon/:id', function(req, res) {
+adminRouter.get('/deleteCoupon/:id', function(req, res) {
   helpers.removeCouponOffer(req.params.id)
   res.json()
 });
 
-router.post('/graphdata',(req, res)=>{
+adminRouter.post('/graphdata',(req, res)=>{
   // helpers.salesReport().then((data)=>{
     helpers.graphdata().then(data=>{
 
@@ -127,7 +127,7 @@ router.post('/graphdata',(req, res)=>{
   // })
 });
 
-router.get('/add_product', function(req, res) {
+adminRouter.get('/add_product', function(req, res) {
   helpers.getCategory().then((category)=>{
     res.render('admin/add_product',{category,addProduct:true})
 
@@ -135,7 +135,7 @@ router.get('/add_product', function(req, res) {
 
 });
 
-router.post('/add_product', function(req, res) {
+adminRouter.post('/add_product', function(req, res) {
   console.log(req.body);
   if(req.files){
   helpers.addProduct(req.body,(id)=>{
@@ -157,7 +157,7 @@ router.post('/add_product', function(req, res) {
 });
 
 // makeit Ajax request
-router.post('/add_category',(req,res)=>{
+adminRouter.post('/add_category',(req,res)=>{
   // check category is already exist 
   helpers.checkCategoryAvailable(req.body.category).then(exist =>{
     if(exist){
@@ -175,12 +175,12 @@ router.post('/add_category',(req,res)=>{
 })
 
 
-router.post('/categoryedit/:id',(req,res)=>{
+adminRouter.post('/categoryedit/:id',(req,res)=>{
 helpers.editCategory(req.params.id,req.body)
  res.redirect('/admin/add_product')
 })
 
-router.get('/categorydelete/:id',(req,res)=>{
+adminRouter.get('/categorydelete/:id',(req,res)=>{
  
     helpers.deleteCategory(req.params.id)
     res.redirect('/admin/add_product')
@@ -189,21 +189,21 @@ router.get('/categorydelete/:id',(req,res)=>{
  
 
 
-router.get('/form', function(req, res){
+adminRouter.get('/form', function(req, res){
   res.render('/admin/form')
 });
 
-router.get('/allproducts', function(req, res) {
+adminRouter.get('/allproducts', function(req, res) {
   helpers.getAllProducts().then((products)=>{
   res.render('admin/allproducts',{products,allProduct:true})
   })
 })
 
-router.get('/chart', function(req, res) {
+adminRouter.get('/chart', function(req, res) {
   res.render('admin/chart')
 });
 
-router.get('/edit_product/:id', async function(req, res) {
+adminRouter.get('/edit_product/:id', async function(req, res) {
   let id = req.params.id
   let product = await helpers.getProductDetails(id)
   // console.log(product);
@@ -211,7 +211,7 @@ router.get('/edit_product/:id', async function(req, res) {
 
 });
 
-router.post('/edit_product/:id',(req, res)=>{
+adminRouter.post('/edit_product/:id',(req, res)=>{
 helpers.updateProduct(req.params.id,req.body).then(()=>{
   res.redirect('/admin/allproducts')
 
@@ -222,7 +222,7 @@ helpers.updateProduct(req.params.id,req.body).then(()=>{
 })
 })
  
-router.get('/edit/:email',(req,res)=>{
+adminRouter.get('/edit/:email',(req,res)=>{
   helpers.getUser(req.params.email).then((user)=>{
     // console.log(user);
     res.render('admin/editUser',{user})
@@ -232,7 +232,7 @@ router.get('/edit/:email',(req,res)=>{
   // data not found
 })
 
-router.post('/edit/:email',(req,res)=>{ 
+adminRouter.post('/edit/:email',(req,res)=>{ 
   // update user and redirect
   console.log(req.params.email)
   // console.log(req.body)
@@ -242,7 +242,7 @@ router.post('/edit/:email',(req,res)=>{
   res.redirect('/admin/allusers')
 })
 
-router.get('/delete_product/:id', function(req, res) {
+adminRouter.get('/delete_product/:id', function(req, res) {
   let id = req.params.id
   // delete file also
   helpers.deleteProduct(id).then((data)=>{
@@ -252,7 +252,7 @@ router.get('/delete_product/:id', function(req, res) {
 });
 
 
-router.get('/delete/:id', function(req, res) {
+adminRouter.get('/delete/:id', function(req, res) {
   let id = req.params.id
   helpers.deleteUser(id).then((data)=>{
     console.log(data);
@@ -260,33 +260,33 @@ router.get('/delete/:id', function(req, res) {
   })
 });
 
-router.get('/block/:id',(req,res)=>{
+adminRouter.get('/block/:id',(req,res)=>{
   helpers.block(req.params.id)
   res.redirect('/admin/allusers')
 })
 
-router.get('/unblock/:id',(req,res)=>{
+adminRouter.get('/unblock/:id',(req,res)=>{
   helpers.unblock(req.params.id)
   res.redirect('/admin/allusers')
 })
 
-router.get('/allusers', function(req, res) {
+adminRouter.get('/allusers', function(req, res) {
   helpers.getAllUsers().then((users)=>{
     res.render('admin/userslist',{users,allUsers:true})
     })
 });
 
 
-router.get('/about', function(req, res) {
+adminRouter.get('/about', function(req, res) {
   res.send('Admin about page')
 });
 
-router.get('/logout',(req,res)=>{
+adminRouter.get('/logout',(req,res)=>{
   res.clearCookie('jwt')
   res.redirect('/admin')
 })
 
-router.get('/orders',(req,res)=>{
+adminRouter.get('/orders',(req,res)=>{
 
   helpers.getAllOrderAvailable().then((data)=>{
     console.log(data[0]);
@@ -295,7 +295,7 @@ router.get('/orders',(req,res)=>{
 
   
   
-  router.get('/orderstatus',(req,res)=>{
+  adminRouter.get('/orderstatus',(req,res)=>{
     console.log(req.query.status);
     console.log(req.query.id);
     helpers.cancelOrder(req.query.id,req.query.status)
@@ -308,13 +308,13 @@ router.get('/orders',(req,res)=>{
 
 
 
-    router.get('/profile',(req,res)=>{
+    adminRouter.get('/profile',(req,res)=>{
       
       res.send("Admin profile ithuvare cheythilla")
   
       })
 
-      router.get('/settings',(req,res)=>{
+      adminRouter.get('/settings',(req,res)=>{
       
         res.send("Admin settings ithuvare cheythilla")
     
@@ -323,4 +323,4 @@ router.get('/orders',(req,res)=>{
 
 })
 
-module.exports = router;
+module.exports = adminRouter;

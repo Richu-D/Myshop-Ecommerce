@@ -12,8 +12,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
-
-var router = express.Router();
+var usersRouter = express.Router();
 
 function ifuser(req,res,next){
   // checking JWT
@@ -28,7 +27,7 @@ let token = req.cookies.jwt;
     })}
 
 /* GET users listing. */
-router.get('/', function(req, res) {
+usersRouter.get('/', function(req, res) {
   if(req.cookies.err){
     // res.render('users/signin')
 
@@ -39,7 +38,7 @@ router.get('/', function(req, res) {
   }
 });
 
-router.post('/', (req, res)=>{
+usersRouter.post('/', (req, res)=>{
   helpers.getUser(req.body.email).then((data)=>{
 if(data){
     if(!data.block){
@@ -81,15 +80,15 @@ if(data){
  
 });
 
-router.get('/error', function(req, res) {
+usersRouter.get('/error', function(req, res) {
   res.render('users/error')
 });
 
-router.get('/signup', function(req, res) {
+usersRouter.get('/signup', function(req, res) {
   res.render('users/signup')
 });
 
-router.post('/signup', async function (req, res) {
+usersRouter.post('/signup', async function (req, res) {
 if(req.body.password){
 req.body.password = await bcrypt.hash(req.body.password,10)
 otp = Math.floor(100000 + Math.random() * 900000);
@@ -137,12 +136,12 @@ res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.em
 
 });
 
-router.get('/verifyotp', function(req, res, next) {
+usersRouter.get('/verifyotp', function(req, res, next) {
   res.render('users/verifyotp')
 });
 
 // applyCoupon
-router.post('/applyCoupon',checkuser, async (req, res) => {
+usersRouter.post('/applyCoupon', async (req, res) => {
 
   let couponUsed = await helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
   if(couponUsed){
@@ -174,7 +173,7 @@ helpers.checkCoupon(req.body).then(coupon=>{
 
 
 
-router.post('/verifyotp', function(req, res, next) {
+usersRouter.post('/verifyotpold', function(req, res, next) {
 var {username,email,number,password,otp,referelCode} = req.cookies;
   
 var userdata ={username,email,number,password}
@@ -217,12 +216,80 @@ res.clearCookie('otp')
 });
 
 
-
-// User Authorisation
-function checkuser(req,res,next){
-  // checking JWT
+usersRouter.get('/home',async function(req, res) {
+  let products = await helpers.getAllProducts()
+   let category = await helpers.getCategory()
+ console.log(products);
+     res.render('users/home',{products,category})
+     
+ });
  
-let token = req.cookies.jwt;
+ 
+ usersRouter.post('/sendOtp',function(req, res) { 
+      console.log(req.body.phoneNumber);
+     //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
+     //             .verifications
+     //             .create({to: `+91${req.body.phoneNumber}`, channel: 'sms'})
+     //             .then(verification => {
+     //               console.log(verification.status)
+     //             });
+     res.json({})
+  });
+  usersRouter.post('/verifyOtp',function(req, res) { 
+   console.log(req.body);
+ //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
+ //       .verificationChecks
+ //       .create({to: `+91${req.body.number}`, code:`${req.body.otp}`})
+ //       .then(verification_check =>{
+ //         console.log(verification_check?.status)
+ //         if(verification_check?.status=="approved"){
+ //             console.log("hyy");
+ //             // do done tasks 
+ //           }else{
+ //             console.log("hoi");
+ //             // respond with error message
+             
+ //         }
+ // } );
+  })
+  
+  usersRouter.get('/detail/:id', function(req, res) {
+    helpers.getProductDetails(req.params.id).then((data)=>{
+      res.render('users/detail',{data})
+    }).catch(() =>{
+      res.redirect('/error')
+    })
+  });
+ 
+
+  usersRouter.get('/search',(req,res)=>{
+  
+    helpers.search(req.query.searchKey).then(async data =>{ 
+      let category = await helpers.getCategory()
+      res.render('users/shop',{data:data,category})
+    })
+  
+    // res.send(req.query.searchKey)
+    })
+
+  // need to implement contact us page
+    usersRouter.get('/contact', function(req, res) {
+      res.render('users/contact')
+    });
+
+    usersRouter.post('/searchRateRange',(req,res)=>{
+      helpers.searchRateRange(req.body.params,req.body.min,req.body.max).then(async data =>{
+        
+        res.json({data:data})
+      })
+    })
+
+    
+// User Authorisation middleware
+
+    usersRouter.use((req,res,next)=>{
+
+      let token = req.cookies.jwt;
     if(token == null) return res.redirect('/')
 
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
@@ -240,31 +307,16 @@ let token = req.cookies.jwt;
         })
         
         next()
-    })}
+    })
 
-    
+    })
 
-router.get('/home',async function(req, res) {
- let products = await helpers.getAllProducts()
-  let category = await helpers.getCategory()
-console.log(products);
-    res.render('users/home',{products,category})
-    
-});
 
-router.get('/shop',checkuser, function(req, res) {
-  res.render('users/shop')
-});
 
-router.get('/detail/:id', function(req, res) {
-  helpers.getProductDetails(req.params.id).then((data)=>{
-    res.render('users/detail',{data})
-  }).catch(() =>{
-    res.redirect('/error')
-  })
-});
 
-router.get('/cart',checkuser, async function(req, res) {
+
+
+usersRouter.get('/cart', async function(req, res) {
 
   let products = await helpers.getAllCartItems(req.user.email)
 let grantTotal = 0;   
@@ -291,7 +343,7 @@ products.forEach(data => {
 
    });
 
-router.post('/addtocart/:id',checkuser, function(req, res) {
+usersRouter.post('/addtocart/:id', function(req, res) {
   // add to cart 
 
     helpers.addToCart(req.user.email,req.params.id).then(()=>{
@@ -305,13 +357,13 @@ router.post('/addtocart/:id',checkuser, function(req, res) {
   // res.render('users/cart')
 });
 
-router.post('/change-product-quantity',(req,res)=>{
+usersRouter.post('/change-product-quantity',(req,res)=>{
   helpers.changeProductQuantity(req.body).then((response)=>{ 
     res.json(response)
   })
 })
 
-router.post('/removeCartItem',(req,res)=>{
+usersRouter.post('/removeCartItem',(req,res)=>{
   helpers.removeCartItem(req.body).then((response)=>{
     res.json(response)
   })
@@ -321,7 +373,7 @@ router.post('/removeCartItem',(req,res)=>{
   // })
 })
 
-router.get('/checkout',checkuser, async function(req, res) {
+usersRouter.get('/checkout', async function(req, res) {
 
   helpers.getAddress(req.user.email).then(async (data) =>{
 
@@ -351,14 +403,12 @@ router.get('/checkout',checkuser, async function(req, res) {
 
 
 
-router.get('/contact',checkuser, function(req, res) {
-  res.render('users/contact')
-});
-router.get('/logout',checkuser,(req,res)=>{
+
+usersRouter.get('/logout',(req,res)=>{
   res.clearCookie('jwt')
   res.redirect('/')
 })
-router.post('/updateAllValues',checkuser,async(req,res)=>{
+usersRouter.post('/updateAllValues',async(req,res)=>{
   
   let products = await helpers.getAllCartItems(req.user.email)
   let grantTotal = 0;
@@ -378,18 +428,8 @@ router.post('/updateAllValues',checkuser,async(req,res)=>{
 })
 
 
-router.get('/search',(req,res)=>{
   
-  helpers.search(req.query.searchKey).then(async data =>{ 
-    let category = await helpers.getCategory()
-    res.render('users/shop',{data:data,category})
-  })
-
-  // res.send(req.query.searchKey)
-  })
-
-  
-  router.post('/wishlistAndCartCount',checkuser,async (req,res)=>{
+  usersRouter.post('/wishlistAndCartCount',async (req,res)=>{
   
    let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email).catch(err =>{
     console.log(err);
@@ -397,14 +437,9 @@ router.get('/search',(req,res)=>{
     res.json(wishlistCountAndCartCount)
     })
 
-router.post('/searchRateRange',(req,res)=>{
-  helpers.searchRateRange(req.body.params,req.body.min,req.body.max).then(async data =>{
-    
-    res.json({data:data})
-  })
-})
 
-router.get('/myprofile',checkuser,(req,res)=>{ 
+
+usersRouter.get('/myprofile',(req,res)=>{ 
     helpers.getUser(req.user.email).then(async(user)=>{
       let category = await helpers.getCategory()
       let walletDetails = await helpers.walletDetails(req.user.email)
@@ -432,13 +467,13 @@ router.get('/myprofile',checkuser,(req,res)=>{
 
 // })
 
-router.get('/cancelorder/:id',checkuser,(req,res)=>{
+usersRouter.get('/cancelorder/:id',(req,res)=>{
 helpers.cancelOrder(req.params.id,"Order Cancelled By User")
 
   res.redirect('/orders')
 })
 
-router.get('/wishlist',checkuser,(req,res)=>{
+usersRouter.get('/wishlist',(req,res)=>{
   helpers.getWishlistItems(req.user.email).then(async(data)=>{
     let category = await helpers.getCategory()
         if(data[0]){
@@ -452,7 +487,7 @@ router.get('/wishlist',checkuser,(req,res)=>{
  })
  
 
- router.post('/wishlist/:id',checkuser,(req,res)=>{
+ usersRouter.post('/wishlist/:id',(req,res)=>{
  
 helpers.addWishlist(req.user.email,req.params.id)
 
@@ -463,7 +498,7 @@ helpers.addWishlist(req.user.email,req.params.id)
 
 
 
-router.post('/addAddress',checkuser,(req,res)=>{
+usersRouter.post('/addAddress',(req,res)=>{
   let address = req.body.address
   let stringAdress = address.replace(/\s+/g, ' ').trim()
   if(stringAdress.length > 10){
@@ -475,7 +510,7 @@ router.post('/addAddress',checkuser,(req,res)=>{
   res.redirect('myprofile')
 })
 
-router.post('/addAddressCheckOut',checkuser,(req,res)=>{
+usersRouter.post('/addAddressCheckOut',(req,res)=>{
   let address = req.body.address
   console.log(address);
   let stringAdress = address.replace(/\s+/g, ' ').trim()
@@ -488,7 +523,7 @@ router.post('/addAddressCheckOut',checkuser,(req,res)=>{
 res.json({})
 })
 
-router.get('/orders',checkuser,(req,res)=>{
+usersRouter.get('/orders',(req,res)=>{
 helpers.getAllOrder(req.user.email).then(async(data)=>{
   // let grantTotal = 0
   // data.forEach(data=>{
@@ -510,14 +545,14 @@ helpers.getAllOrder(req.user.email).then(async(data)=>{
 })
 
 // editpersonaldetails
-router.post('/editpersonaldetails',checkuser,(req,res)=>{
+usersRouter.post('/editpersonaldetails',(req,res)=>{
 
 helpers.updateUser(req.user.email,req.body)
 
 res.redirect('/myprofile')
 })
 
-router.post('/removeItemFromWishlist',checkuser,(req,res)=>{
+usersRouter.post('/removeItemFromWishlist',(req,res)=>{
 
   helpers.removeItemFromWishlist(req.user.email,req.body.productId)
   
@@ -525,7 +560,7 @@ router.post('/removeItemFromWishlist',checkuser,(req,res)=>{
   })
 
 
-router.post('/changepassword',checkuser,async (req,res)=>{
+usersRouter.post('/changepassword',async (req,res)=>{
   let existingpassword = req.body.existingpassword;
   let newpassword = req.body.newpassword;
   let conformpassword = req.body.conformpassword;
@@ -556,7 +591,7 @@ return 0;
 
   })
 
-  router.post('/verifyPayment',checkuser,(req,res)=>{
+  usersRouter.post('/verifyPayment',(req,res)=>{
       helpers.verifyPayment(req.body).then(()=>{
         helpers.changePaymentStatus(req.body['order[receipt]']).then(()=>{
           res.json({status:true})
@@ -570,7 +605,7 @@ return 0;
 
   
 
-router.post('/editaddress',checkuser,(req,res)=>{
+usersRouter.post('/editaddress',(req,res)=>{
 
   // delete address
   let oldaddress = req.body.oldaddress
@@ -586,7 +621,7 @@ router.post('/editaddress',checkuser,(req,res)=>{
   
 res.redirect('/myprofile')
 })
-router.get('/deleteaddress/:id',checkuser,(req,res)=>{
+usersRouter.get('/deleteaddress/:id',(req,res)=>{
 
 
   helpers.deleteaddress(req.user.email,req.params.id)
@@ -597,7 +632,7 @@ res.redirect('/myprofile')
 
 
 // moment().format("MMM Do YY")
-router.post('/placeorder',checkuser, (req,res)=>{
+usersRouter.post('/placeorder', (req,res)=>{
 
     // inser details into order collection 
  helpers.getAllCartItems(req.user.email).then(async (cartitems)=>{
@@ -694,4 +729,4 @@ res.json(response)
  })
 
 
-module.exports = router;
+module.exports = usersRouter;

@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>login page</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <style>
 
@@ -63,7 +64,7 @@ body {
     border-color: var(--focus)
 }
 
-.box button[type="submit"] {
+.box button{
     border: 0;
     background: none;
     display: block;
@@ -78,7 +79,7 @@ body {
     cursor: pointer
 }
 
-.box button[type="submit"]:hover {
+.box button:hover {
     background: var(--hover)
 }
 
@@ -95,10 +96,10 @@ visibility:hidden;
 
     </style>
 </head>
-<body>
+<body> 
     
     
-<form action="/signup" id="signup" method="post" class="box">
+<form id="signup" method="post" class="box">
     <h1><span style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:800;"><span style="color:#29edeb">MY</span>SHOP <br> SIGNUP</a></span></h1>
                 
     <p class="text-danger" id="warning">Please enter Valid Email and password</p>
@@ -116,17 +117,18 @@ visibility:hidden;
     <p class="alert alert-danger" id="phone-error" style="display: none;"></p>         
 
     <input type="text" name="referelCode" id="referelCode" placeholder="Referel Code (optional)">
+    <input type="number" name="otp" id="otp" placeholder="Enter OTP" style="display: none;">
     
                    
                             
-    <button type="submit">Submit</button> 
+    <button onclick="sendOtp()" id="sendOtpButton" form="notAform">Submit</button> 
+    <button onclick="verifyOtp()" id="verifyOtpButton" form="notAform" style="display: none;">Verify Otp</button> 
     <a class="signup text-muted" href="/">Already have an Account? Sign In</a>
 </form>
 
 
 <script>
 
-const form = document.getElementById('signup')
 var nameErr = document.getElementById('name-error');
 var emailErr = document.getElementById('email-error');
 var phoneErr = document.getElementById('phone-error');
@@ -210,22 +212,76 @@ function validatePassword(){
     return true
 }
 
-        function removeError(errId){
-         document.getElementById(`${errId}`).style.display = "none"
-        }
-
-
-
-
-form.addEventListener('submit',(e)=>{
-   if(!validateName() || !validateEmail() || !validatePhone() || !validatePassword() ){
-    e.preventDefault()
+function removeError(errId){
+document.getElementById(`${errId}`).style.display = "none"
 }
 
+ function sendOtp() {
 
+if(validateName() && validateEmail() && validatePhone() && validatePassword() ){
     
-})
+        let name = document.getElementById('username').value;
+        let email = document.getElementById('email').value;
+        let phoneNumber = document.getElementById('phone-number').value
+        let password = document.getElementById('password').value;
+        let referelCode = document.getElementById('referelCode').value;
+        console.log(name,email,phoneNumber,password,referelCode);
 
+
+        
+        $.ajax({
+            url: '/sendOtp',
+            method: 'post',
+            data: { "phoneNumber": phoneNumber },
+            success: (response) => {
+               // location.reload(); 
+               document.getElementById('username').style.display="none"
+               document.getElementById('email').style.display="none"
+               document.getElementById('phone-number').style.display="none"
+               document.getElementById('password').style.display="none"
+               document.getElementById('referelCode').style.display="none"
+               document.getElementById('sendOtpButton').style.display="none"
+               document.getElementById('verifyOtpButton').style.display="block"
+               document.getElementById('otp').style.display="block"
+               
+            }
+        })
+    }
+
+ }
+
+
+
+function verifyOtp(){
+    let name = document.getElementById('username').value;
+    let email = document.getElementById('email').value;
+    let phoneNumber = document.getElementById('phone-number').value
+    let password = document.getElementById('password').value;
+    let referelCode = document.getElementById('referelCode').value;
+     let otp = document.getElementById('otp').value
+console.log(otp)
+
+
+$.ajax({
+            url: '/verifyOtp',
+            method: 'post',
+            data: { 
+                "username":name,
+                "email":email,
+                "number":phoneNumber,
+                "password":password,
+                "referelCode":referelCode,
+                "otp":otp
+                },
+            success: (response) => {
+            
+            console.log(response)
+
+         }
+         })
+
+
+}
 </script>
 
 </body>
