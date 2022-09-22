@@ -68,7 +68,7 @@
                        <td>{{#each order}}<img style="width: 50px;height:50px" src="/product_image/{{this.item}}.jpg" alt="product image">{{/each}}</td>
                         <td>{{this.details.name}}</td>
                         <td>{{this.details.userId}}</td>
-                        <td>{{#each order}}{{this.productname}} x {{this.quantity}} = {{this.totalAmount}}  <br>{{/each}}Coupon Offer {{details.offer}}% OFF<br> Address : {{this.details.address}}<br> Ph: {{this.details.number}}</td>
+                        <td>{{#each order}}{{this.productname}} x {{this.quantity}} = {{this.totalAmount}}  <br>{{/each}}{{#if details.offer}}Coupon Offer {{details.offer}}% OFF<br>{{/if}} Address : {{this.details.address}}<br> Ph: {{this.details.number}}</td>
                         <td>{{this.details.date}}</td>
                         <td>{{this.details.grantTotal}}</td>
                         <td>{{this.details.paymentMethod}}</td>

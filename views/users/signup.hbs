@@ -263,6 +263,7 @@ console.log(otp)
 
 
 $.ajax({
+            
             url: '/verifyOtp',
             method: 'post',
             data: { 
@@ -274,10 +275,10 @@ $.ajax({
                 "otp":otp
                 },
             success: (response) => {
-            
-            console.log(response)
-
+            if(response.status) window.location = "/home";
+            //otp error show 
          }
+         
          })
 
 

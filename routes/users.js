@@ -7,6 +7,7 @@ const { Db } = require('mongodb');
 var moment = require('moment')
 let referralCodeGenerator = require('referral-code-generator')
 const { response } = require('../app');
+const { json } = require('express');
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -102,7 +103,7 @@ res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.em
 
 
 
-//Twilio otp send uncomment
+//Twilio custom otp send 
 
 //   try{
 //   client.messages
@@ -140,7 +141,177 @@ usersRouter.get('/verifyotp', function(req, res, next) {
   res.render('users/verifyotp')
 });
 
-// applyCoupon
+
+
+222222222
+usersRouter.post('/verifyotpold', function(req, res, next) {
+var {username,email,number,password,otp,referelCode} = req.cookies;
+  
+var userdata ={username,email,number,password}
+
+  // verifying otp 
+  bcrypt.compare(req.body.otp,otp).then((data)=>{
+    if(data){
+
+
+userdata.wallet = {
+  balance:0,
+  myReferelId:referralCodeGenerator.alphaNumeric('uppercase', 4, 4),
+  whoReferedMe:referelCode
+};
+
+helpers.addUser(userdata)
+    const email = req.cookies.email
+    const user = { email: email}
+
+  
+
+
+  //  generating JWT
+   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+  
+  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
+  res.clearCookie('password')
+res.clearCookie('email')
+res.clearCookie('username')
+res.clearCookie('number')
+res.clearCookie('data')
+res.clearCookie('otp')
+    res.redirect('/')
+
+
+    }else{
+
+    }
+  })
+
+});
+
+
+usersRouter.get('/home',async function(req, res) {
+  let products = await helpers.getAllProducts()   
+     res.render('users/home',{products,})
+     
+ });
+ 
+ 
+ usersRouter.post('/sendOtp',function(req, res) { 
+      console.log(req.body.phoneNumber);
+     //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
+     //             .verifications
+     //             .create({to: `+91${req.body.phoneNumber}`, channel: 'sms'})
+     //             .then(verification => {
+     //               console.log(verification.status)
+     //             });
+     res.json({})
+  });
+
+  usersRouter.post('/verifyOtp',async function(req, res) { 
+   var {username,email,number,password,referelCode,otp} = req.body;
+ //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
+ //       .verificationChecks
+ //       .create({to: `+91${number}`, code:`${otp}`})
+ //       .then(verification_check =>{
+ //         console.log(verification_check?.status)
+          // if(verification_check?.status!=="approved") return res.json({status:false})
+          console.log("sussuss");
+          password = await bcrypt.hash(password,10)
+ 
+var userdata ={username,email,number,password}
+
+userdata.wallet = {
+  balance:0,
+  myReferelId:referralCodeGenerator.alphaNumeric('uppercase', 4, 4),
+  whoReferedMe:referelCode
+}
+
+// console.log(userdata);
+
+helpers.addUser(userdata).then(userObjectId =>{
+  const user = {email,userObjectId}
+
+  //  generating JWT
+   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+  console.log(user);
+
+  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
+
+  res.json({status:true})
+
+})    
+  
+
+
+  })
+  
+  usersRouter.get('/detail/:id', function(req, res) {
+    helpers.getProductDetails(req.params.id).then((data)=>{
+      res.render('users/detail',{data})
+    }).catch(() =>{
+      res.redirect('/error')
+    })
+  });
+ 
+
+  usersRouter.get('/search',(req,res)=>{
+  
+    helpers.search(req.query.searchKey).then(async data =>{ 
+      
+      res.render('users/shop',{data:data})
+    })
+  
+    // res.send(req.query.searchKey)
+    })
+
+  // need to implement contact us page
+    usersRouter.get('/contact', function(req, res) {
+      res.render('users/contact')
+    });
+
+    usersRouter.post('/searchRateRange',(req,res)=>{
+      helpers.searchRateRange(req.body.params,req.body.min,req.body.max).then(async data =>{
+        
+        res.json({data:data})
+      })
+    })
+
+
+  // getCategory
+usersRouter.post('/getCategory',async (req,res)=>{
+  let category = await helpers.getCategory()
+  res.json({category})
+  })
+
+    
+// User Authorisation middleware
+
+    usersRouter.use((req,res,next)=>{
+
+      let token = req.cookies.jwt;
+    if(token == null) return res.redirect('/')
+
+    jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
+        if(err) return res.sendStatus(403)
+        req.user = user
+        // check block or not
+        helpers.getUser(req.user.email).then((data)=>{
+          if(data){
+          if(data.block){
+            res.send('Your are blocked')
+          }
+        }else{
+          res.redirect('/')
+        }
+        })
+        
+        next()
+    })
+
+    })
+
+
+
+// applyCoupon 
 usersRouter.post('/applyCoupon', async (req, res) => {
 
   let couponUsed = await helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
@@ -173,154 +344,12 @@ helpers.checkCoupon(req.body).then(coupon=>{
 
 
 
-usersRouter.post('/verifyotpold', function(req, res, next) {
-var {username,email,number,password,otp,referelCode} = req.cookies;
-  
-var userdata ={username,email,number,password}
-
-  // verifying otp 
-  bcrypt.compare(req.body.otp,otp).then((data)=>{
-    if(data){
-
-
-userdata.wallet = {
-  balance:0,
-  myReferelId:referralCodeGenerator.alphaNumeric('uppercase', 4, 4),
-  whoReferedMe:referelCode
-};
-helpers.addUser(userdata)
-    const email = req.cookies.email
-    const user = { email: email}
-
-  
-
-
-  //  generating JWT
-   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
-  
-  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
-  res.clearCookie('password')
-res.clearCookie('email')
-res.clearCookie('username')
-res.clearCookie('number')
-res.clearCookie('data')
-res.clearCookie('otp')
-    res.redirect('/')
-
-
-    }else{
-
-    }
-  })
-
-});
-
-
-usersRouter.get('/home',async function(req, res) {
-  let products = await helpers.getAllProducts()
-   let category = await helpers.getCategory()
- console.log(products);
-     res.render('users/home',{products,category})
-     
- });
- 
- 
- usersRouter.post('/sendOtp',function(req, res) { 
-      console.log(req.body.phoneNumber);
-     //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
-     //             .verifications
-     //             .create({to: `+91${req.body.phoneNumber}`, channel: 'sms'})
-     //             .then(verification => {
-     //               console.log(verification.status)
-     //             });
-     res.json({})
-  });
-  usersRouter.post('/verifyOtp',function(req, res) { 
-   console.log(req.body);
- //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
- //       .verificationChecks
- //       .create({to: `+91${req.body.number}`, code:`${req.body.otp}`})
- //       .then(verification_check =>{
- //         console.log(verification_check?.status)
- //         if(verification_check?.status=="approved"){
- //             console.log("hyy");
- //             // do done tasks 
- //           }else{
- //             console.log("hoi");
- //             // respond with error message
-             
- //         }
- // } );
-  })
-  
-  usersRouter.get('/detail/:id', function(req, res) {
-    helpers.getProductDetails(req.params.id).then((data)=>{
-      res.render('users/detail',{data})
-    }).catch(() =>{
-      res.redirect('/error')
-    })
-  });
- 
-
-  usersRouter.get('/search',(req,res)=>{
-  
-    helpers.search(req.query.searchKey).then(async data =>{ 
-      let category = await helpers.getCategory()
-      res.render('users/shop',{data:data,category})
-    })
-  
-    // res.send(req.query.searchKey)
-    })
-
-  // need to implement contact us page
-    usersRouter.get('/contact', function(req, res) {
-      res.render('users/contact')
-    });
-
-    usersRouter.post('/searchRateRange',(req,res)=>{
-      helpers.searchRateRange(req.body.params,req.body.min,req.body.max).then(async data =>{
-        
-        res.json({data:data})
-      })
-    })
-
-    
-// User Authorisation middleware
-
-    usersRouter.use((req,res,next)=>{
-
-      let token = req.cookies.jwt;
-    if(token == null) return res.redirect('/')
-
-    jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
-        if(err) return res.sendStatus(403)
-        req.user = user
-        // check block or not
-        helpers.getUser(req.user.email).then((data)=>{
-          if(data){
-          if(data.block){
-            res.send('Your are blocked')
-          }
-        }else{
-          res.redirect('/')
-        }
-        })
-        
-        next()
-    })
-
-    })
-
-
-
-
-
 
 usersRouter.get('/cart', async function(req, res) {
 
   let products = await helpers.getAllCartItems(req.user.email)
 let grantTotal = 0;   
-let category = await helpers.getCategory()
+
 console.log(products);
 if(products[0]){
 products.forEach(data => {
@@ -336,9 +365,9 @@ products.forEach(data => {
 });
 
 
-  res.render('users/cart',{products,grantTotal:grantTotal,cart:true,category})
+  res.render('users/cart',{products,grantTotal:grantTotal,cart:true})
 }else{
-  res.render('users/emptyCart',{cart:true,category})
+  res.render('users/emptyCart',{cart:true})
 }
 
    });
@@ -428,20 +457,19 @@ usersRouter.post('/updateAllValues',async(req,res)=>{
 })
 
 
-  
+
   usersRouter.post('/wishlistAndCartCount',async (req,res)=>{
-  
    let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email).catch(err =>{
     console.log(err);
    })
-    res.json(wishlistCountAndCartCount)
+    res.json({wishlistCountAndCartCount})
     })
 
 
 
 usersRouter.get('/myprofile',(req,res)=>{ 
     helpers.getUser(req.user.email).then(async(user)=>{
-      let category = await helpers.getCategory()
+      
       let walletDetails = await helpers.walletDetails(req.user.email)
       let coupons = await helpers.getCoupons();
       let availableCoupons = []
@@ -459,7 +487,7 @@ usersRouter.get('/myprofile',(req,res)=>{
       })
     }
   
-    res.render('users/profile',{address:user.address,user,category,walletDetails,availableCoupons,usedCoupons})
+    res.render('users/profile',{address:user.address,user,walletDetails,availableCoupons,usedCoupons})
     }).catch(err =>{
       console.log(err);
     })
@@ -475,11 +503,11 @@ helpers.cancelOrder(req.params.id,"Order Cancelled By User")
 
 usersRouter.get('/wishlist',(req,res)=>{
   helpers.getWishlistItems(req.user.email).then(async(data)=>{
-    let category = await helpers.getCategory()
+    
         if(data[0]){
-          res.render('users/wishlist',{products:data,wishlist:true,category})
+          res.render('users/wishlist',{products:data,wishlist:true})
         }else{
-          res.render('users/emptyWishlist',{wishlist:true,category})
+          res.render('users/emptyWishlist',{wishlist:true})
         }
     }).catch(err =>{
       console.log(err);
@@ -531,12 +559,12 @@ helpers.getAllOrder(req.user.email).then(async(data)=>{
   //   console.log(data.order);
 
   // }) 
-  let category = await helpers.getCategory()
+  
   if(data[0]){
     console.log(data[0]);
-  res.render('users/orders',{data,category})
+  res.render('users/orders',{data})
   }else{
-    res.render('users/emptyOrders',{category})
+    res.render('users/emptyOrders')
   }
 
 })

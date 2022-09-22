@@ -1,5 +1,5 @@
-var db = require('../confic/connection')
-var collection = require('../confic/collections')
+var db = require('../config/connection')
+var collection = require('../config/collections')
 const { response } = require('../app')
 var objectId = require('mongodb').ObjectId
 const Razorpay = require('razorpay');
@@ -59,37 +59,51 @@ module.exports={
     })
     },
     addUser:async(userDetail)=>{
-    db.get().collection(collection.USERS).insertOne(userDetail)
+        return new Promise(async(resolve,reject)=>{
+    db.get().collection(collection.USERS).insertOne(userDetail).then(response=>{
+        // adding referel wallet balance 50
+        db.get().collection(collection.USERS).updateOne({"wallet.myReferelId":userDetail.wallet.whoReferedMe},{$inc: { "wallet.balance": 50}}).then(result =>{
+            // adding user wallet balance by 100
+            if(result.modifiedCount) db.get().collection(collection.USERS).updateOne({"wallet.myReferelId":userDetail.wallet.myReferelId},{$inc: { "wallet.balance": 100}})
+
+        })
+
+        resolve(response.insertedId)
+    })
+    .catch(err =>{
+        console.log("handling err",err);
+    })
+})
         // update wallet if user have whoReferedMe field value and valid referel
-       let whoReferedMeId = await db.get().collection(collection.USERS).aggregate([
-            {$match:{email:userDetail.email}},
-            {$project:{"whoReferedMe":"$wallet.whoReferedMe",_id:0}},
-            {
-                $lookup:
-                  {
-                    from: collection.USERS,
-                    localField: "whoReferedMe",
-                    foreignField: "wallet.myReferelId",
-                    as: "result"
-                  }
-             },
-             {
-                $project:{whoReferedMe:0}
-             }
+    //    let whoReferedMeId = await db.get().collection(collection.USERS).aggregate([
+    //         {$match:{email:userDetail.email}},
+    //         {$project:{"whoReferedMe":"$wallet.whoReferedMe",_id:0}},
+    //         {
+    //             $lookup:
+    //               {
+    //                 from: collection.USERS,
+    //                 localField: "whoReferedMe",
+    //                 foreignField: "wallet.myReferelId",
+    //                 as: "result"
+    //               }
+    //          },
+    //          {
+    //             $project:{whoReferedMe:0}
+    //          }
 
-        ]).toArray()
-        if(whoReferedMeId[0].result[0]){
-            whoReferedMeId = whoReferedMeId[0].result[0]._id;
-            console.log(whoReferedMeId);
-            // Adding 50 rs to whoreferedMe
-            db.get().collection(collection.USERS).updateOne({"_id":whoReferedMeId},{ $inc: { "wallet.balance": 50}}).then(result =>{
-                if(result.modifiedCount){
-                    // Adding 100 rs to new user after referer get money
-                    db.get().collection(collection.USERS).updateOne({"email":userDetail.email},{ $inc: { "wallet.balance": 100}})
-                }
-            })
+    //     ]).toArray()
+    //     if(whoReferedMeId[0]?.result[0]){
+    //         whoReferedMeId = whoReferedMeId[0].result[0]._id;
+    //         console.log(whoReferedMeId);
+    //         // Adding 50 rs to whoreferedMe
+    //         db.get().collection(collection.USERS).updateOne({"_id":whoReferedMeId},{ $inc: { "wallet.balance": 50}}).then(result =>{
+    //             if(result.modifiedCount){
+    //                 // Adding 100 rs to new user after referer get money
+    //                 db.get().collection(collection.USERS).updateOne({"email":userDetail.email},{ $inc: { "wallet.balance": 100}})
+    //             }
+    //         })
 
-        }
+    //     }
     
     },
     getUser:(email)=>{

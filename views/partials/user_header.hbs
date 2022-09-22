@@ -263,14 +263,7 @@ border-radius: .25rem;
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                        category
                     </a>
-                    <div class="dropdown-menu mt-4" aria-labelledby="dropdownMenuButton">
-                        {{#each category}}
-                        <form action="/search" method="get">
-                        <input type="text" name="searchKey" value="{{this.category}}" style="display:none;">
-                        <button  type="submit" class="dropdown-item">{{this.category}}</button></form>
-                        {{/each}}
-                        
-                    </div>
+                    <div class="dropdown-menu mt-4" aria-labelledby="dropdownMenuButton" id="categoryDropdown"></div>
                 </div>
 
 
