@@ -16,6 +16,8 @@ adminRouter.get('/', function(req, res) {
  
 });
 
+
+
 adminRouter.post('/', function(req, res) {
   
  if(req.body.email==='r@gmail.com'&& req.body.password==='123'){
@@ -322,5 +324,13 @@ adminRouter.get('/orders',(req,res)=>{
   
 
 })
+adminRouter.get('/error', function(req, res) {
+  res.render('admin/404')
+});
+
+adminRouter.use(function(req, res, next) {
+  console.log("hellooooooooooooooooooooooooooooooooooo");
+  res.redirect('/admin/error')
+ })
 
 module.exports = adminRouter;

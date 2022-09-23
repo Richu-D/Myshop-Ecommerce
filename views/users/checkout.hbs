@@ -237,7 +237,7 @@
             method: 'post',
             data: { "coupon": coupon },
             success: (response) => {
-                if(response.status && response.coupon) {
+                if(response.status && response.coupon && response.coupon.offerUpto >= {{ grantTotal }}) {
                     document.getElementById("grantTotal").innerText = {{ grantTotal }}
                     let off = response.coupon.offer;
                     document.getElementById("couponValue").value = coupon;
@@ -253,7 +253,7 @@
                     document.getElementById("couponOffer").style.display = "none"
                     document.getElementById("grantTotal").innerText = {{ grantTotal }}
                     var couponErr = document.getElementById('coupon-error');
-                    couponErr.innerText = response.ErrMsg
+                    couponErr.innerText = response.ErrMsg || `Coupon is only valid upto ${response.coupon.offerUpto}`
                     couponErr.style.display = "block";
 
                 }

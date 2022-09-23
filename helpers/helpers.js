@@ -22,16 +22,19 @@ module.exports={
     },
     getAllProducts:()=>{
         return new Promise(async(resolve,reject)=>{
+            try {                
             let products =await db.get().collection(collection.PRODUCT_COLLECTION).find().toArray()
             resolve(products)
+            } catch (error) {
+                
+            }
         })
     },
-    wishlistAndCartCount:(email)=>{
-      
-        console.log("This is email",email);
-        
+    wishlistAndCartCount:(email)=>{        
         return new Promise(async(resolve,reject)=>{
-            try {
+       try {
+        
+       
         let userName = await db.get().collection(collection.USERS).aggregate([
             {$match:{"email":email}},
             {$project:{_id:0,username:1}}
@@ -47,19 +50,16 @@ module.exports={
             {$project:{_id:0,'cartSize':{$size:"$products"}}}
         ]).toArray()
 
-        // if(wishlistCount[0]===undefined && cartCount[0] === undefined) return resolve({wishlistCount:0,cartCount:0,userName:userName[0]?.username||"Guest User"});
-        // if(cartCount[0]===undefined) return resolve({wishlistCount:wishlistCount[0].wishlistSize,cartCount:0,userName:userName[0]?.username||"Guest User"});
-        // if(wishlistCount[0]===undefined) return resolve({wishlistCount:0,cartCount:cartCount[0].cartSize,userName:userName[0]?.username||"Guest User"});
-        
         resolve({wishlistCount:wishlistCount[0]?.wishlistSize||0,cartCount:cartCount[0]?.cartSize||0,userName:userName[0]?.username||"Guest User"});      
     } catch (error) {
-        // Error Log
-        console.log(error);
+        
     }
-    })
+   
+        })
     },
     addUser:async(userDetail)=>{
         return new Promise(async(resolve,reject)=>{
+            try {
     db.get().collection(collection.USERS).insertOne(userDetail).then(response=>{
         // adding referel wallet balance 50
         db.get().collection(collection.USERS).updateOne({"wallet.myReferelId":userDetail.wallet.whoReferedMe},{$inc: { "wallet.balance": 50}}).then(result =>{
@@ -70,9 +70,10 @@ module.exports={
 
         resolve(response.insertedId)
     })
-    .catch(err =>{
-        console.log("handling err",err);
-    })
+} catch (error) {
+                
+}
+   
 })
         // update wallet if user have whoReferedMe field value and valid referel
     //    let whoReferedMeId = await db.get().collection(collection.USERS).aggregate([
@@ -108,13 +109,18 @@ module.exports={
     },
     getUser:(email)=>{
         return new Promise(async(resolve,reject)=>{
+            try {
 let data = await db.get().collection(collection.USERS).findOne({email})
             resolve(data)
+        } catch (error) {
+                
+        }
         })
     },
     
     updateUser:(email,data)=>{
         return new Promise((resolve,reject)=>{
+            try {
             db.get().collection(collection.USERS).updateOne({'email':email},{
                 $set:{
                     username:data.username,
@@ -124,29 +130,44 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             }).then((response)=>{
                 resolve()
             })
-        })
-    },
+    
+    } catch (error) {
+                
+    }
+})
+},
 
     // deleteaddress(req.user.email,req.params.id)
     deleteaddress:(email,data)=>{
-       
+            try {
+            
             db.get().collection(collection.USERS).updateOne({'email':email},{
                 $pull:{
-                    'address': `${data}`      
+                    'address': `${data}`    
                           
                 }
                 
-        })
+        })    
+    } catch (error) {
+    }
+
     },
     // walletDetails
     walletDetails:(userId)=>{
+        
+        
         return new Promise(async(resolve,reject)=>{
+            try {
             let users =await db.get().collection(collection.USERS).aggregate([
                {$match:{email:userId}} ,
             {$project:{"_id":0,"balance":"$wallet.balance","myReferelId":"$wallet.myReferelId","whoReferedMe":"$wallet.whoReferedMe"}}
             ]).toArray()
             resolve(users[0])
-        }) 
+        } catch (error) {
+        
+        }
+        })     
+    
     },
     
 
@@ -806,7 +827,7 @@ getCategoryOfferProducts:()=>{
 // addCoupon
 addCoupon:(couponOffer)=>{
     console.log(couponOffer);
-    db.get().collection(collection.COUPON).updateOne({"couponName":couponOffer.couponName},{$set:{"offer":Number(couponOffer.offer),"offerStarts":new Date(couponOffer.offerStarts),"offerExpire":new Date(couponOffer.offerExpire),starts:moment(new Date(couponOffer.offerStarts)).format("MMM Do YY"),ends:moment(new Date(couponOffer.offerExpire)).format("MMM Do YY")}},{upsert:true}) 
+    db.get().collection(collection.COUPON).updateOne({"couponName":couponOffer.couponName},{$set:{"offer":Number(couponOffer.offer),"offerUpto":Number(couponOffer.offerUpto),"offerStarts":new Date(couponOffer.offerStarts),"offerExpire":new Date(couponOffer.offerExpire)}},{upsert:true}) 
 },
 // getCoupons
 getCoupons:()=>{
@@ -825,7 +846,8 @@ checkCoupon:(coupon)=>{
         {$project:{
             _id:0,
             offer:1,
-            couponName:1
+            couponName:1,
+            offerUpto:1
         }}
     ]).toArray()
        resolve(Coupon[0])
@@ -833,19 +855,32 @@ checkCoupon:(coupon)=>{
     
 },
 
-// helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
-checkCouponUsedOrNot:(userId,coupon)=>{
+// helpers.findNonUsedCoupons(req.user.email,req.body.coupon)
+findNonUsedCoupons:(userId,coupon)=>{
     return new Promise( async(resolve,reject)=>{
        let Coupon = await db.get().collection(collection.USERS).findOne({$and:[{"email":userId},{"usedCoupons":coupon}]})
-    //    not match then null
-    if(Coupon){
-        resolve(true)       
-    }else{
-        resolve(false)
-    }
-    
+    if(Coupon) resolve(true)       
+    resolve(false)
     })
-    
+},
+
+// getUsedCoupons
+getUsedCoupons:(userId)=>{
+    return new Promise( async(resolve,reject)=>{
+       let usedCoupons = await db.get().collection(collection.USERS).aggregate([
+        {$match:{"email":userId}},
+        {$project:{_id:0,usedCoupons:1}},
+        {$lookup:{
+            from: collection.COUPON,
+            localField: "usedCoupons",
+            foreignField: "couponName",
+            as: "Coupons"
+          }},
+        {$project:{usedCoupons:0}},
+       ]).toArray()
+       resolve(usedCoupons[0]?.Coupons)
+    })
+
 },
 
 // addUsedCoupon(req.body.email,details['couponName'])

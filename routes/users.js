@@ -81,9 +81,7 @@ if(data){
  
 });
 
-usersRouter.get('/error', function(req, res) {
-  res.render('users/error')
-});
+
 
 usersRouter.get('/signup', function(req, res) {
   res.render('users/signup')
@@ -459,9 +457,7 @@ usersRouter.post('/updateAllValues',async(req,res)=>{
 
 
   usersRouter.post('/wishlistAndCartCount',async (req,res)=>{
-   let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email).catch(err =>{
-    console.log(err);
-   })
+   let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email)
     res.json({wishlistCountAndCartCount})
     })
 
@@ -473,17 +469,12 @@ usersRouter.get('/myprofile',(req,res)=>{
       let walletDetails = await helpers.walletDetails(req.user.email)
       let coupons = await helpers.getCoupons();
       let availableCoupons = []
-      let usedCoupons = []
+      let usedCoupons = await helpers.getUsedCoupons(req.user.email)
+
       // console.log(coupons);
       for(let i=0;i<coupons.length;++i){ 
-      await helpers.checkCouponUsedOrNot(req.user.email,coupons[i].couponName).then(result =>{
-        if(result){
-          // coupon is used
-          usedCoupons.push(coupons[i])
-        }else{
-          // coupon is not used
-          availableCoupons.push(coupons[i])
-        }
+      await helpers.findNonUsedCoupons(req.user.email,coupons[i].couponName).then(result =>{
+        if(!result) availableCoupons.push(coupons[i])        
       })
     }
   
@@ -701,15 +692,16 @@ usersRouter.post('/placeorder', (req,res)=>{
 if(couponUsed){
 // coupon is used 
 }else{
-
-
+ 
   let off = await helpers.checkCoupon(req.body)
   // console.log(off);
-  if(off){
+ 
+  if(off && off.offerUpto >= grantTotal){
   details['couponName'] =  off.couponName 
   off = off.offer;
   details['offer'] =  off  
   grantTotal = (grantTotal - ((grantTotal/100)*off)) 
+  helpers.addUsedCoupon(req.user.email,details['couponName'])
   }
 
 // console.log("inside if");
@@ -729,9 +721,7 @@ details['grantTotal'] =  grantTotal
 
 // console.log("Order details",order,"details",details)
 
-if(details['couponName']){
-  helpers.addUsedCoupon(req.user.email,details['couponName'])
-}
+
 
 
   helpers.addOrder(order,details).then((orderId)=>{
@@ -756,5 +746,13 @@ res.json(response)
 
  })
 
+ usersRouter.get('/error', function(req, res) {
+  res.render('users/404')
+});
+
+ usersRouter.use(function(req, res, next) {
+  res.redirect('/error')
+ })
 
 module.exports = usersRouter;
+ 

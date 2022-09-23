@@ -8,6 +8,8 @@
                         <input type="text" name="couponName" id="couponName" onfocusout="checkCouponName()" class="form-control">                                                                     
                         <label for="offer">Offer %</label>
                         <input type="number" name="offer" id="offer" class="form-control">
+                        <label for="offerUpto">Offer Upto</label>
+                        <input type="number" name="offerUpto" id="offerUpto" class="form-control">
                         <label for="offerStarts" class="mt-4">Offer Starts</label>
                         <input type="date" id="offerStarts" name="offerStarts">
                         <label for="offerExpire">Offer Expire</label>
@@ -21,6 +23,7 @@
                             <th>No.</th>
                             <th>Coupon Name</th>
                             <th>offer %</th>                           
+                            <th>offer Upto</th>                           
                             <th>Offer Starts</th>
                             <th>Offer Ends</th>
                             <th>Status</th>                            
@@ -35,6 +38,7 @@
                             <td>{{order @index}}</td>                        
                             <td>{{this.couponName}}</td>                       
                             <td>{{this.offer}}</td>
+                            <td>{{this.offerUpto}}</td>
                             <td class="offerStarts">{{this.offerStarts}}</td>
                             <td class="offerExpire">{{this.offerExpire}}</td>
                             <td>{{#if this.status}}Active{{else}}Not Active{{/if}}</td>
