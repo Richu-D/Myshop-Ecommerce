@@ -7,8 +7,9 @@
 <!-- Checkout Start -->
 <form action="" id="checkOutForm" name="checkOutForm">
     <div class="container-fluid mt-2">
-        <div class="row px-xl-5">
-            <div class="col-md-5" style="margin-left:150px;">
+        <div class="row">
+
+            <div class="col-md-4">
                 <h5 class="title">Shipping Details</h5>
 
 
@@ -58,8 +59,7 @@
 
                     {{/each}}
 
-                    <input type="text" class="form-control mt-5 p-1" id="coupon" onfocus="removeCouponError()"
-                        style="width: 300px;display:inline-block;" placeholder="Enter Coupon Code">
+                    <input type="text" class="form-control mt-5 p-1" id="coupon" onfocus="removeCouponError()" style="width: 300px;display:inline-block;" placeholder="Enter Coupon Code">
                     <button class="btn btn-success" form="notAform" onclick="applyCoupon()">Apply</button>
                     <p class="alert alert-danger" id="coupon-error" style="display: none;width:100%;"></p>                    
                     <input type="text" name="coupon" style="display:none;" id="couponValue">
@@ -108,7 +108,7 @@
 
 
             </div>
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <h5 class="title pr-3">Order Total</span></h5>
                 <br>
                 <div class="p-10 mb-2">
@@ -185,6 +185,26 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+               {{#if availableCoupons}} <h2>Available Coupons</h2> {{else}}<div class="alert alert-warning" role="alert">No Coupons Available<div><br>{{/if}}
+                    <div class="row g-4">
+                        {{#each availableCoupons}}
+                        <div class="col-sm-12">
+                            <div class="bg-light rounded justify-content-center d-flex p-4">
+                                {{!-- <i class="fa fa-chart-line fa-3x text-primary"></i> --}}
+                                <h3 class="mb-2 mr-2">{{this.couponName}}</h3>
+                                <p class="m-0 ml-2 customBadge" style="font-weight:400;color:#24dd3b;background-color:#f8f9fa;">{{this.offer}}%OFF</p>
+
+                            </div>
+                        </div>                        
+                        {{/each}}
+                     </div>
+            </div>
+            </div></div>
+
+
+
+
         </div>
     </div>
 </form>

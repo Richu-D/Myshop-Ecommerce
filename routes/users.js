@@ -18,17 +18,15 @@ var usersRouter = express.Router();
 function ifuser(req,res,next){
   // checking JWT
 
-let token = req.cookies.jwt;
-    if(token == null){next()}
-
+let token = req?.cookies?.jwt;
+    if(!token){ return next()}
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
-        if(err) return res.sendStatus(403)
-        
+        if(err) { res.clearCookie('jwt')}     
         res.redirect('/home')
     })}
 
 /* GET users listing. */
-usersRouter.get('/', function(req, res) {
+usersRouter.get('/',ifuser, function(req, res) {
   if(req.cookies.err){
     // res.render('users/signin')
 
@@ -50,8 +48,7 @@ if(data){
   const user = { email: email}
   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
   
-  // res.setHeader('Set-Cookie',`jwt=${accessToken}`) //maxAge: 10000,
-  res.cookie('jwt',accessToken, { httpOnly: true })
+  res.cookie('jwt',accessToken, { httpOnly: true,expires:new Date("9999-12-31T23:59:59.000Z")})
     res.redirect('/home')
       }
       else{
@@ -195,23 +192,23 @@ usersRouter.get('/home',async function(req, res) {
  
  usersRouter.post('/sendOtp',function(req, res) { 
       console.log(req.body.phoneNumber);
-     //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
-     //             .verifications
-     //             .create({to: `+91${req.body.phoneNumber}`, channel: 'sms'})
-     //             .then(verification => {
-     //               console.log(verification.status)
-     //             });
+      client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+                 .verifications
+                 .create({to: `+91${req.body.phoneNumber}`, channel: 'sms'})
+                 .then(verification => {
+                   console.log(verification.status)
+                 });
      res.json({})
   });
 
   usersRouter.post('/verifyOtp',async function(req, res) { 
    var {username,email,number,password,referelCode,otp} = req.body;
- //  client.verify.v2.services('VAf94071e88af152a8e100b862ed118b8d')
- //       .verificationChecks
- //       .create({to: `+91${number}`, code:`${otp}`})
- //       .then(verification_check =>{
- //         console.log(verification_check?.status)
-          // if(verification_check?.status!=="approved") return res.json({status:false})
+    client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+       .verificationChecks
+       .create({to: `+91${number}`, code:`${otp}`})
+       .then(async verification_check =>{
+         console.log(verification_check?.status)
+          if(verification_check?.status!=="approved") return res.json({status:false})
           console.log("sussuss");
           password = await bcrypt.hash(password,10)
  
@@ -241,6 +238,8 @@ helpers.addUser(userdata).then(userObjectId =>{
 
 
   })
+
+})
   
   usersRouter.get('/detail/:id', function(req, res) {
     helpers.getProductDetails(req.params.id).then((data)=>{
@@ -276,8 +275,13 @@ helpers.addUser(userdata).then(userObjectId =>{
 
   // getCategory
 usersRouter.post('/getCategory',async (req,res)=>{
-  let category = await helpers.getCategory()
-  res.json({category})
+  try {
+    let category = await helpers.getCategory()
+    res.json({category})
+  } catch (error) {
+    console.log(error);
+  }
+  
   })
 
     
@@ -289,7 +293,10 @@ usersRouter.post('/getCategory',async (req,res)=>{
     if(token == null) return res.redirect('/')
 
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
-        if(err) return res.sendStatus(403)
+        if(err) {res.clearCookie('jwt')
+        res.redirect('/')
+        return;
+      }
         req.user = user
         // check block or not
         helpers.getUser(req.user.email).then((data)=>{
@@ -312,7 +319,7 @@ usersRouter.post('/getCategory',async (req,res)=>{
 // applyCoupon 
 usersRouter.post('/applyCoupon', async (req, res) => {
 
-  let couponUsed = await helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
+  let couponUsed = await helpers.findNonUsedCoupons(req.user.email,req.body.coupon)
   if(couponUsed){
   // coupon is used 
   console.log("used");
@@ -385,9 +392,15 @@ usersRouter.post('/addtocart/:id', function(req, res) {
 });
 
 usersRouter.post('/change-product-quantity',(req,res)=>{
+  if(req.body.count == -1||req.body.count == 1){
   helpers.changeProductQuantity(req.body).then((response)=>{ 
     res.json(response)
+    
   })
+  
+}else{
+  res.json({})
+}
 })
 
 usersRouter.post('/removeCartItem',(req,res)=>{
@@ -403,6 +416,15 @@ usersRouter.post('/removeCartItem',(req,res)=>{
 usersRouter.get('/checkout', async function(req, res) {
 
   helpers.getAddress(req.user.email).then(async (data) =>{
+    let coupons = await helpers.getValidCoupons();
+      let availableCoupons = []
+
+      // console.log(coupons);
+      for(let i=0;i<coupons.length;++i){ 
+      await helpers.findNonUsedCoupons(req.user.email,coupons[i].couponName).then(result =>{
+        if(!result) availableCoupons.push(coupons[i])        
+      })
+    }
 
     let products = await helpers.getAllCartItems(req.user.email)
     let grantTotal = 0;
@@ -421,8 +443,7 @@ usersRouter.get('/checkout', async function(req, res) {
 
     }
     });
-    console.log(grantTotal,productdata);
-    res.render('users/checkout',{address:data.address,productdata:productdata,razorpay_key:process.env.RAZORPAY_KEY_ID,grantTotal,name:data.username,number:data.number})
+    res.render('users/checkout',{address:data.address,productdata:productdata,razorpay_key:process.env.RAZORPAY_KEY_ID,grantTotal,name:data.username,number:data.number,availableCoupons})
 });
 
 })
@@ -457,8 +478,15 @@ usersRouter.post('/updateAllValues',async(req,res)=>{
 
 
   usersRouter.post('/wishlistAndCartCount',async (req,res)=>{
-   let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email)
-    res.json({wishlistCountAndCartCount})
+    try {
+      let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email)
+      console.log(wishlistCountAndCartCount);
+      res.json({wishlistCountAndCartCount});
+    } catch (error) {
+      console.log(error);
+    }
+  
+    
     })
 
 
@@ -467,9 +495,9 @@ usersRouter.get('/myprofile',(req,res)=>{
     helpers.getUser(req.user.email).then(async(user)=>{
       
       let walletDetails = await helpers.walletDetails(req.user.email)
-      let coupons = await helpers.getCoupons();
-      let availableCoupons = []
       let usedCoupons = await helpers.getUsedCoupons(req.user.email)
+      let coupons = await helpers.getValidCoupons();
+      let availableCoupons = []
 
       // console.log(coupons);
       for(let i=0;i<coupons.length;++i){ 
@@ -477,7 +505,6 @@ usersRouter.get('/myprofile',(req,res)=>{
         if(!result) availableCoupons.push(coupons[i])        
       })
     }
-  
     res.render('users/profile',{address:user.address,user,walletDetails,availableCoupons,usedCoupons})
     }).catch(err =>{
       console.log(err);
@@ -688,7 +715,7 @@ usersRouter.post('/placeorder', (req,res)=>{
 
   })
 
-  let couponUsed = await helpers.checkCouponUsedOrNot(req.user.email,req.body.coupon)
+  let couponUsed = await helpers.findNonUsedCoupons(req.user.email,req.body.coupon)
 if(couponUsed){
 // coupon is used 
 }else{

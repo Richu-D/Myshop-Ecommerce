@@ -401,14 +401,17 @@ let data = await db.get().collection(collection.USERS).findOne({email})
 
             // cancelOrder(req.user.email,req.params.id)
             cancelOrder:(orderId,cancelMsg)=>{
-
-                db.get().collection(collection.ORDER).updateMany({_id:objectId(orderId)},{
-                    $set:{
-                       'details.status':`${cancelMsg}`
-                    }
+               
+                return new Promise((resolve,reject)=>{
+                    db.get().collection(collection.ORDER).updateMany({_id:objectId(orderId)},{
+                        $set:{
+                           'details.status':`${cancelMsg}`
+                        }
+                    })
+                    resolve()
+    
                 })
-
-
+               
             },
             getAllOrderAvailable:()=>{
                 return new Promise(async(resolve,reject)=>{
@@ -833,6 +836,14 @@ addCoupon:(couponOffer)=>{
 getCoupons:()=>{
     return new Promise( async(resolve,reject)=>{
        let Coupons = await db.get().collection(collection.COUPON).find({}).toArray()
+       resolve(Coupons)
+    })
+    
+},
+
+getValidCoupons:()=>{
+    return new Promise( async(resolve,reject)=>{
+       let Coupons = await db.get().collection(collection.COUPON).find({status:true}).toArray()
        resolve(Coupons)
     })
     

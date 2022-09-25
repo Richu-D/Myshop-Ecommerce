@@ -149,11 +149,13 @@
 
                     <div style="margin-bottom:20px;">
 
-                    <div id="id{{this}}" class="inline-block" style="width: 500px;">
-                    <label for="">{{this}}</label>
-                    <button type="button" onclick="deleteThisAddress('{{this}}')" style="float: right;" class="btn btn-danger">Delete</button>
-                    <button class="btn btn-primary mx-2" onclick="showAddressEditOption('{{this}}')" style="float: right;">Edit</button>
-
+                    <div id="id{{this}}" class="inline-block" style="width:100%;">
+                   
+                    <label for="" class="mr-5">{{this}}</label>
+                    <span style="float:right;">
+                    <button class="btn btn-primary mx-2" onclick="showAddressEditOption('{{this}}')">Edit</button>
+                    <button type="button" onclick="deleteThisAddress('{{this}}')" class="btn btn-danger" style="margin-right:1rem;">Delete</button>
+                    </span>
                     </div>
 
                         <form action="/editAddress" method="post" class="hide" id="{{this}}">

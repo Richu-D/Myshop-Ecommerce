@@ -90,9 +90,7 @@ body {
     left: 5%;
     bottom: 5%;
 }
-#warning{
-visibility:hidden;
-}
+
 
     </style>
 </head>
@@ -102,7 +100,7 @@ visibility:hidden;
 <form id="signup" method="post" class="box">
     <h1><span style="color:white;text-decoration:none;cursor:pointer;font-size: larger;font-weight:800;"><span style="color:#29edeb">MY</span>SHOP <br> SIGNUP</a></span></h1>
                 
-    <p class="text-danger" id="warning">Please enter Valid Email and password</p>
+    <p class="text-danger" id="warning" style="visibility:hidden;"></p>
 
     <input type="text" name="username" id="username" placeholder="Name" onfocus="removeError('name-error')" onfocusout="validateName()">
     <p class="alert alert-danger" id="name-error" style="display: none;"></p>
@@ -276,7 +274,9 @@ $.ajax({
                 },
             success: (response) => {
             if(response.status) window.location = "/home";
-            //otp error show 
+            document.getElementById('warning').style.visibility = "visible";
+            document.getElementById('warning').innerText = "Invalid OTP";
+
          }
          
          })

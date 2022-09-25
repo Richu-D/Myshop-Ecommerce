@@ -37,16 +37,18 @@ adminRouter.post('/', function(req, res) {
 
   res.end()
 });
+
 // Authorisation 
 adminRouter.use((req,res,next)=>{
 
   let token = req.cookies.jwt;
-      if(token == null) return res.redirect('/admin')
+      if(token == null) return res.redirect('/')
   
       jwt.verify(token,process.env.ADMIN_TOKEN_SECRET,(err,user)=>{
-          if(err) return res.sendStatus(403)
+        console.log(err,user);
+          if(err){ res.redirect('/')}
           req.user = user
-          console.log(req.user);
+          
           next()
       })   
 })
@@ -297,12 +299,12 @@ adminRouter.get('/orders',(req,res)=>{
 
   
   
-  adminRouter.get('/orderstatus',(req,res)=>{
-    console.log(req.query.status);
-    console.log(req.query.id);
-    helpers.cancelOrder(req.query.id,req.query.status)
-    res.redirect('/admin/orders')
+  adminRouter.get('/orderstatus',(req,res,next)=>{
+    helpers.cancelOrder(req.query.id,req.query.status).then(()=>{
 
+      res.redirect('/admin/orders')
+    })
+  
     })
 
 
@@ -324,13 +326,13 @@ adminRouter.get('/orders',(req,res)=>{
   
 
 })
+
 adminRouter.get('/error', function(req, res) {
   res.render('admin/404')
 });
 
-adminRouter.use(function(req, res, next) {
-  console.log("hellooooooooooooooooooooooooooooooooooo");
-  res.redirect('/admin/error')
- })
+// adminRouter.use(function(req, res, next) {
+//   res.redirect('/admin/error')
+//  })
 
 module.exports = adminRouter;
