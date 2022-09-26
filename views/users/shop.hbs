@@ -149,8 +149,10 @@
                     <div class="product-item bg-light mb-4">
                         <a href="detail/{{this._id}}">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100 img" id="i" src="/product_image/{{this._id}}.jpg"
-                                    alt="{{this.name}}" style="height:300px" ;>
+                                <div style="height:350px;">
+                                <img style="object-fit: contain; width: 100%; height: 100%;" id="i" src="/product_image/{{this._id}}.jpg" alt=""></div>
+                                {{!-- <img class="img-fluid w-100 img" id="i" src="/product_image/{{this._id}}.jpg" --}}
+                                    {{!-- alt="{{this.name}}" style="height:300px" ;> --}}
                                     {{#if this.offerPercentage}}
                                     <span style="position:absolute;top:10px;right:10px;z-index:10;"><span class="customBadge">{{this.offerPercentage}}% OFF</span></span>
                                     {{/if}}
@@ -229,8 +231,9 @@
                         <div class="product-item bg-light mb-4">
                         <a href="detail/${data.data[i]._id}">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100 img" id="i" src="/product_image/${data.data[i]._id}.jpg"
-                                    alt="${data.data[i].name}" style="height:300px" ;>
+                                <div style="height:350px;">
+                                <img style="object-fit: contain; width: 100%; height: 100%;" id="i" src="/product_image/${data.data[i]._id}.jpg" alt=""></div>
+                                
                                 <div class="${data.data[i].offerPercentage}">
                                     <span style="position:absolute;top:10px;right:10px;z-index:10;"><span class="customBadge">${data.data[i].offerPercentage}% OFF</span></span>
                                 </div>

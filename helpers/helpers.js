@@ -59,8 +59,17 @@ module.exports={
     },
     addUser:async(userDetail)=>{
         return new Promise(async(resolve,reject)=>{
+            
             try {
+    let olduser = await db.get().collection(collection.USERS).findOne({"email":userDetail.email})
+    console.log(olduser);
+    if(olduser){
+        
+    }else{
+        
+   
     db.get().collection(collection.USERS).insertOne(userDetail).then(response=>{
+       
         // adding referel wallet balance 50
         db.get().collection(collection.USERS).updateOne({"wallet.myReferelId":userDetail.wallet.whoReferedMe},{$inc: { "wallet.balance": 50}}).then(result =>{
             // adding user wallet balance by 100
@@ -69,9 +78,12 @@ module.exports={
         })
 
         resolve(response.insertedId)
+
+        
     })
+}
 } catch (error) {
-                
+    console.log(error)   
 }
    
 })
@@ -173,178 +185,262 @@ let data = await db.get().collection(collection.USERS).findOne({email})
 
     getAllUsers:()=>{
         return new Promise(async(resolve,reject)=>{
-            let users =await db.get().collection(collection.USERS).find().toArray()
+            try {
+                let users =await db.get().collection(collection.USERS).find().toArray()
             resolve(users)
+            } catch (error) {
+                
+            }
+            
         }) 
     },
     deleteUser:(id)=>{
         return new Promise(async(resolve,reject)=>{
-        db.get().collection(collection.USERS).remove({_id:objectId(id)}).then((response)=>{
-            resolve(response)
-        })
+            try {
+                db.get().collection(collection.USERS).remove({_id:objectId(id)}).then((response)=>{
+                    resolve(response)
+                })
+            } catch (error) {
+                
+            }
+        
     })
     },
     deleteProduct:(id)=>{
         return new Promise(async(resolve,reject)=>{
-        db.get().collection(collection.PRODUCT_COLLECTION).remove({_id:objectId(id)}).then((response)=>{
-            resolve(response)
-        })
+            try {
+                db.get().collection(collection.PRODUCT_COLLECTION).remove({_id:objectId(id)}).then((response)=>{
+                    resolve(response)
+                })
+            } catch (error) {
+                
+            }
+        
     })
     },
     getProductDetails:(id)=>{
         return new Promise((resolve,reject)=>{
-            db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{  
-                if(!product) reject()                
-                resolve(product)   
-            })
+            try {
+                db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{  
+                    if(!product) reject()                
+                    resolve(product)   
+                })
+            } catch (error) {
+                
+            }
+            
             
         })
     },
     updateProduct:(id,data)=>{
         return new Promise((resolve,reject)=>{
-            db.get().collection(collection.PRODUCT_COLLECTION).updateOne({_id:objectId(id)},{
-                $set:{
-                    name:data.name,
-                    description:data.description,
-                    price:parseInt( data.price),
-                    category:data.category                    
-                }
-            }).then((response)=>{
-                resolve()
-            })
+            try {
+
+                db.get().collection(collection.PRODUCT_COLLECTION).updateOne({_id:objectId(id)},{
+                    $set:{
+                        name:data.name,
+                        description:data.description,
+                        price:parseInt( data.price),
+                        category:data.category                    
+                    }
+                }).then((response)=>{
+                    resolve()
+                })
+                
+            } catch (error) {
+                
+            }
+            
         })
     },
     block:(id)=>{
         return new Promise((resolve,reject)=>{
-            db.get().collection(collection.USERS).updateOne({_id:objectId(id)},{
-                $set:{
-                    block:true           
-                 }
-            }).then((response)=>{
-                resolve()
-            })
+            try {
+                db.get().collection(collection.USERS).updateOne({_id:objectId(id)},{
+                    $set:{
+                        block:true           
+                     }
+                }).then((response)=>{
+                    resolve()
+                })
+            } catch (error) {
+                
+            }
+           
         })
     },
     unblock:(id)=>{
         return new Promise((resolve,reject)=>{
-            db.get().collection(collection.USERS).updateOne({_id:objectId(id)},{
-                $set:{
-                    block:false             
-              }
-            }).then((response)=>{
-                resolve()
-            })
+            try {
+                db.get().collection(collection.USERS).updateOne({_id:objectId(id)},{
+                    $set:{
+                        block:false             
+                  }
+                }).then((response)=>{
+                    resolve()
+                })
+            } catch (error) {
+                
+            }
+            
         })
     },
     addCategory:(data)=>{
-            db.get().collection(collection.CATEGORY).insertOne(data)
+    try {
+        db.get().collection(collection.CATEGORY).insertOne(data)
+    } catch (error) {
+        
+    }
+           
         },
     getCategory:()=>{
         return new Promise(async(resolve,reject)=>{
-        let category =await db.get().collection(collection.CATEGORY).find().toArray()
-        resolve(category)
+            try {
+                let category =await db.get().collection(collection.CATEGORY).find().toArray()
+                resolve(category)
+            } catch (error) {
+                
+            }
+        
     }) 
     },
     checkCategoryAvailable:(categoryName)=>{
         return new Promise(async(resolve,reject)=>{
-        let availbleCategory =await db.get().collection(collection.CATEGORY).find({"category":categoryName}).toArray()
+            try {
+                let availbleCategory =await db.get().collection(collection.CATEGORY).find({"category":categoryName}).toArray()
         resolve(availbleCategory[0])
+            } catch (error) {
+                
+            }
+        
     }) 
     },
     editCategory:(id,data)=>{
-        db.get().collection(collection.CATEGORY).updateOne({_id:objectId(id)},{
-            $set:{            
-                category:data.category                    
-            }
-        })
+        try {
+            db.get().collection(collection.CATEGORY).updateOne({_id:objectId(id)},{
+                $set:{            
+                    category:data.category                    
+                }
+            })
+        } catch (error) {
+            
+        }
+        
     },
     deleteCategory:(id)=>{
-        db.get().collection(collection.CATEGORY).remove({_id:objectId(id)})
+        try {
+            db.get().collection(collection.CATEGORY).remove({_id:objectId(id)})
+        } catch (error) {
+            
+        }
+        
     },
 
     addToCart:(userId,productId)=>{
+    
+try {
+    let proObj={
+        item:objectId(productId),
+        quantity:1
+    }
 
-        let proObj={
-            item:objectId(productId),
-            quantity:1
-        }
-
-        // checking user have cart
-        return new Promise(async(resolve,reject)=>{
+    // checking user have cart
+    return new Promise(async(resolve,reject)=>{
+        try {
             let userCart = await db.get().collection(collection.CART).findOne({user:userId})
             if(userCart){
 
-                let proExist = userCart.products.findIndex(product => product.item==productId)
-                if(proExist != -1){
+            let proExist = userCart.products.findIndex(product => product.item==productId)
+            if(proExist != -1){
 
-                    console.log(`product exist`);
+                console.log(`product exist`);
 
-                    db.get().collection(collection.CART).updateOne({user:userId,'products.item':objectId(productId)},
-                    {
-                        $inc:{'products.$.quantity':1}
-                    }
-                    ).then(()=>{
-                        resolve()
-                    })
-                }else{
-
-                db.get().collection(collection.CART).updateOne({user:userId},{$push:{products:proObj}})
+                db.get().collection(collection.CART).updateOne({user:userId,'products.item':objectId(productId)},
+                {
+                    $inc:{'products.$.quantity':1}
                 }
-
-
-
-
+                ).then(()=>{
+                    resolve()
+                })
             }else{
-                let cartObj = {
-                            user:userId,
-                            products:[proObj]
-                        }
-                        db.get().collection(collection.CART).insertOne(cartObj)
 
+            db.get().collection(collection.CART).updateOne({user:userId},{$push:{products:proObj}})
             }
-            resolve()
 
-        })
+
+
+
+        }else{
+            try {
+                let cartObj = {
+                    user:userId,
+                    products:[proObj]
+                }
+                db.get().collection(collection.CART).insertOne(cartObj)
+            } catch (error) {
+                
+            }
+           
+
+        }
+        resolve()
+        } catch (error) {
+            
+        }
+        
+
+    })
+} catch (error) {
+    
+}
+       
        
 
     },
 
     getAllCartItems:(userId)=>{
         return new Promise(async(resolve,reject)=>{
-        let cartItems= await  db.get().collection(collection.CART).aggregate([
-            {
-                $match:{user:userId}
-            },
-            {
-                $unwind:'$products'
-            },
-            {
-                $project:{
-                    item:'$products.item',
-                    quantity:'$products.quantity'
-                }
-            },
-            {
-                $lookup:{
-                    from:collection.PRODUCT_COLLECTION,
-                    localField:'item',
-                    foreignField:'_id',
-                    as:'product'
-                }
-            },
-            {
-                $project:{
-                    item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
-                }
+            try {
+                let cartItems= await  db.get().collection(collection.CART).aggregate([
+                    {
+                        $match:{user:userId}
+                    },
+                    {
+                        $unwind:'$products'
+                    },
+                    {
+                        $project:{
+                            item:'$products.item',
+                            quantity:'$products.quantity'
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:collection.PRODUCT_COLLECTION,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                    },
+                    {
+                        $project:{
+                            item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                        }
+                    }
+                ]).toArray()
+                    resolve(cartItems)
+            } catch (error) {
+                
             }
-        ]).toArray()
-            resolve(cartItems)
+        
         })
     },
     changeProductQuantity:async ({cartId,productId,count,quantity})=>{
         count = parseInt(count)
         quantity = parseInt(quantity)
         return new Promise((resolve,reject)=>{
+            try {
+                
             if(count == -1 && quantity == 1){
                 db.get().collection(collection.CART).updateOne({_id:objectId(cartId)},{
                     $pull:{products:{item:objectId(productId)}}
@@ -360,16 +456,26 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                     resolve(true)
                 })
             }
+
+            } catch (error) {
+                
+            }
         })
     },
     
     removeCartItem:({cartId,productId})=>{
         return new Promise((resolve,reject)=>{
+            try {
+                
                 db.get().collection(collection.CART).updateOne({_id:objectId(cartId)},{
                     $pull:{products:{item:objectId(productId)}}
                 }).then((response)=>{
                     resolve({delete:true})
                 })
+
+            } catch (error) {
+                
+            }
              } )
             } ,
             // helpers.addOrder(order,grantTotal)
@@ -377,23 +483,39 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             addOrder:(order,details)=>{
 
                 return new Promise((resolve,reject)=>{
+                    try {
+                        
                     db.get().collection(collection.ORDER).insertOne({order,details}).then((response)=>{
                         resolve(response.insertedId)
                     })
+                    } catch (error) {
+                        
+                    }
                 })
                 
             },
             removeAllCartItem:(userId)=>{
+                try {
                     db.get().collection(collection.CART).deleteOne({user:`${userId}`})
+                } catch (error) {
+                    
+                }
+                    
                
             },
             // getAllOrder(req.user.email)
             getAllOrder:(userId)=>{
                 return new Promise(async(resolve,reject)=>{
-                let orders =await  db.get().collection(collection.ORDER).aggregate([{$match:{"details.userId":`${userId}`}},{$sort:{_id:-1}}
+                    try {
+                        let orders =await  db.get().collection(collection.ORDER).aggregate([{$match:{"details.userId":`${userId}`}},{$sort:{_id:-1}}
 
                 ]).toArray()
                 resolve(orders)
+
+                    } catch (error) {
+                        
+                    }
+                
 
                 })
 
@@ -403,41 +525,49 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             cancelOrder:(orderId,cancelMsg)=>{
                
                 return new Promise((resolve,reject)=>{
-                    db.get().collection(collection.ORDER).updateMany({_id:objectId(orderId)},{
-                        $set:{
-                           'details.status':`${cancelMsg}`
-                        }
-                    })
-                    resolve()
+                    try {
+                        db.get().collection(collection.ORDER).updateMany({_id:objectId(orderId)},{
+                            $set:{
+                               'details.status':`${cancelMsg}`
+                            }
+                        })
+                        resolve()
+                    } catch (error) {
+                        
+                    }
+                    
     
                 })
                
             },
             getAllOrderAvailable:()=>{
                 return new Promise(async(resolve,reject)=>{
-                    // let orderslist = await db.get().collection(collection.ORDER).find().toArray()
+                    try {
+                        let orderslist = await db.get().collection(collection.ORDER).aggregate([{$sort:{_id:-1}}]).toArray()
+                        resolve(orderslist)
+                        
+                    } catch (error) {
+                        
+                    }
 
-                    let orderslist = await db.get().collection(collection.ORDER).aggregate([{$sort:{_id:-1}}]).toArray()
-
-
-
-
-
-
-                    resolve(orderslist)
                 })
             },
             search:(data)=>{
                 return new Promise(async(resolve,reject)=>{
-
-                    let products = await db.get().collection(collection.PRODUCT_COLLECTION).find({$text:{$search:data}}).toArray()
+                    try {
+                        let products = await db.get().collection(collection.PRODUCT_COLLECTION).find({$text:{$search:data}}).toArray()
                     resolve(products)
+                    } catch (error) {
+                        
+                    }
+                    
                 })
             },
 
             searchRateRange:(params,min,max)=>{
                 return new Promise(async(resolve,reject)=>{
-                    let minimum = Number(min)
+                    try {
+                        let minimum = Number(min)
                     let maximum = Number(max)
                     let products = await db.get().collection(collection.PRODUCT_COLLECTION).aggregate([
                      {$match:{$text:{$search:params}}},
@@ -445,17 +575,23 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                     ]).toArray()
                     console.log(products);
                     resolve(products)
+                    } catch (error) {
+                        
+                    }
+                    
                 })
             },
 
             addWishlist:(userId,productId)=>{
-
-                    db.get().collection(collection.WISHLIST).updateOne({user:userId},{ $addToSet: { wishlistItems: objectId(productId)} },{upsert:true})
+                    try {
+                        db.get().collection(collection.WISHLIST).updateOne({user:userId},{ $addToSet: { wishlistItems: objectId(productId)} },{upsert:true})                        
+                    } catch (error) {
+                        
+                    }
 
             },
             getWishlistItems:(userId)=>{
 
-                console.log(`Inside helpers `,userId);
                 return new Promise(async (resolve,reject)=>{
                         try {
                             let products = await db.get().collection(collection.WISHLIST).aggregate([
@@ -496,9 +632,8 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     
         return new Promise( async(resolve,reject)=>{
 
-            
-
-         let  userdata = await db.get().collection(collection.USERS).findOne({email:email})
+            try {
+                let  userdata = await db.get().collection(collection.USERS).findOne({email:email})
             if(userdata.address==undefined){
                 db.get().collection(collection.USERS).updateOne({email:email},{
                         $set:{
@@ -510,9 +645,10 @@ let data = await db.get().collection(collection.USERS).findOne({email})
                 db.get().collection(collection.USERS).updateOne({email:email},{$push:{address:data}})
                
             }
-            
-            // 
-
+            } catch (error) {
+                
+            }
+  
         }
         )
 
@@ -521,15 +657,19 @@ let data = await db.get().collection(collection.USERS).findOne({email})
         orderId = ""+orderId;
 
         return new Promise((resolve,reject)=>{
-
-           var options = {
-            amount: grantTotal*100,
-            currency:"INR",
-            receipt:orderId
-           };
-           instance.orders.create(options,(err,order)=>{
-            resolve(order)
-           })
+            try {
+                var options = {
+                    amount: grantTotal*100,
+                    currency:"INR",
+                    receipt:orderId
+                   };
+                   instance.orders.create(options,(err,order)=>{
+                    resolve(order)
+                   })
+            } catch (error) {
+                
+            }
+          
                 
         })
 
@@ -537,7 +677,8 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     },
     verifyPayment:(details)=>{
         return new Promise((resolve,reject)=>{
-            const crypto = require('crypto');
+            try {
+                const crypto = require('crypto');
             let hmac = crypto.createHmac('sha256',process.env.RAZORPAY_SECRET_KEY)
 
             hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]'])
@@ -547,57 +688,80 @@ let data = await db.get().collection(collection.USERS).findOne({email})
             }else{
                 reject()
             }
+            } catch (error) {
+                
+            }
+            
         })
     },
     changePaymentStatus:(orderId)=>{
         return new Promise((resolve,reject)=>{
-            db.get().collection(collection.ORDER).updateOne({_id:objectId(orderId)},{
-                $set:{
-                    'details.status':'placed'
-                }
-            }).then(()=>{
-                resolve()
-            })
+            try {
+                db.get().collection(collection.ORDER).updateOne({_id:objectId(orderId)},{
+                    $set:{
+                        'details.status':'placed'
+                    }
+                }).then(()=>{
+                    resolve()
+                })
+            } catch (error) {
+                
+            }
+            
         })
     },
     changePassword:(email,password)=>{
+
+    try {
         db.get().collection(collection.USERS).updateOne({email:`${email}`},{
             $set:{password:`${password}`}})
+    } catch (error) {
+        
+    }
+        
 
 
-        // return new Promise((resolve,reject)=>{
-        //     db.get().collection(collection.ORDER).updateOne({_id:objectId(orderId)},{
-        //         $set:{
-        //             'details.status':'placed'
-        //         }
-        //     }).then(()=>{
-        //         resolve()
-        //     })
-        // })
+        
     },
+
     editAddress:(email,oldaddress,newaddress)=>{
-    
-    db.get().collection(collection.USERS).updateOne(
-        {$and:
-            [{"email":email},
-            {"address":oldaddress}]
-        },
-        {
-            $set:{"address.$":newaddress}
+        try {
+            db.get().collection(collection.USERS).updateOne(
+                {$and:
+                    [{"email":email},
+                    {"address":oldaddress}]
+                },
+                {
+                    $set:{"address.$":newaddress}
+                }
+                )
+            
+        } catch (error) {
+            
         }
-        )
+    
     
 },
 removeItemFromWishlist:(userId,productId)=>{
-    db.get().collection(collection.WISHLIST).updateOne({user:userId},{$pull:{wishlistItems:objectId(productId)}})
+    try {
+        db.get().collection(collection.WISHLIST).updateOne({user:userId},{$pull:{wishlistItems:objectId(productId)}})
+        
+    } catch (error) {
+        
+    }
 },
 
 
     getAddress:(email)=>{
         return new Promise( async(resolve,reject)=>{
+            try {
+                let useraddress = db.get().collection(collection.USERS).findOne({email:email})
+                resolve(useraddress)
+            } catch (error) {
+                
+            }
 
-            let useraddress = db.get().collection(collection.USERS).findOne({email:email})
-            resolve(useraddress)
+            
         })
 
     },
@@ -713,6 +877,7 @@ removeItemFromWishlist:(userId,productId)=>{
 
 graphdata:()=>{
     return new Promise( async(resolve,reject)=>{
+
    //   WeeklySales
    var weeklySales = await db.get().collection(collection.ORDER).aggregate([
     {$match:{"details.status":"Delevered"}},
@@ -813,38 +978,61 @@ resolve({weeklySales,monthlySales,yearlySales})
 // addCoupon
 addCategoryOffer:(categoryOffer)=>{
     return new Promise( async(resolve,reject)=>{
-    db.get().collection(collection.CATEGORY).updateOne({"category":categoryOffer.categoryName},{$set:{"offer":Number(categoryOffer.offer),"offerStarts":new Date(categoryOffer.offerStarts),"offerExpire":new Date(categoryOffer.offerExpire),starts:moment(new Date(categoryOffer.offerStarts)).format("MMM Do YY"),ends:moment(new Date(categoryOffer.offerExpire)).format("MMM Do YY")}}).then(() =>{
-        resolve()
-    }
-    )
+        try {
+            db.get().collection(collection.CATEGORY).updateOne({"category":categoryOffer.categoryName},{$set:{"offer":Number(categoryOffer.offer),"offerStarts":new Date(categoryOffer.offerStarts),"offerExpire":new Date(categoryOffer.offerExpire),starts:moment(new Date(categoryOffer.offerStarts)).format("MMM Do YY"),ends:moment(new Date(categoryOffer.offerExpire)).format("MMM Do YY")}}).then(() =>{
+                resolve()
+            })
+        } catch (error) {
+            
+        }
+    
     })
 },
 // getCategoryOfferProducts
 getCategoryOfferProducts:()=>{
     return new Promise( async(resolve,reject)=>{
-       let categorys = await db.get().collection(collection.CATEGORY).find({"offer":{$exists: true}}).toArray()
+        try {
+            let categorys = await db.get().collection(collection.CATEGORY).find({"offer":{$exists: true}}).toArray()
        resolve(categorys)
+        } catch (error) {
+            
+        }
+       
     })
     
 },
 // addCoupon
 addCoupon:(couponOffer)=>{
-    console.log(couponOffer);
+    try {
     db.get().collection(collection.COUPON).updateOne({"couponName":couponOffer.couponName},{$set:{"offer":Number(couponOffer.offer),"offerUpto":Number(couponOffer.offerUpto),"offerStarts":new Date(couponOffer.offerStarts),"offerExpire":new Date(couponOffer.offerExpire)}},{upsert:true}) 
+        
+    } catch (error) {
+        
+    }
 },
 // getCoupons
 getCoupons:()=>{
     return new Promise( async(resolve,reject)=>{
-       let Coupons = await db.get().collection(collection.COUPON).find({}).toArray()
-       resolve(Coupons)
+        try {
+            let Coupons = await db.get().collection(collection.COUPON).find({}).toArray()
+            resolve(Coupons)
+        } catch (error) {
+            
+        }
+       
     })
     
 },
 
 getValidCoupons:()=>{
     return new Promise( async(resolve,reject)=>{
-       let Coupons = await db.get().collection(collection.COUPON).find({status:true}).toArray()
-       resolve(Coupons)
+        try {
+            let Coupons = await db.get().collection(collection.COUPON).find({status:true}).toArray()
+            resolve(Coupons)
+        } catch (error) {
+            
+        }
+       
     })
     
 },
@@ -852,16 +1040,21 @@ getValidCoupons:()=>{
 // checkCoupon
 checkCoupon:(coupon)=>{
     return new Promise( async(resolve,reject)=>{
-       let Coupon = await db.get().collection(collection.COUPON).aggregate([
-        {$match:{$and:[{"couponName":coupon.coupon},{"status":true}]}},
-        {$project:{
-            _id:0,
-            offer:1,
-            couponName:1,
-            offerUpto:1
-        }}
-    ]).toArray()
-       resolve(Coupon[0])
+        try {
+            let Coupon = await db.get().collection(collection.COUPON).aggregate([
+                {$match:{$and:[{"couponName":coupon.coupon},{"status":true}]}},
+                {$project:{
+                    _id:0,
+                    offer:1,
+                    couponName:1,
+                    offerUpto:1
+                }}
+            ]).toArray()
+               resolve(Coupon[0])
+        } catch (error) {
+            
+        }
+       
     })
     
 },
@@ -869,67 +1062,100 @@ checkCoupon:(coupon)=>{
 // helpers.findNonUsedCoupons(req.user.email,req.body.coupon)
 findNonUsedCoupons:(userId,coupon)=>{
     return new Promise( async(resolve,reject)=>{
-       let Coupon = await db.get().collection(collection.USERS).findOne({$and:[{"email":userId},{"usedCoupons":coupon}]})
+        try {
+            let Coupon = await db.get().collection(collection.USERS).findOne({$and:[{"email":userId},{"usedCoupons":coupon}]})
     if(Coupon) resolve(true)       
     resolve(false)
+        } catch (error) {
+            
+        }
+       
     })
 },
 
 // getUsedCoupons
 getUsedCoupons:(userId)=>{
     return new Promise( async(resolve,reject)=>{
-       let usedCoupons = await db.get().collection(collection.USERS).aggregate([
-        {$match:{"email":userId}},
-        {$project:{_id:0,usedCoupons:1}},
-        {$lookup:{
-            from: collection.COUPON,
-            localField: "usedCoupons",
-            foreignField: "couponName",
-            as: "Coupons"
-          }},
-        {$project:{usedCoupons:0}},
-       ]).toArray()
-       resolve(usedCoupons[0]?.Coupons)
+        try {
+            let usedCoupons = await db.get().collection(collection.USERS).aggregate([
+                {$match:{"email":userId}},
+                {$project:{_id:0,usedCoupons:1}},
+                {$lookup:{
+                    from: collection.COUPON,
+                    localField: "usedCoupons",
+                    foreignField: "couponName",
+                    as: "Coupons"
+                  }},
+                {$project:{usedCoupons:0}},
+               ]).toArray()
+               resolve(usedCoupons[0]?.Coupons)
+        } catch (error) {
+            
+        }
+       
     })
 
 },
 
 // addUsedCoupon(req.body.email,details['couponName'])
 addUsedCoupon: (userId,couponName)=>{
-    console.log(userId,couponName);
-db.get().collection(collection.USERS).updateOne({email:userId},{$addToSet:{usedCoupons:couponName}})
+    try {
+        db.get().collection(collection.USERS).updateOne({email:userId},{$addToSet:{usedCoupons:couponName}})
+        
+    } catch (error) {
+        
+    }
 
 },
 
 //removeCategoryOffer(req.params.id)
 removeCategoryOffer:(categoryName)=>{
-    console.log(categoryName);
-    db.get().collection(collection.CATEGORY).updateOne({"category":categoryName},{$unset:{"offer":1,"offerStarts":1,"offerExpire":1,"status":1,"updated":1,"offerPercentage":1}})
-    db.get().collection(collection.PRODUCT_COLLECTION).updateMany({$and:[{offerPrice:{ $exists: true }},{category:categoryName}]},{$unset:{offerPrice:1,offerPercentage:1}})
+    try {
+        db.get().collection(collection.CATEGORY).updateOne({"category":categoryName},{$unset:{"offer":1,"offerStarts":1,"offerExpire":1,"status":1,"updated":1,"offerPercentage":1}})
+        db.get().collection(collection.PRODUCT_COLLECTION).updateMany({$and:[{offerPrice:{ $exists: true }},{category:categoryName}]},{$unset:{offerPrice:1,offerPercentage:1}})
+        
+    } catch (error) {
+        
+    }
 },
 
 // removeCouponOffer
 removeCouponOffer:(couponName)=>{
-    db.get().collection(collection.COUPON).deleteOne({"couponName":couponName})    
+    try {
+        db.get().collection(collection.COUPON).deleteOne({"couponName":couponName})   
+        
+    } catch (error) {
+        
+    }
 },
 
 // couponsOffersStatusUpdate
 
 couponsOffersStatusUpdate:async ()=>{
-    // Set offer status true
-db.get().collection(collection.COUPON).updateMany({$and:[{offerStarts:{$lte:new Date()}},{offerExpire:{$gte:new Date()}}]},{$set:{status:true}}).then(result =>{
-    console.log("inside helper set offer status true",result);
-})
-// set offer status false
-db.get().collection(collection.CATEGORY).updateMany({$or:[{offerStarts:{$gt:new Date()}},{offerExpire:{$lt:new Date()}}]},{$set:{status:false}}).then(result =>{
-    
-        console.log("inside helper set offer status false",result);
+    try {
+        db.get().collection(collection.COUPON).updateMany({$and:[{offerStarts:{$lte:new Date()}},{offerExpire:{$gte:new Date()}}]},{$set:{status:true}}).then(result =>{
+            console.log("inside helper set offer status true",result);
+        })
+        // set offer status false
+        db.get().collection(collection.CATEGORY).updateMany({$or:[{offerStarts:{$gt:new Date()}},{offerExpire:{$lt:new Date()}}]},{$set:{status:false}}).then(result =>{
+            
+                console.log("inside helper set offer status false",result);
+            }
+        )
+    } catch (error) {
+        
     }
-)
+    // Set offer status true
+
+
 },
 
 // activateOffers
 categoryOffersStatusUpdate:async ()=>{
+
+    try {
+        
+    
     // setting Active status for active offers in category
  db.get().collection(collection.CATEGORY).updateMany({$and:[{offerStarts:{$lte:new Date()}},{offerExpire:{$gte:new Date()}}]},{$set:{status:true}}).then(async result =>{
     
@@ -995,7 +1221,11 @@ for(let i=0;i<a.length;++i){
 //
 
 
-    // remove offer price inside product collection
+// remove offer price inside product collection
+
+} catch (error) {
+        
+}
     
 
 },

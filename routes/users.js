@@ -2,7 +2,6 @@ var express = require('express');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 var helpers = require('../helpers/helpers')
-const twilio = require('twilio');
 const { Db } = require('mongodb');
 var moment = require('moment')
 let referralCodeGenerator = require('referral-code-generator')
@@ -21,8 +20,11 @@ function ifuser(req,res,next){
 let token = req?.cookies?.jwt;
     if(!token){ return next()}
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
-        if(err) { res.clearCookie('jwt')}     
-        res.redirect('/home')
+        if(err) { res.clearCookie('jwt')
+      res.redirect('/')} 
+        else{
+          res.redirect('/home')
+        }    
     })}
 
 /* GET users listing. */
@@ -84,104 +86,6 @@ usersRouter.get('/signup', function(req, res) {
   res.render('users/signup')
 });
 
-usersRouter.post('/signup', async function (req, res) {
-if(req.body.password){
-req.body.password = await bcrypt.hash(req.body.password,10)
-otp = Math.floor(100000 + Math.random() * 900000);
-console.log(otp);
-req.body.otp = await bcrypt.hash(`${otp}`,10)
-// send to cookie
-res.setHeader('set-Cookie',[`username=${req.body.username}`,`email=${req.body.email}`,`password=${req.body.password}`,`number=${req.body.number}`,`otp=${req.body.otp}`,`referelCode=${req.body.referelCode}`])
-
-// verify
-
-
-
-
-//Twilio custom otp send 
-
-//   try{
-//   client.messages
-//   .create({
-//     body: `Your one time password for login is ${otp} `,
-//     from: +16415521519,
-//     to: `+91` + req.body.number,
-//   })
-//   .then((message) => {
-  
-//     res.redirect('/verifyotp')
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
-// }catch (err){
-
-// console.log(`Some error cames in catch /signup post  ${err}`);
-
-// }
-
-
-
-
-
-  res.redirect('/verifyotp')
-
-}else{
- res.send("Error pass cheyyanam User script block cheyyuva")
-}
-
-});
-
-usersRouter.get('/verifyotp', function(req, res, next) {
-  res.render('users/verifyotp')
-});
-
-
-
-222222222
-usersRouter.post('/verifyotpold', function(req, res, next) {
-var {username,email,number,password,otp,referelCode} = req.cookies;
-  
-var userdata ={username,email,number,password}
-
-  // verifying otp 
-  bcrypt.compare(req.body.otp,otp).then((data)=>{
-    if(data){
-
-
-userdata.wallet = {
-  balance:0,
-  myReferelId:referralCodeGenerator.alphaNumeric('uppercase', 4, 4),
-  whoReferedMe:referelCode
-};
-
-helpers.addUser(userdata)
-    const email = req.cookies.email
-    const user = { email: email}
-
-  
-
-
-  //  generating JWT
-   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
-  
-  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
-  res.clearCookie('password')
-res.clearCookie('email')
-res.clearCookie('username')
-res.clearCookie('number')
-res.clearCookie('data')
-res.clearCookie('otp')
-    res.redirect('/')
-
-
-    }else{
-
-    }
-  })
-
-});
-
 
 usersRouter.get('/home',async function(req, res) {
   let products = await helpers.getAllProducts()   
@@ -191,24 +95,30 @@ usersRouter.get('/home',async function(req, res) {
  
  
  usersRouter.post('/sendOtp',function(req, res) { 
-      console.log(req.body.phoneNumber);
-      client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+  try {
+    client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
                  .verifications
                  .create({to: `+91${req.body.phoneNumber}`, channel: 'sms'})
                  .then(verification => {
                    console.log(verification.status)
                  });
      res.json({})
+  } catch (error) {
+    
+  }
+      
   });
 
+
   usersRouter.post('/verifyOtp',async function(req, res) { 
-   var {username,email,number,password,referelCode,otp} = req.body;
+    try {
+      var {username,email,number,password,referelCode,otp} = req.body;
     client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
        .verificationChecks
        .create({to: `+91${number}`, code:`${otp}`})
        .then(async verification_check =>{
          console.log(verification_check?.status)
-          if(verification_check?.status!=="approved") return res.json({status:false})
+          if(verification_check?.status!=="approved"){ return res.json({status:false})}
           console.log("sussuss");
           password = await bcrypt.hash(password,10)
  
@@ -223,30 +133,44 @@ userdata.wallet = {
 // console.log(userdata);
 
 helpers.addUser(userdata).then(userObjectId =>{
-  const user = {email,userObjectId}
+  try {
+    const user = {email,userObjectId}
 
-  //  generating JWT
-   const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
-  console.log(user);
-
-  res.setHeader('Set-Cookie',`jwt=${accessToken}`)
-
-  res.json({status:true})
+    //  generating JWT
+     const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET)
+    console.log(user);
+  
+    res.setHeader('Set-Cookie',`jwt=${accessToken}`)
+  
+    res.json({status:true})
+  } catch (error) {
+    console.log(error);
+  }
+ 
 
 })    
   
 
 
   })
+    } catch (error) {
+      console.log(error);
+    }
+   
 
 })
   
   usersRouter.get('/detail/:id', function(req, res) {
-    helpers.getProductDetails(req.params.id).then((data)=>{
-      res.render('users/detail',{data})
-    }).catch(() =>{
-      res.redirect('/error')
-    })
+    try {
+      helpers.getProductDetails(req.params.id).then((data)=>{
+        res.render('users/detail',{data})
+      }).catch(() =>{
+        res.redirect('/error')
+      })
+    } catch (error) {
+      
+    }
+   
   });
  
 
@@ -512,7 +436,7 @@ usersRouter.get('/myprofile',(req,res)=>{
   })
 
 // })
-
+ 
 usersRouter.get('/cancelorder/:id',(req,res)=>{
 helpers.cancelOrder(req.params.id,"Order Cancelled By User")
 

@@ -301,7 +301,6 @@ adminRouter.get('/orders',(req,res)=>{
   
   adminRouter.get('/orderstatus',(req,res,next)=>{
     helpers.cancelOrder(req.query.id,req.query.status).then(()=>{
-
       res.redirect('/admin/orders')
     })
   
@@ -331,7 +330,7 @@ adminRouter.get('/error', function(req, res) {
   res.render('admin/404')
 });
 
-// adminRouter.use(function(req, res, next) {
+// app.use(function(req, res, next) {
 //   res.redirect('/admin/error')
 //  })
 
