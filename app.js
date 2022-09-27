@@ -20,7 +20,9 @@ Handlebars.registerHelper("orderfinished",(a,id)=>{
     // href="/cancelorder/'+id+'" 
   }
 })
-
+Handlebars.registerHelper("multiply",(num1,num2)=>{
+  return new Handlebars.SafeString(num1*num2)
+})
 Handlebars.registerHelper("adminOrder",(status,id)=>{
   if(status!=="Delevered" && status!=="Order Cancelled By User" && status!=="Order Cancelled by Admin"){
     return new Handlebars.SafeString(`<div class="dropdown">

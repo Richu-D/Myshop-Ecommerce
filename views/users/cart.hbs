@@ -132,7 +132,8 @@
                  swal("", "Cart Item Removed", "success").then(() => {
                      location.reload()
                  })
-             } else {  //updateAllValues'
+             } else {  
+                //updateAllValues'
                  $.ajax({
                      url: '/updateAllValues',
                      method: 'post',

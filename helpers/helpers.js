@@ -385,20 +385,20 @@ try {
                 }
                 db.get().collection(collection.CART).insertOne(cartObj)
             } catch (error) {
-                
+                console.log(error);
             }
            
 
         }
         resolve()
         } catch (error) {
-            
+            console.log(error);
         }
         
 
     })
 } catch (error) {
-    
+    console.log(error);
 }
        
        
@@ -435,9 +435,10 @@ try {
                         }
                     }
                 ]).toArray()
+                console.log(cartItems);
                     resolve(cartItems)
             } catch (error) {
-                
+                console.log(error);
             }
         
         })

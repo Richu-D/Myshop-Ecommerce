@@ -297,11 +297,10 @@ helpers.checkCoupon(req.body).then(coupon=>{
 
 
 usersRouter.get('/cart', async function(req, res) {
-
   let products = await helpers.getAllCartItems(req.user.email)
 let grantTotal = 0;   
 
-console.log(products);
+console.log("products ",products);
 if(products[0]){
 products.forEach(data => {
 
