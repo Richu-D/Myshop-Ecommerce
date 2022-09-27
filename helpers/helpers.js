@@ -219,14 +219,21 @@ let data = await db.get().collection(collection.USERS).findOne({email})
     })
     },
     getProductDetails:(id)=>{
-        return new Promise((resolve,reject)=>{
+        return new Promise(async(resolve,reject)=>{
             try {
-                db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)}).then((product)=>{  
-                    if(!product) reject()                
-                    resolve(product)   
-                })
-            } catch (error) {
+                console.log(id);
+            let product = await db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:objectId(id)})
+                    console.log("Product is ",product);
+                    if(product){
+                        resolve(product)   
+                    }else{
+                        reject()            
+                        
+                    } 
                 
+            } catch (error) {
+                console.log("hyy");
+                reject() 
             }
             
             

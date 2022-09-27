@@ -147,7 +147,7 @@
 
 
                     <div class="product-item bg-light mb-4">
-                        <a href="detail/{{this._id}}">
+                        <a href="detail/{{this._id}}" target="_blank">
                             <div class="product-img position-relative overflow-hidden">
                                 <div style="height:350px;">
                                 <img style="object-fit: contain; width: 100%; height: 100%;" id="i" src="/product_image/{{this._id}}.jpg" alt=""></div>
@@ -229,7 +229,7 @@
                         console.log(data.data[i])
                         $('.productJson').append(`<div class="col-lg-4 col-md-6 col-sm-6 pb-1 productsList">
                         <div class="product-item bg-light mb-4">
-                        <a href="detail/${data.data[i]._id}">
+                        <a href="detail/${data.data[i]._id}" target="_blank">
                             <div class="product-img position-relative overflow-hidden">
                                 <div style="height:350px;">
                                 <img style="object-fit: contain; width: 100%; height: 100%;" id="i" src="/product_image/${data.data[i]._id}.jpg" alt=""></div>

@@ -335,8 +335,8 @@ adminRouter.get('/error', function(req, res) {
   res.render('admin/404')
 });
 
-// app.use(function(req, res, next) {
-//   res.redirect('/admin/error')
-//  })
+adminRouter.use(function(req, res, next) {
+  res.redirect('/admin/error')
+ })
 
 module.exports = adminRouter;

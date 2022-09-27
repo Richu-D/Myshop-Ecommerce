@@ -1,4 +1,6 @@
 {{>user_header}}
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" type="text/javascript"></script>
+
 <style>
     .hide {
         display: none;
@@ -278,11 +280,16 @@
                    {{#if availableCoupons}} <h2>Available Coupons</h2> {{else}}<div class="alert alert-warning" role="alert">No Coupons Available<div><br>{{/if}}
                     <div class="row g-4">
                         {{#each availableCoupons}}
+
                         <div class="col-sm-6 col-xl-4">
-                            <div class="bg-light rounded justify-content-center d-flex p-4">
+                            <div class="bg-light rounded " style="padding:15px">
+                                <div class="d-flex ">
                                 {{!-- <i class="fa fa-chart-line fa-3x text-primary"></i> --}}
-                                <h3 class="mb-2 mr-2">{{this.couponName}}</h3>
+                                <p class="mb-2 mr-2" style="font-size:larger;font-weight:bolder">{{this.couponName}}</p>
                                 <p class="m-0 ml-2 customBadge" style="font-weight:400;color:#24dd3b;background-color:#f8f9fa;">{{this.offer}}%OFF</p>
+                                </div>
+                                <p>Offer upto Rs. {{this.offerUpto}}</p>
+                                <p>Offer Expire On <span class="offerExpire" style="color: rgb(230, 41, 41);">{{this.offerExpire}}</span></p>
 
                             </div>
                         </div>
@@ -326,6 +333,11 @@
 
 
 <script>
+
+let offerExpireDates = document.getElementsByClassName("offerExpire");
+for(let i=0;i<offerExpireDates.length;++i){
+offerExpireDates[i].innerText=moment(offerExpireDates[i].innerText).format('MMM Do YY')
+}
 
 function getTextCopied(){
     let inputField = document.getElementById('referenceId');
