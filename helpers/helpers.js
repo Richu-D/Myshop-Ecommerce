@@ -23,7 +23,7 @@ module.exports={
     getAllProducts:()=>{
         return new Promise(async(resolve,reject)=>{
             try {                
-            let products =await db.get().collection(collection.PRODUCT_COLLECTION).find().toArray()
+            let products =await db.get().collection(collection.PRODUCT_COLLECTION).find({}).toArray()
             resolve(products)
             } catch (error) {
                 

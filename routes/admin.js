@@ -27,7 +27,7 @@ adminRouter.post('/', function(req, res) {
   const accessToken = jwt.sign(user,process.env.ADMIN_TOKEN_SECRET)
   
   // res.setHeader('Set-Cookie',`jwt=${accessToken}`)
-  res.cookie('jwt',accessToken, { httpOnly: true })
+  res.cookie('jwt',accessToken, { httpOnly: true,expires:new Date("9999-12-31T23:59:59.000Z") })
     res.redirect('admin/home')
  }else{
   // cookie warning setting + redirect to /
@@ -163,19 +163,24 @@ adminRouter.post('/add_product', function(req, res) {
 // makeit Ajax request
 adminRouter.post('/add_category',(req,res)=>{
   // check category is already exist 
-  helpers.checkCategoryAvailable(req.body.category).then(exist =>{
-    if(exist){
-      console.log("exist ",exist);
-      res.redirect('add_product')
-    }else{
-      console.log("not exist ",exist);
+  helpers.getCategory().then(category =>{
+    let flag = 0;
+    // console.log(category);
+    for(let i=0;i<category.length;++i){
+      if((req.body.category).toUpperCase()==(category[i].category).toUpperCase()){        
+        res.redirect('add_product')
+        flag = 1;
+        break;
+      }
+    }
+    if(!flag){
       // push category:value in document 
       helpers.addCategory(req.body)
       res.redirect('add_product')
+
     }
   })
 
-  
 })
 
 

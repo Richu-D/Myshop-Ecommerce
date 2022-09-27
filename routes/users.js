@@ -19,13 +19,31 @@ function ifuser(req,res,next){
 
 let token = req?.cookies?.jwt;
     if(!token){ return next()}
+    else{
     jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
         if(err) { res.clearCookie('jwt')
       res.redirect('/')} 
         else{
-          res.redirect('/home')
+          
+          req.user = user
+        // check block or not
+        helpers.getUser(req.user.email).then((data)=>{
+          if(data){
+          if(data.block){
+            res.clearCookie('jwt')
+            res.send('Your are blocked')
+            
+
+          }
+        }else{
+          res.redirect('/')
+        }
+        })
+        next()
+       // res.redirect('/home')
         }    
-    })}
+    })
+}}
 
 /* GET users listing. */
 usersRouter.get('/',ifuser, function(req, res) {
@@ -53,7 +71,7 @@ if(data){
   res.cookie('jwt',accessToken, { httpOnly: true,expires:new Date("9999-12-31T23:59:59.000Z")})
     res.redirect('/home')
       }
-      else{
+      else{ 
         res.setHeader('Set-Cookie',"err=true")
         res.redirect('/')
       }
@@ -64,6 +82,8 @@ if(data){
   }
 
   }else{
+    
+    res.clearCookie('jwt')
     res.send('Your are blocked')
   }
 
@@ -226,6 +246,8 @@ usersRouter.post('/getCategory',async (req,res)=>{
         helpers.getUser(req.user.email).then((data)=>{
           if(data){
           if(data.block){
+            
+            res.clearCookie('jwt')
             res.send('Your are blocked')
           }
         }else{
@@ -404,7 +426,7 @@ usersRouter.post('/updateAllValues',async(req,res)=>{
   usersRouter.post('/wishlistAndCartCount',async (req,res)=>{
     try {
       let wishlistCountAndCartCount = await helpers.wishlistAndCartCount(req.user.email)
-      console.log(wishlistCountAndCartCount);
+      console.log(wishlistCountAndCartCount);      
       res.json({wishlistCountAndCartCount});
     } catch (error) {
       console.log(error);
