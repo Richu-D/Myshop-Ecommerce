@@ -338,14 +338,14 @@ usersRouter.post('/addtocart/:id', function(req, res) {
 });
 
 usersRouter.post('/change-product-quantity',(req,res)=>{
-  if(req.body.count == -1||req.body.count == 1){
+console.log(req.body);
+  if(req.body.count == -1||req.body.count == 1){ 
   helpers.changeProductQuantity(req.body).then((response)=>{ 
-    res.json(response)
-    
+    res.json(response)    
   })
   
 }else{
-  res.json({})
+  res.json({countErorr:true})
 }
 })
 

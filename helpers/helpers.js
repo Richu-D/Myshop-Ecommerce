@@ -442,9 +442,23 @@ try {
         
         })
     },
-    changeProductQuantity:async ({cartId,productId,count,quantity})=>{
+    changeProductQuantity:async ({cartId,productId,count})=>{
         count = parseInt(count)
-        quantity = parseInt(quantity)
+        quantity = await db.get().collection(collection.CART).aggregate([
+           {$match:{_id:objectId(cartId)}},
+           {$project:{_id:0,user:0}},
+           {
+            $unwind:"$products"
+           },
+           {
+            $match:{"products.item":objectId(productId)}
+           },
+           {
+            $project:{"products.quantity":1}
+           }
+        ]).toArray()
+        quantity = await quantity[0]?.products?.quantity;
+        
         return new Promise((resolve,reject)=>{
             try {
                 
@@ -461,7 +475,7 @@ try {
                 }
                 ).then((response)=>{
                     resolve(true)
-                })
+                })       
             }
 
             } catch (error) {
