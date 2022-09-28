@@ -6,7 +6,7 @@
 
     $.ajax({
     url:'/wishlistAndCartCount',                
-    method:'post',
+    method:'get',
     success:(response)=>{
         wishlist.innerText = response?.wishlistCountAndCartCount?.wishlistCount||0
         cart.innerText = response?.wishlistCountAndCartCount?.cartCount||0
@@ -23,7 +23,7 @@
 
     $.ajax({
         url:'/getCategory',                
-        method:'post',
+        method:'get',
         success:(response)=>{          
     
         for (var i = 0; i < response?.category?.length; ++i) {
