@@ -65,6 +65,8 @@ usersRouter.post('/searchRateRange',searchRateRange)
 
 usersRouter.get('/getCategory',getCategory)
 
+usersRouter.get('/error',error);
+
 usersRouter.use(authorisation)     // User Authorisation middleware
 
 usersRouter.post('/applyCoupon',applyCoupon);
@@ -112,8 +114,6 @@ usersRouter.post('/editaddress',editaddress)
 usersRouter.get('/deleteaddress/:id',deleteaddress)
 
 usersRouter.post('/placeorder',placeorder)
-
-usersRouter.get('/error',error);
 
 usersRouter.use(showError)
 

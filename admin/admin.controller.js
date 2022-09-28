@@ -1,7 +1,6 @@
 require('dotenv').config()
 var express = require('express');
 const jwt = require('jsonwebtoken')
-var adminRouter = express.Router();
 var helpers = require('../helpers/helpers')
 
 getLogin =(req, res)=>{
