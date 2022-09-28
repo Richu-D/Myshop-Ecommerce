@@ -30,7 +30,7 @@
 
                 <br>
                 <br>
-                <div class="col-md-9 form-group">
+                <div class="col-md-12 form-group">
                     <h5 class="title mb-3"> Select Your Address</h5><button class="btn btn-primary" id="addAddressBtn" form="noForm" onclick="show()">Add Address</button><br>
                    {{#if address}} <p class="alert alert-danger" id="address-error" style="display: none;width:100%;">Select An Address From Below</p>{{else}}<p class="alert alert-danger" id="address-error" style="display: none;width:100%;">Add A New Address Please</p>{{/if}}
                     <div style="margin-bottom:20px;">
@@ -60,7 +60,7 @@
 
                     {{/each}}
 
-                    <input type="text" class="form-control mt-5 p-1" id="coupon" onfocus="removeCouponError()" style="width: 300px;display:inline-block;" placeholder="Enter Coupon Code">
+                    <input type="text" class="form-control mt-5 p-1" id="coupon" onfocus="removeCouponError()" style="width: 82%;display:inline-block;" placeholder="Enter Coupon Code">
                     <button class="btn btn-success" form="notAform" onclick="applyCoupon()">Apply</button>
                     <p class="alert alert-danger" id="coupon-error" style="display: none;width:100%;"></p>                    
                     <input type="text" name="coupon" style="display:none;" id="couponValue">
