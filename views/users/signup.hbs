@@ -273,9 +273,13 @@ $.ajax({
                 "otp":otp
                 },
             success: (response) => {
-            if(response.status) window.location = "/home";
+            if(response.status){
+                window.location = "/home";
+                }else{
             document.getElementById('warning').style.visibility = "visible";
             document.getElementById('warning').innerText = "Invalid OTP";
+
+                }
 
          }
          
