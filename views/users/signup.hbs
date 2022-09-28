@@ -120,7 +120,7 @@ body {
                    
                             
     <button onclick="sendOtp()" id="sendOtpButton" form="notAform">Submit</button> 
-    <button onclick="verifyOtp()" id="verifyOtpButton" form="notAform" style="display: none;">Verify Otp</button> 
+    <button onclick="verifyOtp()" id="verifyOtpButton" form="notAform" style="display: none;">Verify OTP</button> 
     <a class="signup text-muted" href="/">Already have an Account? Sign In</a>
 </form>
 
@@ -278,7 +278,6 @@ $.ajax({
                 }else{
             document.getElementById('warning').style.visibility = "visible";
             document.getElementById('warning').innerText = "Invalid OTP";
-
                 }
 
          }
