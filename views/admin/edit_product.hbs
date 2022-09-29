@@ -14,11 +14,13 @@
 
                 <label for="category">Category</label>
                 {{!-- <input type="text" name="category" class="form-control" value="{{product.category}}"> --}}
-<select name="category" class="form-control" value="{{product.category}}" id="category">
-    <option value="men" >men</option>
-    <option value="woman">woman</option>
-    <option value="kids">kids</option>
-</select>
+
+                <select name="category" class="form-control"  value="{{product.category}}" id="category">
+                    <option value="">Select Category</option>
+                    {{#each category}}
+                    <option value="{{this.category}}">{{this.category}}</option>
+                    {{/each}}
+                </select>
                 
                 <label for="price">Price</label>
                 <input type="number" name="price" class="form-control" value="{{product.price}}">

@@ -190,9 +190,10 @@ res.render('admin/chart')
 }
 editProductPage = async(req, res)=>{
 let id = req.params.id
+let category = await helpers.getCategory()
 let product = await helpers.getProductDetails(id)
 // console.log(product);
-res.render('admin/edit_product',{product}) 
+res.render('admin/edit_product',{product,category}) 
 
 }
 editProduct=(req, res)=>{
