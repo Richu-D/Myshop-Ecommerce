@@ -25,10 +25,10 @@
                    
                     <div class="d-flex align-items-center mb-4 pt-2">
 
-                        <form action="/wishlist/{{data._id}}" method="post"><button class="btn btn-success px-2 m-2">Add
-                                To wishlist</button></form>
-                        <form action="/addtocart/{{data._id}}" method="post"> <button class="btn btn-primary px-2">Add
-                                To Cart</button></form>
+                        <button class="btn btn-success px-2 m-2" onclick="addToWishlist('{{data._id}}')">Add
+                                To wishlist</button>
+                                <button class="btn btn-primary px-2" onclick="addToCart('{{data._id}}')">Add
+                                To Cart</button>
 
                     </div>
 
@@ -164,6 +164,28 @@
  <script src="/javascripts/zoomsl.js"></script>
 
 <script>
+function addToCart(productId){
+    $.ajax({
+            url: `/addtocart/${productId}`,
+            method: 'post',            
+            success: () => {               
+               location.href="/cart"                
+            }
+        })
+
+        }
+
+function addToWishlist(productId){
+    $.ajax({
+            url: `/wishlist/${productId}`,
+            method: 'post',            
+            success: () => {               
+               location.href="/wishlist"                
+            }
+        })
+
+        }
+        
   $(document).ready(function () {
    // $('.small-images img').click(function(){
     //  let image = $(this).attr('src')

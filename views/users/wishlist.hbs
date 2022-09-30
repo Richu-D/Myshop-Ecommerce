@@ -60,9 +60,7 @@
         </div>
 
         <div class="right">
-            <div>
-            <form action="/addtocart/{{this.product._id}}" method="post"><button class="btn btn-primary px-2">Add To Cart</button></form>
-            </div>
+            <div><button class="btn btn-primary px-2" onclick="addToCart('{{this.product._id}}')">Add To Cart</button></div>
             <div class="fa fa-trash wishlistDeleteIcon my-auto" onclick="removeWishlistItem('{{this.product._id}}')"></div>
         </div>
     </div>  
@@ -73,6 +71,18 @@
 </div>
 
 <script>
+
+    function addToCart(productId){
+    $.ajax({
+            url: `/addtocart/${productId}`,
+            method: 'put',            
+            success: () => {               
+               location.href="/cart"                
+            }
+        })
+
+        }
+
     function removeWishlistItem(productId) {
         swal({
             title: "",
@@ -88,7 +98,7 @@
             data: {
                 productId: productId
             },
-            method: 'post',
+            method: 'delete',
             success: (response) => {
 
                   swal("","Wishlist Item Removed", "success").then(()=>{

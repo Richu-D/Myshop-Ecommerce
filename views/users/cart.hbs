@@ -118,13 +118,13 @@
        let unique = document.getElementsByClassName('unique')
        let unique1 = document.getElementsByClassName('unique1')     
        $.ajax({
-         url: '/change-product-quantity',
+         url: '/changeProductQuantity',
          data: {
              cartId: cartId,
              productId: productId,
              count: count             
          },
-         method: 'post',
+         method: 'patch',
          success: (response) => {
              if (response.countErorr) {
                  location.reload()   
@@ -136,7 +136,7 @@
                 //updateAllValues'
                  $.ajax({
                      url: '/updateAllValues',
-                     method: 'post',
+                     method: 'get',
                      success: (response) => {
                            for (i = 0; i < unique.length; ++i) {
                              unique[i].innerHTML = response.rates[i]
@@ -157,7 +157,7 @@
                  })
                 // location.reload()
                  document.getElementById(productId).innerHTML = quantity + count;
-                         document.getElementById(`${productId}1`).innerHTML = quantity + count;
+                 document.getElementById(`${productId}1`).innerHTML = quantity + count;
            }
          }
      })
@@ -184,7 +184,7 @@
                         cartId: cartId,
                         productId: productId
                     },
-                    method: 'post',
+                    method: 'delete',
                     success: (response) => {
                         if (response.delete) {
                             //alert("Product Removed from Cart")

@@ -308,7 +308,7 @@ addtocart = (req, res)=> {
 // add to cart 
 
 helpers.addToCart(req.user.email,req.params.id).then(()=>{
-res.redirect('/cart')
+res.json({})
 }).catch(err =>{
 console.log(err);
 })
@@ -444,12 +444,12 @@ console.log(err);
 })
 }
 
-addWishlist=(req,res)=>{
+addToWishlist=(req,res)=>{
 
 helpers.addWishlist(req.user.email,req.params.id)
 
 
-res.redirect('/wishlist')
+res.json({})
 }
 
 addAddress=(req,res)=>{
@@ -702,7 +702,7 @@ wishlistAndCartCount,
 myprofile,
 cancelorder,
 wishlist,
-addWishlist,
+addToWishlist,
 addAddress,
 addAddressCheckOut,
 orders,

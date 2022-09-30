@@ -73,17 +73,17 @@ usersRouter.post('/applyCoupon',applyCoupon);
 
 usersRouter.get('/cart',cart);
 
-usersRouter.post('/addtocart/:id',addtocart);
+usersRouter.post('/addtocart/:id',addtocart); 
 
-usersRouter.post('/change-product-quantity',changeProductQuantity)
+usersRouter.patch('/changeProductQuantity',changeProductQuantity)
 
-usersRouter.post('/removeCartItem',removeCartItem)
+usersRouter.delete('/removeCartItem',removeCartItem)
 
 usersRouter.get('/checkout', checkout)
 
 usersRouter.get('/logout',logout)
 
-usersRouter.post('/updateAllValues',updateAllValues)
+usersRouter.get('/updateAllValues',updateAllValues)
 
 usersRouter.get('/wishlistAndCartCount',wishlistAndCartCount)
 
@@ -93,7 +93,7 @@ usersRouter.get('/cancelorder/:id',cancelorder)
 
 usersRouter.get('/wishlist',wishlist)
 
-usersRouter.post('/wishlist/:id',addWishlist)
+usersRouter.post('/wishlist/:id',addToWishlist);
 
 usersRouter.post('/addAddress',addAddress)
 
@@ -103,7 +103,7 @@ usersRouter.get('/orders',orders)
 
 usersRouter.post('/editpersonaldetails',editpersonaldetails)
 
-usersRouter.post('/removeItemFromWishlist',removeItemFromWishlist)
+usersRouter.delete('/removeItemFromWishlist',removeItemFromWishlist)
 
 usersRouter.post('/changepassword',changepassword)
 
