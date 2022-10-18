@@ -35,16 +35,16 @@
                     <div class="d-flex pt-2">
                         <strong class="text-dark mr-2">Share on:</strong>
                         <div class="d-inline-flex">
-                            <a class="text-dark px-2" href="">
+                            <a class="text-dark px-2" >
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a class="text-dark px-2" href="">
+                            <a class="text-dark px-2" >
                                 <i class="fab fa-twitter"></i>
                             </a>
-                            <a class="text-dark px-2" href="">
+                            <a class="text-dark px-2" >
                                 <i class="fab fa-linkedin-in"></i>
                             </a>
-                            <a class="text-dark px-2" href="">
+                            <a class="text-dark px-2" >
                                 <i class="fab fa-pinterest"></i>
                             </a>
                         </div>
@@ -159,15 +159,13 @@
 
 
 </div>
-
-
- <script src="/javascripts/zoomsl.js"></script>
-
+<script src="/javascripts/zoomsl.js"></script>
 <script>
+    
 function addToCart(productId){
     $.ajax({
             url: `/addtocart/${productId}`,
-            method: 'post',            
+            method: 'put',            
             success: () => {               
                location.href="/cart"                
             }
@@ -186,6 +184,12 @@ function addToWishlist(productId){
 
         }
         
+    function isMobile() {
+return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+    if (!isMobile()) {
+
   $(document).ready(function () {
    // $('.small-images img').click(function(){
     //  let image = $(this).attr('src')
@@ -196,6 +200,8 @@ function addToWishlist(productId){
       zoomrange: [4, 4]
     });
   })
+}
 </script>
+
 
 {{>user_footer}}

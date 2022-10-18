@@ -10,18 +10,18 @@
     <div class="container-fluid mt-2">
         <div class="row">
 
-            <div class="col-md-4">
+            <div class="col-12 col-md-4" >
                 <h5 class="title">Shipping Details</h5>
 
 
                 <br>
-                <div class="col-md-9 form-group">
+                <div class="col-12  form-group">
                     <label>First Name</label>
                     <input class="form-control" id="name" name="name" type="text" value="{{name}}"
                         onkeyup="validateName()">
                     <p class="alert alert-danger" id="name-error" style="display: none;width:100%;"></p>
                 </div>
-                <div class="col-md-9 form-group">
+                <div class="col-12 form-group">
                     <label>Mobile No</label>
                     <input class="form-control" id="number" name="number" type="number" value="{{number}}"
                         onkeyup="validatePhone()">
@@ -30,7 +30,7 @@
 
                 <br>
                 <br>
-                <div class="col-md-12 form-group">
+                <div class="col-12 form-group mb-5">
                     <h5 class="title mb-3"> Select Your Address</h5><button class="btn btn-primary" id="addAddressBtn" form="noForm" onclick="show()">Add Address</button><br>
                    {{#if address}} <p class="alert alert-danger" id="address-error" style="display: none;width:100%;">Select An Address From Below</p>{{else}}<p class="alert alert-danger" id="address-error" style="display: none;width:100%;">Add A New Address Please</p>{{/if}}
                     <div style="margin-bottom:20px;">
@@ -60,7 +60,7 @@
 
                     {{/each}}
 
-                    <input type="text" class="form-control mt-5 p-1" id="coupon" onfocus="removeCouponError()" style="width: 82%;display:inline-block;" placeholder="Enter Coupon Code">
+                    <input type="text" class="mt-5 p-1 col-10" id="coupon" onfocus="removeCouponError()" style="display:inline-block;" placeholder="Enter Coupon Code">
                     <button class="btn btn-success" form="notAform" onclick="applyCoupon()">Apply</button>
                     <p class="alert alert-danger" id="coupon-error" style="display: none;width:100%;"></p>                    
                     <input type="text" name="coupon" style="display:none;" id="couponValue">
@@ -109,7 +109,7 @@
 
 
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-md-4 mb-5">
                 <h5 class="title pr-3">Order Total</span></h5>
                 <br>
                 <div class="p-10 mb-2">
@@ -147,13 +147,14 @@
                     </div>
                 </div>
                 <br>
-                <div style="margin-top:25px;">
+                <div style="margin-top:25px;width: 100%;">
+              
                     <h5 class="section-title position-relative text-uppercase mb-3"><span
                             class="title pr-3">Payment</span></h5>
-                    <p class="alert alert-danger" id="payment-error" style="display:none;width:100%; margin:0"></p>
-
-                    <br>
-                    <div class="p-20">
+                    <p class="alert alert-danger" id="payment-error" style="display:none;width:100%; margin-bottom:10px"></p>
+                  
+                   <div style="display: flex;justify-content: space-between;">
+                        <div class="p-20">
                         <div class="form-group">
                             <div class="custom-control custom-radio">
                                 <input type="radio" class="custom-control-input paymentMethod" name="paymentMethod"
@@ -177,21 +178,26 @@
                                 <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
                             </div>
                         </div> --}}
-                        <br>
-                        <button type="submit" class="btn btn-block btn-primary font-weight-bold mt-2 py-3">Place
-                            Order</button>
+                       
+                        
                         {{!-- <button type="submit" class="btn btn-block btn-primary font-weight-bold mt-2 py-3">Place
                             Order</button> --}}
 
                     </div>
+                    <div>
+                        <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3 ">Place
+                            Order</button>
+                    </div>
+                   </div>
+                    
                 </div>
             </div>
             <div class="col-md-4">
-               {{#if availableCoupons}} <h2>Available Coupons</h2> {{else}}<div class="alert alert-warning" role="alert">No Coupons Available<div><br>{{/if}}
+               {{#if availableCoupons}} <h2>Available Coupons</h2> {{else}}<div class="alert alert-warning" role="alert" style="width:100%;">No Coupons Available<div><br>{{/if}}
                     <div class="row md-12" style="max-height:70vh;overflow: auto;">
                         {{#each availableCoupons}}
-                        <div class="col-sm-12 mt-3"> 
-                            <div class="bg-light rounded " style="padding:10px ">
+                        <div class="col-12 mt-3"> 
+                            <div class="bg-light rounded" style="padding:10px;">
                                 <div class="d-flex">
                                 <p class="mb-2 mr-2" style="font-size:larger;font-weight:bolder">{{this.couponName}}</p>
                                 <p class="m-0 ml-2 customBadge" style="font-weight:400;color:#24dd3b;background-color:#f8f9fa;">{{this.offer}}%OFF</p>

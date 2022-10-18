@@ -19,7 +19,7 @@
         justify-content: space-between;
     }
     .left{
-        display: flex;
+    display: flex;
     flex-direction: column;
     justify-content: inherit;
     }
@@ -35,13 +35,27 @@
         display: flex;
         padding: 40px 0;
     }
+
+    @media screen and (max-width: 480px) {
+
+   .productsList .discription .right button{
+    font-size: 10px;
+   }
+
+   .left {
+    justify-content: center;
+   }
+ 
+
+
+}
 </style>
 
 
 <div class="container" style="background-color:rgb(246, 246, 255);margin-top: 100px;padding-bottom: 10px;min-height: 80vh;">
 
 <div class="title" style="font-size:2rem;border-bottom:1px solid black ;margin:0;">Wishlist</div>
-
+<section class="productsList">
 {{#each products}}
 <div class="content flex" style="font-size:1rem; margin:15px 0;">
      <a class="products" href="/detail/{{this.product._id}}">
@@ -67,6 +81,7 @@
 </div>
 
      {{/each}}  
+</section>
 
 </div>
 

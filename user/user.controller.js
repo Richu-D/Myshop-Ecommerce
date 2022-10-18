@@ -571,7 +571,6 @@ deleteaddress=(req,res)=>{
 
 helpers.deleteaddress(req.user.email,req.params.id)
 // delete address
-
 res.redirect('/myprofile')
 }
 
