@@ -73,7 +73,7 @@ usersRouter.post('/applyCoupon',applyCoupon);
 
 usersRouter.get('/cart',cart);
 
-usersRouter.post('/addtocart/:id',addtocart); 
+usersRouter.put('/addtocart/:id',addtocart); 
 
 usersRouter.patch('/changeProductQuantity',changeProductQuantity)
 

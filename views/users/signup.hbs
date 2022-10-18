@@ -91,6 +91,12 @@ body {
     bottom: 5%;
 }
 
+ @media screen and (max-width: 480px) {
+.box{
+    margin-top: 0px;
+}
+ }
+
 
     </style>
 </head>
@@ -274,7 +280,7 @@ $.ajax({
                 },
             success: (response) => {
             if(response.status){
-                window.location = "/home";
+                window.location = "/";
                 }else{
             document.getElementById('warning').style.visibility = "visible";
             document.getElementById('warning').innerText = "Invalid OTP";

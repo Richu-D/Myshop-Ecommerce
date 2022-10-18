@@ -30,7 +30,7 @@ Handlebars.registerHelper("adminOrder",(status,id)=>{
     <div class="dropdown-content">
       <a href="/admin/orderstatus/?status=shipped&id=${id}">Shipped</a>
       <a href="/admin/orderstatus/?status=Out for delevery&id=${id}">Out for delevery</a>
-      <a href="/admin/orderstatus/?status=Delevered&id=${id}">Delivered</a>
+      <a href="/admin/orderstatus/?status=Delevered&id=${id}" style="color:green">Delivered</a>
       <a href="/admin/orderstatus/?status=Order Cancelled by Admin&id=${id}" class="btn btn-danger">Cancel Order</a>
     </div>
   </div> `)

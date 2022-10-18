@@ -151,11 +151,10 @@ let data = await db.get().collection(collection.USERS).findOne({email})
 
     // deleteaddress(req.user.email,req.params.id)
     deleteaddress:(email,data)=>{
-            try {
-            
+            try {            
             db.get().collection(collection.USERS).updateOne({'email':email},{
                 $pull:{
-                    'address': `${data}`    
+                    'address': `${data}`   
                           
                 }
                 
